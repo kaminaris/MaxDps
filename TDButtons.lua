@@ -42,7 +42,7 @@ end
 ----------------------------------------------
 -- Show Overlay on button
 ----------------------------------------------
-function TDActionButton_Glow(self, id)
+function TDActionButton_Glow(self, id, r, g, b)
 	if ( self.tdOverlays and self.tdOverlays[id] ) then
 		self.tdOverlays[id]:Show();
 	else
@@ -60,7 +60,7 @@ function TDActionButton_Glow(self, id)
 		t:SetTexture("Interface\\Cooldown\\ping4")
 		t:SetBlendMode("ADD");
 		t:SetAllPoints(self.tdOverlays[id]);
-		t:SetVertexColor(1, 0, 0);
+		t:SetVertexColor(r or 1, g or 0, b or 0);
 		self.tdOverlays[id].texture = t;
 
 		self.tdOverlays[id]:SetPoint("CENTER",0,0);
@@ -196,12 +196,34 @@ function TDGlowSpellId(spellId)
 end
 
 ----------------------------------------------
+-- Glow independent button by spell name
+----------------------------------------------
+function TDGlowIndependent(spellName, id, r, g, b)
+	local name = GetSpellInfo(spellName) or spellName;
+	if TDActionSpells[name] ~= nil then
+		for k, button in pairs(TDActionSpells[name]) do
+			TDActionButton_Glow(button, id, r, g, b);
+		end
+	end
+end
+
+----------------------------------------------
+-- Clear glow independent button by spell name
+----------------------------------------------
+function TDClearGlowIndependent(spellName, id)
+	local name = GetSpellInfo(spellName) or spellName;
+	for k, button in pairs(TDActionSpells[name]) do
+		TDActionButton_HideGlow(button, id);
+	end
+end
+
+----------------------------------------------
 -- Glow spell by name
 ----------------------------------------------
 function TDGlowSpell(spellName)
     if TDActionSpells[spellName] ~= nil then
-        for k, v in pairs(TDActionSpells[spellName]) do
-            TDActionButton_ShowOverlayGlow(v);
+        for k, button in pairs(TDActionSpells[spellName]) do
+            TDActionButton_ShowOverlayGlow(button);
         end
         TDActionSpellsGlowing[spellName] = 1;
     end
@@ -238,6 +260,9 @@ function TDGlowClear()
     end
 end
 
+----------------------------------------------
+-- Frame init
+----------------------------------------------
 local TDButtonsFrame = CreateFrame("FRAME", "TDButtonsFrame");
 TDButtonsFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
 
