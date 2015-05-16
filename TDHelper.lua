@@ -1,8 +1,11 @@
 
+-- Global cooldown spell id
+_GlobalCooldown = 61304;
+
 ----------------------------------------------
 -- Current Specialisation name
 ----------------------------------------------
-function TDSpecName() 
+function TD_SpecName()
 	local currentSpec = GetSpecialization();
 	local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "None";
 	return currentSpecName;
@@ -11,7 +14,7 @@ end
 ----------------------------------------------
 -- Is talent enabled
 ----------------------------------------------
-function TDTalentEnabled(talent)
+function TD_TalentEnabled(talent)
 	local found = false;
 	for i=1,7 do
 		for j=1,3 do 
@@ -27,7 +30,7 @@ end
 ----------------------------------------------
 -- Is aura on player
 ----------------------------------------------
-function TDAura(name, atLeast)
+function TD_Aura(name, atLeast)
 	atLeast = atLeast or 0.2;
 	local spellName = GetSpellInfo(name);
 	local _, _, _, count, _, _, expirationTime = UnitAura("player", spellName); 
@@ -41,7 +44,7 @@ end
 ----------------------------------------------
 -- Is aura on target
 ----------------------------------------------
-function TDTargetAura(name, TMinus)
+function TD_TargetAura(name, TMinus)
 	TMinus = TMinus or 0;
 	local spellName = GetSpellInfo(name) or name;
 	local _, _, _, _, _, _, expirationTime = UnitAura("target", spellName, nil, 'PLAYER|HARMFUL'); 
@@ -54,13 +57,17 @@ end
 ----------------------------------------------
 -- When current cast will end
 ----------------------------------------------
-function TDEndCast()
-	local c = GetTime()*1000;
+function TD_EndCast()
+	local t = GetTime();
+	local c = t*1000;
 	local spell, _, _, _, _, endTime = UnitCastingInfo("player");
+	local gstart, gduration = GetSpellCooldown(_GlobalCooldown);
+	local gcd = gduration - (t - gstart);
+	if gcd < 0 then gcd = 0; end;
 	if endTime == nil then
-		return 0, "";
+		return 0, "", gcd;
 	end
-	return (endTime - c)/1000, spell;
+	return (endTime - c)/1000, spell, gcd;
 end
 
 ----------------------------------------------
@@ -81,7 +88,7 @@ end
 ----------------------------------------------
 -- Simple calculation of global cooldown
 ----------------------------------------------
-function TDDps_GlobalCooldown()
+function TD_GlobalCooldown()
 	local haste = UnitSpellHaste("player");
 	local gcd = 1.5 / ((haste / 100) + 1);
 	if gcd < 1 then
@@ -94,7 +101,7 @@ end
 ----------------------------------------------
 -- Stacked spell CD, charges and max charges
 ----------------------------------------------
-function TDDps_SpellCharges(spell)
+function TD_SpellCharges(spell)
 	local currentCharges, maxCharges, cooldownStart, cooldownDuration = GetSpellCharges(spell);
 	local cd = cooldownDuration - (GetTime() - cooldownStart);
 	if cd > cooldownDuration then
@@ -106,28 +113,32 @@ end
 ----------------------------------------------
 -- Is Spell Available
 ----------------------------------------------
-function TDDps_SpellCooldown(spell, minus)
-	minus = minus or 0;
-	local start, duration, enabled = GetSpellCooldown(spell);
-	if enabled and duration == 0 and start == 0 then
-		return true;
-	elseif enabled then
-		return (duration - (GetTime() - start) - minus) < 0.1;
-	else
-		return false;
-	end;
+function TD_SpellAvailable(spell, minus)
+	local cd = TD_Cooldown(spell, minus);
+	return cd <= 0, cd;
 end
 
+
 ----------------------------------------------
--- Real spell cooldown
+-- Spell Cooldown
 ----------------------------------------------
-function TDDps_SpellCooldownReal(spell)
+function TD_Cooldown(spell, minus)
+	minus = minus or 0;
 	local start, duration, enabled = GetSpellCooldown(spell);
 	if enabled and duration == 0 and start == 0 then
 		return 0;
 	elseif enabled then
-		return (duration - (GetTime() - start));
+		return (duration - (GetTime() - start) - minus);
 	else
-		return false;
+		return 100000;
 	end;
+end
+
+----------------------------------------------
+-- Current or Future Mana Percent
+----------------------------------------------
+function TD_Mana(minus, afterTime)
+	local _, casting = GetManaRegen();
+	local mana = UnitPower("player", 0) - minus + (casting * afterTime);
+	return mana / UnitPowerMax("player", 0), mana;
 end

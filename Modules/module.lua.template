@@ -1,0 +1,71 @@
+-- Author      : Kaminari
+-- Create Date : 13:03 2015-04-20
+
+-- Spells
+local _Spell			= 23881;
+
+-- Auras
+local _Aura				= 12880;
+
+-- Talents
+local _isTalent = false;
+
+-- Flags for glow independent
+local _FlagHigh = false;
+
+----------------------------------------------
+-- Pre enable, checking talents
+----------------------------------------------
+TDDps_[Class]_CheckTalents = function()
+	_isTalent = TDTalentEnabled('Talent Name');
+	-- other checking functions
+end
+
+----------------------------------------------
+-- Enabling Addon
+----------------------------------------------
+function TDDps_[Class]_EnableAddon(mode)
+	mode = mode or 1;
+	_TD["DPS_Description"] = "TD [Class] DPS supports: [Spec1], [Spec2], [Spec3]";
+	_TD["DPS_OnEnable"] = TDDps_[Class]_CheckTalents;
+	if mode == 1 then
+		_TD["DPS_NextSpell"] = TDDps_[Class]_[Spec1];
+	end;
+	if mode == 2 then
+		_TD["DPS_NextSpell"] = TDDps_[Class]_[Spec2];
+	end;
+	if mode == 3 then
+		_TD["DPS_NextSpell"] = TDDps_[Class]_[Spec3];
+	end;
+	TDDps_EnableAddon();
+end
+
+----------------------------------------------
+-- Main rotation: [Spec1]
+----------------------------------------------
+TDDps_[Class]_[Spec1] = function()
+
+	local lcd, currentSpell = TDEndCast();
+
+	return _Spell;
+end
+
+----------------------------------------------
+-- Main rotation: [Spec2]
+----------------------------------------------
+TDDps_[Class]_[Spec2] = function()
+
+	local lcd, currentSpell = TDEndCast();
+
+	return _Spell;
+end
+
+----------------------------------------------
+-- Main rotation: [Spec3]
+----------------------------------------------
+TDDps_[Class]_[Spec3] = function()
+
+	local lcd, currentSpell = TDEndCast();
+
+	return _Spell;
+end

@@ -1,69 +1,33 @@
 
-local numtdOverlays = 0;
-local TDActionSpells = {};
-local TDActionSpellsGlowing = {};
+local TDButton_Spells = {};
+local TDButton_SpellsGlowing = {};
 
 ----------------------------------------------
 -- Show Overlay on button
 ----------------------------------------------
-function TDActionButton_ShowOverlayGlow(self)
-	if ( self.tdOverlay ) then
-		self.tdOverlay:Show();
-	else
-		numtdOverlays = numtdOverlays + 1;
-		self.tdOverlay = CreateFrame("Frame", "ActionButtonTdOverlay" .. numtdOverlays, UIParent);
-
-		self.tdOverlay:SetParent(self);
-		self.tdOverlay:SetFrameStrata("HIGH")
-		self.tdOverlay:SetWidth(self:GetWidth() * 1.4) 
-		self.tdOverlay:SetHeight(self:GetHeight() * 1.4)
-
-		local t = self.tdOverlay:CreateTexture(nil,"OVERLAY")
-		t:SetTexture("Interface\\Cooldown\\ping4")
-		t:SetBlendMode("ADD");
-		t:SetAllPoints(self.tdOverlay);
-		self.tdOverlay.texture = t;
-
-		self.tdOverlay:SetPoint("CENTER",0,0);
-		self.tdOverlay:Show();
-	end
-end
-
-----------------------------------------------
--- Hide Overlay on button
-----------------------------------------------
-function TDActionButton_HideOverlayGlow(self)
-	if ( self.tdOverlay ) then
-		self.tdOverlay:Hide();
-	end
-end
-
-
-----------------------------------------------
--- Show Overlay on button
-----------------------------------------------
-function TDActionButton_Glow(self, id, r, g, b)
-	if ( self.tdOverlays and self.tdOverlays[id] ) then
+function TDButton_Glow(self, id, r, g, b, texture)
+	if (self.tdOverlays and self.tdOverlays[id]) then
 		self.tdOverlays[id]:Show();
 	else
 		if not self.tdOverlays then
 			self.tdOverlays = {};
 		end
-		self.tdOverlays[id] = CreateFrame("Frame", "ActionButtonTdOverlays" .. id, UIParent);
+		texture = texture or 'Interface\\Cooldown\\ping4';
+		self.tdOverlays[id] = CreateFrame('Frame', 'TDButton_Overlay_' .. id, UIParent);
 
 		self.tdOverlays[id]:SetParent(self);
-		self.tdOverlays[id]:SetFrameStrata("HIGH")
+		self.tdOverlays[id]:SetFrameStrata('HIGH')
 		self.tdOverlays[id]:SetWidth(self:GetWidth() * 1.4)
 		self.tdOverlays[id]:SetHeight(self:GetHeight() * 1.4)
 
-		local t = self.tdOverlays[id]:CreateTexture(nil, "OVERLAY")
-		t:SetTexture("Interface\\Cooldown\\ping4")
-		t:SetBlendMode("ADD");
+		local t = self.tdOverlays[id]:CreateTexture(nil, 'OVERLAY')
+		t:SetTexture(texture)
+		t:SetBlendMode('ADD');
 		t:SetAllPoints(self.tdOverlays[id]);
 		t:SetVertexColor(r or 1, g or 0, b or 0);
 		self.tdOverlays[id].texture = t;
 
-		self.tdOverlays[id]:SetPoint("CENTER",0,0);
+		self.tdOverlays[id]:SetPoint('CENTER',0,0);
 		self.tdOverlays[id]:Show();
 	end
 end
@@ -71,8 +35,8 @@ end
 ----------------------------------------------
 -- Hide Overlay on button
 ----------------------------------------------
-function TDActionButton_HideGlow(self, id)
-	if ( self.tdOverlays[id] ) then
+function TDButton_HideGlow(self, id)
+	if (self.tdOverlays[id]) then
 		self.tdOverlays[id]:Hide();
 	end
 end
@@ -80,19 +44,19 @@ end
 ----------------------------------------------
 -- Fetch button spells
 ----------------------------------------------
-function TDFetchActions()
-	TDGlowClear();
-	TDActionSpells = {};
-	TDActionSpellsGlowing = {};
+function TDButton_Fetch()
+	TDButton_GlowClear();
+	TDButton_Spells = {};
+	TDButton_SpellsGlowing = {};
 	local isBartender = IsAddOnLoaded('Bartender4');
 	local isElv = IsAddOnLoaded('ElvUI');
 
 	if (isBartender) then
-		TDFetchActionsBartender4();
+		TDButton_FetchBartender4();
 	elseif (isElv) then
-		TDFetchActionsElvUI();
+		TDButton_FetchElvUI();
 	else
-		TDFetchActionsBlizzard();
+		TDButton_FetchBlizzard();
 	end
 	print('TDDps: fetched action bars!');
 end
@@ -100,7 +64,7 @@ end
 ----------------------------------------------
 -- Button spells on original blizzard UI
 ----------------------------------------------
-function TDFetchActionsBlizzard()
+function TDButton_FetchBlizzard()
 	local TDActionBarsBlizzard = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft'};
     for _, barName in pairs(TDActionBarsBlizzard) do
        for i = 1, 12 do
@@ -116,11 +80,11 @@ function TDFetchActionsBlizzard()
                 actionName = GetSpellInfo(id);
              end
              if actionName then
-                if TDActionSpells[actionName] == nil then
-                   TDActionSpells[actionName] = {};
+                if TDButton_Spells[actionName] == nil then
+                   TDButton_Spells[actionName] = {};
                 end
 
-                tinsert(TDActionSpells[actionName], button);
+                tinsert(TDButton_Spells[actionName], button);
              end
           end
        end
@@ -130,7 +94,7 @@ end
 ----------------------------------------------
 -- Button spells on ElvUI
 ----------------------------------------------
-function TDFetchActionsElvUI()
+function TDButton_FetchElvUI()
 	local ret = false;
 	for x = 1, 10 do
 		for i = 1, 12 do
@@ -140,11 +104,11 @@ function TDFetchActionsElvUI()
 				if spellId then
 					local actionName, _ = GetSpellInfo(spellId);
 					if actionName then
-						if TDActionSpells[actionName] == nil then
-							TDActionSpells[actionName] = {};
+						if TDButton_Spells[actionName] == nil then
+							TDButton_Spells[actionName] = {};
 						end
 						ret = true;
-						tinsert(TDActionSpells[actionName], button);
+						tinsert(TDButton_Spells[actionName], button);
 					end
 				end
 			end
@@ -156,7 +120,7 @@ end
 ----------------------------------------------
 -- Button spells on Bartender4
 ----------------------------------------------
-function TDFetchActionsBartender4()
+function TDButton_FetchBartender4()
 	local ret = false;
 	for i = 1, 120 do
 		local button = _G['BT4Button' .. i];
@@ -166,11 +130,11 @@ function TDFetchActionsBartender4()
 				local actionName, _ = GetSpellInfo(spellId);
 				print(actionName, spellId);
 				if actionName then
-					if TDActionSpells[actionName] == nil then
-						TDActionSpells[actionName] = {};
+					if TDButton_Spells[actionName] == nil then
+						TDButton_Spells[actionName] = {};
 					end
 					ret = true;
-					tinsert(TDActionSpells[actionName], button);
+					tinsert(TDButton_Spells[actionName], button);
 				end
 			end
 		end
@@ -181,28 +145,20 @@ end
 ----------------------------------------------
 -- Dump spells for debug
 ----------------------------------------------
-function TDDumpSpells() 
-	for k, button in pairs(TDActionSpells) do
+function TDButton_Dump() 
+	for k, button in pairs(TDButton_Spells) do
 		print(k, button:GetName());
 	end
 end
 
 ----------------------------------------------
--- Glow spell by id
-----------------------------------------------
-function TDGlowSpellId(spellId)
-	local name = GetSpellInfo(spellId);
-    TDGlowSpell(name);
-end
-
-----------------------------------------------
 -- Glow independent button by spell name
 ----------------------------------------------
-function TDGlowIndependent(spellName, id, r, g, b)
+function TDButton_GlowIndependent(spellName, id, r, g, b, texture)
 	local name = GetSpellInfo(spellName) or spellName;
-	if TDActionSpells[name] ~= nil then
-		for k, button in pairs(TDActionSpells[name]) do
-			TDActionButton_Glow(button, id, r, g, b);
+	if TDButton_Spells[name] ~= nil then
+		for k, button in pairs(TDButton_Spells[name]) do
+			TDActionButton_Glow(button, id, r, g, b, texture);
 		end
 	end
 end
@@ -210,9 +166,9 @@ end
 ----------------------------------------------
 -- Clear glow independent button by spell name
 ----------------------------------------------
-function TDClearGlowIndependent(spellName, id)
+function TDButton_ClearGlowIndependent(spellName, id)
 	local name = GetSpellInfo(spellName) or spellName;
-	for k, button in pairs(TDActionSpells[name]) do
+	for k, button in pairs(TDButton_Spells[name]) do
 		TDActionButton_HideGlow(button, id);
 	end
 end
@@ -220,42 +176,50 @@ end
 ----------------------------------------------
 -- Glow spell by name
 ----------------------------------------------
-function TDGlowSpell(spellName)
-    if TDActionSpells[spellName] ~= nil then
-        for k, button in pairs(TDActionSpells[spellName]) do
-            TDActionButton_ShowOverlayGlow(button);
-        end
-        TDActionSpellsGlowing[spellName] = 1;
-    end
+function TDButton_GlowSpell(spellName)
+	if TDButton_Spells[spellName] ~= nil then
+		for k, button in pairs(TDButton_Spells[spellName]) do
+			TDButton_Glow(button, 'next');
+		end
+		TDButton_SpellsGlowing[spellName] = 1;
+	end
+end
+
+----------------------------------------------
+-- Glow spell by id
+----------------------------------------------
+function TDButton_GlowSpellId(spellId)
+	local name = GetSpellInfo(spellId);
+	TDButton_GlowSpell(name);
 end
 
 ----------------------------------------------
 -- Glow next spell by name
 ----------------------------------------------
-function TDGlowNextSpell(spellName)
-    TDGlowClear();
-    TDGlowSpell(spellName);
+function TDButton_GlowNextSpell(spellName)
+    TDButton_GlowClear();
+    TDButton_GlowSpell(spellName);
 end
 
 ----------------------------------------------
 -- Glow next spell by id
 ----------------------------------------------
-function TDGlowNextSpellId(spellId)
+function TDButton_GlowNextSpellId(spellId)
 	local spellName = GetSpellInfo(spellId);
-    TDGlowClear();
-    TDGlowSpell(spellName);
+    TDButton_GlowClear();
+    TDButton_GlowSpell(spellName);
 end
 
 ----------------------------------------------
 -- Clear all spell glows
 ----------------------------------------------
-function TDGlowClear()
-    for spellName, v in pairs(TDActionSpellsGlowing) do
+function TDButton_GlowClear()
+    for spellName, v in pairs(TDButton_SpellsGlowing) do
         if v == 1 then 
-            for k, button in pairs(TDActionSpells[spellName]) do
-                TDActionButton_HideOverlayGlow(button);
+            for k, button in pairs(TDButton_Spells[spellName]) do
+                TDButton_HideGlow(button, 'next');
             end
-            TDActionSpellsGlowing[spellName] = 0;
+            TDButton_SpellsGlowing[spellName] = 0;
         end
     end
 end
@@ -263,11 +227,11 @@ end
 ----------------------------------------------
 -- Frame init
 ----------------------------------------------
-local TDButtonsFrame = CreateFrame("FRAME", "TDButtonsFrame");
-TDButtonsFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+local TDButton_Frame = CreateFrame('FRAME', 'TDButton_Frame');
+TDButton_Frame:RegisterEvent('PLAYER_ENTERING_WORLD');
 
-local function eventHandler(self, event, ...)
-	TDFetchActions();
+local function TDButton_EventHandler(self, event, ...)
+	TDButton_Fetch();
 end
 
-TDButtonsFrame:SetScript("OnEvent", eventHandler);
+TDButton_Frame:SetScript('OnEvent', TDButton_EventHandler);
