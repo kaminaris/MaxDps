@@ -84,7 +84,7 @@ end
 function TDDps_OnEvent(event)
 	if event == 'PLAYER_TARGET_CHANGED' then
 		if (UnitIsFriend('player', 'target')) then
-			TDGlowClear();
+			TDButton_GlowClear();
 			return;
 		else
 			TDDps_InvokeNextSpell();
