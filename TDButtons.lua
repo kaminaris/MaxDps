@@ -24,7 +24,7 @@ function TDButton_Glow(self, id, r, g, b, texture)
 		t:SetTexture(texture)
 		t:SetBlendMode('ADD');
 		t:SetAllPoints(self.tdOverlays[id]);
-		t:SetVertexColor(r or 1, g or 0, b or 0);
+		t:SetVertexColor(r or 1, g or 1, b or 1);
 		self.tdOverlays[id].texture = t;
 
 		self.tdOverlays[id]:SetPoint('CENTER',0,0);
@@ -158,7 +158,7 @@ function TDButton_GlowIndependent(spellName, id, r, g, b, texture)
 	local name = GetSpellInfo(spellName) or spellName;
 	if TDButton_Spells[name] ~= nil then
 		for k, button in pairs(TDButton_Spells[name]) do
-			TDActionButton_Glow(button, id, r, g, b, texture);
+			TDButton_Glow(button, id, r, g, b, texture);
 		end
 	end
 end
@@ -168,8 +168,10 @@ end
 ----------------------------------------------
 function TDButton_ClearGlowIndependent(spellName, id)
 	local name = GetSpellInfo(spellName) or spellName;
-	for k, button in pairs(TDButton_Spells[name]) do
-		TDActionButton_HideGlow(button, id);
+	if TDButton_Spells[name] ~= nil then
+		for k, button in pairs(TDButton_Spells[name]) do
+			TDButton_HideGlow(button, id);
+		end
 	end
 end
 
