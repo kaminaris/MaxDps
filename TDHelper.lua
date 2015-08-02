@@ -1,13 +1,24 @@
 
 -- Global cooldown spell id
-_GlobalCooldown = 61304;
+_GlobalCooldown		= 61304;
+
+-- Bloodlust effects
+_Bloodlust			= 2825;
+_TimeWrap			= 80353;
+_Heroism			= 32182;
+_AncientHysteria	= 90355;
+_Netherwinds		= 160452;
+_DrumsOfFury		= 178207;
+_Exhaustion			= 57723;
+
+local _Bloodlusts = {_Bloodlust, _TimeWrap, _Heroism, _AncientHysteria, _Netherwinds, _DrumsOfFury};
 
 ----------------------------------------------
 -- Current Specialisation name
 ----------------------------------------------
 function TD_SpecName()
 	local currentSpec = GetSpecialization();
-	local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "None";
+	local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or 'None';
 	return currentSpecName;
 end
 
@@ -33,7 +44,7 @@ end
 function TD_Aura(name, atLeast)
 	atLeast = atLeast or 0.2;
 	local spellName = GetSpellInfo(name);
-	local _, _, _, count, _, _, expirationTime = UnitAura("player", spellName); 
+	local _, _, _, count, _, _, expirationTime = UnitAura('player', spellName); 
 	if expirationTime ~= nil and (expirationTime - GetTime()) > atLeast then
 		return true, count;
 	end
@@ -47,7 +58,7 @@ end
 function TD_TargetAura(name, TMinus)
 	TMinus = TMinus or 0;
 	local spellName = GetSpellInfo(name) or name;
-	local _, _, _, _, _, _, expirationTime = UnitAura("target", spellName, nil, 'PLAYER|HARMFUL'); 
+	local _, _, _, _, _, _, expirationTime = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL'); 
 	if expirationTime ~= nil and (expirationTime - GetTime()) > TMinus then
 		return true;
 	end
@@ -60,12 +71,12 @@ end
 function TD_EndCast()
 	local t = GetTime();
 	local c = t*1000;
-	local spell, _, _, _, _, endTime = UnitCastingInfo("player");
+	local spell, _, _, _, _, endTime = UnitCastingInfo('player');
 	local gstart, gduration = GetSpellCooldown(_GlobalCooldown);
 	local gcd = gduration - (t - gstart);
 	if gcd < 0 then gcd = 0; end;
 	if endTime == nil then
-		return 0, "", gcd;
+		return 0, '', gcd;
 	end
 	return (endTime - c)/1000, spell, gcd;
 end
@@ -74,11 +85,11 @@ end
 -- Target Percent Health
 ----------------------------------------------
 function TD_TargetPercentHealth()
-	local health = UnitHealth("target");
+	local health = UnitHealth('target');
 	if health <= 0 then
 		return 0;
 	end;
-	local healthMax = UnitHealthMax("target");
+	local healthMax = UnitHealthMax('target');
 	if healthMax <= 0 then
 		return 0;
 	end;
@@ -89,7 +100,7 @@ end
 -- Simple calculation of global cooldown
 ----------------------------------------------
 function TD_GlobalCooldown()
-	local haste = UnitSpellHaste("player");
+	local haste = UnitSpellHaste('player');
 	local gcd = 1.5 / ((haste / 100) + 1);
 	if gcd < 1 then
 		gcd = 1;
@@ -118,7 +129,6 @@ function TD_SpellAvailable(spell, minus)
 	return cd <= 0, cd;
 end
 
-
 ----------------------------------------------
 -- Spell Cooldown
 ----------------------------------------------
@@ -139,6 +149,19 @@ end
 ----------------------------------------------
 function TD_Mana(minus, afterTime)
 	local _, casting = GetManaRegen();
-	local mana = UnitPower("player", 0) - minus + (casting * afterTime);
-	return mana / UnitPowerMax("player", 0), mana;
+	local mana = UnitPower('player', 0) - minus + (casting * afterTime);
+	return mana / UnitPowerMax('player', 0), mana;
+end
+
+----------------------------------------------
+-- Is bloodlust or similar effect
+----------------------------------------------
+function TD_Bloodlust(minus)
+	minus = minus or 0;
+	-- @TODO: detect exhausted/seated debuff instead of 6 auras
+	for k, v in pairs (_Bloodlusts) do
+		if TD_Aura(v, minus) then return true; end
+	end
+
+	return false;
 end

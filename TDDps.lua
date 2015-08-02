@@ -8,23 +8,38 @@ _TD['DPS_Mode'] = 1;
 
 DPS_Skill = nil;
 
+-- Name and colors
+TDDpsName = 'TDDPS';
+_tdInfo = '|cFF1394CC';
+_tdError = '|cFFF0563D';
+_tdSuccess = '|cFFBCCF02';
+
 local _DPS_time = 0;
 local TDDps_Frame = CreateFrame('frame');
+TDDps_Frame.rotationEnabled = false;
 
 ----------------------------------------------
 -- Disable dps addon functionality
 ----------------------------------------------
 function TDDps_DisableAddon()
-	TDDps_Frame:Hide();
-	
-	TDDps_Frame:UnregisterAllEvents();
 	TDDps_Frame:SetScript('OnUpdate', nil);
-	TDDps_Frame:SetScript('OnEvent', nil);
-	
-	print(_TD['DPS_Description']);
-	
-	DPS_Skill = nil;
-	_TD['DPS_Enabled'] = 0;
+	TDButton_ClearAll();
+end
+
+----------------------------------------------
+-- Initialize dps addon functionality
+----------------------------------------------
+function TDDps_InitAddon()
+	TDDps_Frame:Show();
+
+	TDDps_Frame:RegisterEvent('PLAYER_TARGET_CHANGED');
+	TDDps_Frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED');
+	TDDps_Frame:RegisterEvent('PLAYER_REGEN_DISABLED');
+	TDDps_Frame:RegisterEvent('PLAYER_REGEN_ENABLED');
+
+	TDDps_Frame:SetScript('OnEvent', TDDps_OnEvent);
+
+	print(_tdInfo .. TDDpsName .. ': Initialized');
 end
 
 ----------------------------------------------
@@ -33,10 +48,10 @@ end
 function TDDps_EnableAddon(mode)
 	TDDps_DisableAddon();
 	
-	print('enabling');
+	print(_tdInfo .. TDDpsName .. ': Enabling');
 	
 	if _TD['DPS_NextSpell'] == nil then
-		print('TDDPS: No addon selected, cannot enable');
+		print(_tdError .. TDDpsName .. ': No addon selected, cannot enable');
 		return;
 	end
 	
@@ -45,23 +60,17 @@ function TDDps_EnableAddon(mode)
 	end
 	
 	_TD['DPS_Mode'] = mode;
-	
-	TDDps_Frame:Show();
-	
-	TDDps_Frame:RegisterEvent('PLAYER_TARGET_CHANGED');
-	TDDps_Frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED');
 
 	TDButton_Fetch();
 	
 	if _TD['DPS_OnEnable'] then
 		_TD['DPS_OnEnable']();
 	end
-	
+
 	TDDps_Frame:SetScript('OnUpdate', TDDps_OnUpdate);
-	TDDps_Frame:SetScript('OnEvent', TDDps_OnEvent);
 	
-	_TD['DPS_Enabled'] = 1; 
-	print('enabled');
+	_TD['DPS_Enabled'] = 1;
+	print(_tdSuccess .. TDDpsName .. ': Enabled');
 end
 
 ----------------------------------------------
@@ -81,17 +90,29 @@ end
 ----------------------------------------------
 -- Event Script, Target Change, Specializaton Change
 ----------------------------------------------
-function TDDps_OnEvent(event)
-	if event == 'PLAYER_TARGET_CHANGED' then
-		if (UnitIsFriend('player', 'target')) then
-			TDButton_GlowClear();
-			return;
-		else
-			TDDps_InvokeNextSpell();
+function TDDps_OnEvent(self, event)
+	if TDDps_Frame.rotationEnabled then
+		if event == 'PLAYER_TARGET_CHANGED' then
+			if (UnitIsFriend('player', 'target')) then
+				return;
+			else
+				TDDps_InvokeNextSpell();
+			end
+		elseif event == 'ACTIVE_TALENT_GROUP_CHANGED' then
+			TDDps_LoadModule();
 		end
-	elseif event == 'ACTIVE_TALENT_GROUP_CHANGED' then
-		TDDps_CheckPlayer();
 	end
+	if event == 'PLAYER_REGEN_DISABLED' and TDDps_Options.onCombatEnter
+	and not TDDps_Frame.rotationEnabled then
+		print(_tdSuccess .. TDDpsName .. ': Auto enable on combat!');
+		TDDps_Frame.rotationEnabled = true;
+		TDDps_LoadModule();
+	end
+--	if event == 'PLAYER_REGEN_ENABLED' then
+--		print(_tdSuccess .. TDDpsName .. ': Auto disable on combat!');
+--		TDDps_Frame.rotationEnabled = false;
+--		TDDps_DisableAddon();
+--	end
 end
 
 ----------------------------------------------
@@ -99,16 +120,19 @@ end
 ----------------------------------------------
 function TDDps_OnUpdate(self, elapsed)
 	_DPS_time = _DPS_time + elapsed;
-    if _DPS_time >= 0.15 then
+	if _DPS_time >= TDDps_Options.interval then
 		_DPS_time = 0;
 		TDDps_InvokeNextSpell();
-    end
+	end
 end
 
 ----------------------------------------------
 -- Load appropriate addon for class
 ----------------------------------------------
 function TDDps_LoadModule()
+
+	TDDps_Frame.rotationEnabled = true;
+
 	local class = UnitClass('player');
 	class = class:gsub(' ', '');
 	local module = 'TDDps_' .. class;
@@ -118,7 +142,7 @@ function TDDps_LoadModule()
 	end
 
 	if not IsAddOnLoaded(module) then
-		print('TDDps: Could not find class module.');
+		print(_tdError .. TDDpsName .. ': Could not find class module.');
 		return;
 	end
 
@@ -128,4 +152,4 @@ function TDDps_LoadModule()
 	_G[init](mode);
 end
 
--- PLAYER_ALIVE
+TDDps_InitAddon();

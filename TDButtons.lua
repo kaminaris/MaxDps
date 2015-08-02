@@ -1,5 +1,6 @@
 
 local TDButton_Spells = {};
+local TDButton_Flags = {};
 local TDButton_SpellsGlowing = {};
 
 ----------------------------------------------
@@ -12,7 +13,7 @@ function TDButton_Glow(self, id, r, g, b, texture)
 		if not self.tdOverlays then
 			self.tdOverlays = {};
 		end
-		texture = texture or 'Interface\\Cooldown\\ping4';
+		texture = texture or TDDps_Options_GetTexture();
 		self.tdOverlays[id] = CreateFrame('Frame', 'TDButton_Overlay_' .. id, UIParent);
 
 		self.tdOverlays[id]:SetParent(self);
@@ -24,7 +25,12 @@ function TDButton_Glow(self, id, r, g, b, texture)
 		t:SetTexture(texture)
 		t:SetBlendMode('ADD');
 		t:SetAllPoints(self.tdOverlays[id]);
-		t:SetVertexColor(r or 1, g or 1, b or 1);
+		t:SetVertexColor(
+			r or TDDps_Options.highlightColor.r,
+			g or TDDps_Options.highlightColor.g,
+			b or TDDps_Options.highlightColor.b,
+			TDDps_Options.highlightColor.a
+		);
 		self.tdOverlays[id].texture = t;
 
 		self.tdOverlays[id]:SetPoint('CENTER',0,0);
@@ -58,7 +64,7 @@ function TDButton_Fetch()
 	else
 		TDButton_FetchBlizzard();
 	end
-	print('TDDps: fetched action bars!');
+	print(_tdInfo .. TDDpsName .. ': Fetched action bars!');
 end
 
 ----------------------------------------------
@@ -66,29 +72,29 @@ end
 ----------------------------------------------
 function TDButton_FetchBlizzard()
 	local TDActionBarsBlizzard = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft'};
-    for _, barName in pairs(TDActionBarsBlizzard) do
-       for i = 1, 12 do
-          local button = _G[barName .. 'Button' .. i];
-          local slot = ActionButton_GetPagedID(button) or ActionButton_CalculateAction(button) or button:GetAttribute('action') or 0;
-          if HasAction(slot) then
-             local actionName, _;
-             local actionType, id = GetActionInfo(slot);
-             if actionType == 'macro' then _, _ , id = GetMacroSpell(id) end
-             if actionType == 'item' then
-                actionName = GetItemInfo(id);
-             elseif actionType == 'spell' or (actionType == 'macro' and id) then
-                actionName = GetSpellInfo(id);
-             end
-             if actionName then
-                if TDButton_Spells[actionName] == nil then
-                   TDButton_Spells[actionName] = {};
-                end
+	for _, barName in pairs(TDActionBarsBlizzard) do
+		for i = 1, 12 do
+			local button = _G[barName .. 'Button' .. i];
+			local slot = ActionButton_GetPagedID(button) or ActionButton_CalculateAction(button) or button:GetAttribute('action') or 0;
+			if HasAction(slot) then
+				local actionName, _;
+				local actionType, id = GetActionInfo(slot);
+				if actionType == 'macro' then _, _ , id = GetMacroSpell(id) end
+				if actionType == 'item' then
+					actionName = GetItemInfo(id);
+				elseif actionType == 'spell' or (actionType == 'macro' and id) then
+					actionName = GetSpellInfo(id);
+				end
+				if actionName then
+					if TDButton_Spells[actionName] == nil then
+						TDButton_Spells[actionName] = {};
+					end
 
-                tinsert(TDButton_Spells[actionName], button);
-             end
-          end
-       end
-    end
+					tinsert(TDButton_Spells[actionName], button);
+				end
+			end
+		end
+	end
 end
 
 ----------------------------------------------
@@ -145,7 +151,7 @@ end
 ----------------------------------------------
 -- Dump spells for debug
 ----------------------------------------------
-function TDButton_Dump() 
+function TDButton_Dump()
 	for k, button in pairs(TDButton_Spells) do
 		print(k, button:GetName());
 	end
@@ -176,6 +182,23 @@ function TDButton_ClearGlowIndependent(spellName, id)
 end
 
 ----------------------------------------------
+-- Glow cooldown
+----------------------------------------------
+function TDButton_GlowCooldown(spell, condition)
+	if TDButton_Flags[spell] == nil then
+		TDButton_Flags[spell] = false;
+	end
+	if condition and not TDButton_Flags[spell] then
+		TDButton_Flags[spell] = true;
+		TDButton_GlowIndependent(spell, spell, 0, 1, 0);
+	end
+	if not condition and TDButton_Flags[spell] then
+		TDButton_Flags[spell] = false;
+		TDButton_ClearGlowIndependent(spell, spell);
+	end
+end
+
+----------------------------------------------
 -- Glow spell by name
 ----------------------------------------------
 function TDButton_GlowSpell(spellName)
@@ -199,8 +222,8 @@ end
 -- Glow next spell by name
 ----------------------------------------------
 function TDButton_GlowNextSpell(spellName)
-    TDButton_GlowClear();
-    TDButton_GlowSpell(spellName);
+	TDButton_GlowClear();
+	TDButton_GlowSpell(spellName);
 end
 
 ----------------------------------------------
@@ -208,32 +231,36 @@ end
 ----------------------------------------------
 function TDButton_GlowNextSpellId(spellId)
 	local spellName = GetSpellInfo(spellId);
-    TDButton_GlowClear();
-    TDButton_GlowSpell(spellName);
+	TDButton_GlowClear();
+	TDButton_GlowSpell(spellName);
+end
+
+----------------------------------------------
+-- Clear next spell glows
+----------------------------------------------
+function TDButton_GlowClear()
+	for spellName, v in pairs(TDButton_SpellsGlowing) do
+		if v == 1 then
+			for k, button in pairs(TDButton_Spells[spellName]) do
+				TDButton_HideGlow(button, 'next');
+			end
+			TDButton_SpellsGlowing[spellName] = 0;
+		end
+	end
 end
 
 ----------------------------------------------
 -- Clear all spell glows
 ----------------------------------------------
-function TDButton_GlowClear()
-    for spellName, v in pairs(TDButton_SpellsGlowing) do
-        if v == 1 then 
-            for k, button in pairs(TDButton_Spells[spellName]) do
-                TDButton_HideGlow(button, 'next');
-            end
-            TDButton_SpellsGlowing[spellName] = 0;
-        end
-    end
+function TDButton_ClearAll()
+--	for spellName, v in pairs(TDButton_SpellsGlowing) do
+--		if v == 1 then
+--			for k, button in pairs(TDButton_Spells[spellName]) do
+--				for k2, id in pairs(button.tdOverlays) do
+--					button.tdOverlays[k2]:Hide();
+--				end
+--			end
+--			TDButton_SpellsGlowing[spellName] = 0;
+--		end
+--	end
 end
-
-----------------------------------------------
--- Frame init
-----------------------------------------------
-local TDButton_Frame = CreateFrame('FRAME', 'TDButton_Frame');
-TDButton_Frame:RegisterEvent('PLAYER_ENTERING_WORLD');
-
-local function TDButton_EventHandler(self, event, ...)
-	TDButton_Fetch();
-end
-
-TDButton_Frame:SetScript('OnEvent', TDButton_EventHandler);
