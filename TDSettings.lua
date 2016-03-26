@@ -9,8 +9,8 @@ TDDps_textures = {
 };
 
 TDDps_Options = {
-	enabled = false,
-	onCombatEnter = false,
+	enabled = true,
+	onCombatEnter = true,
 	texture = '',
 	customTexture = '',
 	highlightColor = {
@@ -22,15 +22,12 @@ TDDps_Options = {
 TDDps_Temp = {};
 
 function TDDps_Options_GetTexture()
---	if TDDps_Temp.finalTexture then return TDDps_Temp.finalTexture; end
-
 	if TDDps_Options.customTexture ~= '' and TDDps_Options.customTexture ~= nil then
 		TDDps_Temp.finalTexture = TDDps_Options.customTexture;
 		return TDDps_Temp.finalTexture;
 	end
 
 	TDDps_Temp.finalTexture = TDDps_textures[TDDps_Options.texture];
-
 	if TDDps_Temp.finalTexture == '' or TDDps_Temp.finalTexture == nil then
 		TDDps_Temp.finalTexture = 'Interface\\Cooldown\\ping4';
 	end

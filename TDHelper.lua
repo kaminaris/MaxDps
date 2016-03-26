@@ -70,7 +70,7 @@ end
 ----------------------------------------------
 function TD_EndCast()
 	local t = GetTime();
-	local c = t*1000;
+	local c = t * 1000;
 	local spell, _, _, _, _, endTime = UnitCastingInfo('player');
 	local gstart, gduration = GetSpellCooldown(_GlobalCooldown);
 	local gcd = gduration - (t - gstart);

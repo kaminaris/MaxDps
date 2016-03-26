@@ -15,15 +15,22 @@ _tdError = '|cFFF0563D';
 _tdSuccess = '|cFFBCCF02';
 
 local _DPS_time = 0;
-local TDDps_Frame = CreateFrame('frame');
+local TDDps_Frame = CreateFrame('Frame', 'TDDps_Frame');
 TDDps_Frame.rotationEnabled = false;
 
 ----------------------------------------------
 -- Disable dps addon functionality
 ----------------------------------------------
 function TDDps_DisableAddon()
+	if _TD['DPS_Enabled'] == 0 then
+		return;
+	end
+	TDButton_DestroyAllOverlays();
+	print(_tdInfo .. TDDpsName .. ': Disabling');
 	TDDps_Frame:SetScript('OnUpdate', nil);
-	TDButton_ClearAll();
+	DPS_Skill = nil;
+	TDDps_Frame.rotationEnabled = false;
+	_TD['DPS_Enabled'] = 0;
 end
 
 ----------------------------------------------
@@ -33,7 +40,7 @@ function TDDps_InitAddon()
 	TDDps_Frame:Show();
 
 	TDDps_Frame:RegisterEvent('PLAYER_TARGET_CHANGED');
-	TDDps_Frame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED');
+	TDDps_Frame:RegisterEvent('PLAYER_TALENT_UPDATE');
 	TDDps_Frame:RegisterEvent('PLAYER_REGEN_DISABLED');
 	TDDps_Frame:RegisterEvent('PLAYER_REGEN_ENABLED');
 
@@ -46,8 +53,6 @@ end
 -- Enable dps addon functionality
 ----------------------------------------------
 function TDDps_EnableAddon(mode)
-	TDDps_DisableAddon();
-	
 	print(_tdInfo .. TDDpsName .. ': Enabling');
 	
 	if _TD['DPS_NextSpell'] == nil then
@@ -98,12 +103,11 @@ function TDDps_OnEvent(self, event)
 			else
 				TDDps_InvokeNextSpell();
 			end
-		elseif event == 'ACTIVE_TALENT_GROUP_CHANGED' then
-			TDDps_LoadModule();
 		end
 	end
-	if event == 'PLAYER_REGEN_DISABLED' and TDDps_Options.onCombatEnter
-	and not TDDps_Frame.rotationEnabled then
+	if event == 'PLAYER_TALENT_UPDATE' then
+		TDDps_DisableAddon();
+	elseif event == 'PLAYER_REGEN_DISABLED' and TDDps_Options.onCombatEnter and not TDDps_Frame.rotationEnabled then
 		print(_tdSuccess .. TDDpsName .. ': Auto enable on combat!');
 		TDDps_Frame.rotationEnabled = true;
 		TDDps_LoadModule();
@@ -130,7 +134,6 @@ end
 -- Load appropriate addon for class
 ----------------------------------------------
 function TDDps_LoadModule()
-
 	TDDps_Frame.rotationEnabled = true;
 
 	local class = UnitClass('player');
