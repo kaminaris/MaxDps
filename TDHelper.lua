@@ -41,11 +41,11 @@ end
 ----------------------------------------------
 -- Is aura on player
 ----------------------------------------------
-function TD_Aura(name, atLeast)
-	atLeast = atLeast or 0.2;
+function TD_Aura(name, timeShift)
+	timeShift = timeShift or 0.2;
 	local spellName = GetSpellInfo(name);
 	local _, _, _, count, _, _, expirationTime = UnitAura('player', spellName); 
-	if expirationTime ~= nil and (expirationTime - GetTime()) > atLeast then
+	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
 		return true, count;
 	end
 	return false, 0;
@@ -55,11 +55,11 @@ end
 ----------------------------------------------
 -- Is aura on target
 ----------------------------------------------
-function TD_TargetAura(name, TMinus)
-	TMinus = TMinus or 0;
+function TD_TargetAura(name, timeShift)
+	timeShift = timeShift or 0;
 	local spellName = GetSpellInfo(name) or name;
 	local _, _, _, _, _, _, expirationTime = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL'); 
-	if expirationTime ~= nil and (expirationTime - GetTime()) > TMinus then
+	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
 		return true;
 	end
 	return false;
@@ -68,17 +68,21 @@ end
 ----------------------------------------------
 -- When current cast will end
 ----------------------------------------------
-function TD_EndCast()
+function TD_EndCast(target)
 	local t = GetTime();
 	local c = t * 1000;
-	local spell, _, _, _, _, endTime = UnitCastingInfo('player');
+	local spell, _, _, _, _, endTime = UnitCastingInfo(target or 'player');
 	local gstart, gduration = GetSpellCooldown(_GlobalCooldown);
 	local gcd = gduration - (t - gstart);
 	if gcd < 0 then gcd = 0; end;
 	if endTime == nil then
-		return 0, '', gcd;
+		return gcd, '', gcd;
 	end
-	return (endTime - c)/1000, spell, gcd;
+	local timeShift = (endTime - c) / 1000;
+	if gcd > timeShift then
+		timeShift = gcd;
+	end
+	return timeShift, spell, gcd;
 end
 
 ----------------------------------------------
@@ -124,21 +128,20 @@ end
 ----------------------------------------------
 -- Is Spell Available
 ----------------------------------------------
-function TD_SpellAvailable(spell, minus)
-	local cd = TD_Cooldown(spell, minus);
+function TD_SpellAvailable(spell, timeShift)
+	local cd = TD_Cooldown(spell, timeShift);
 	return cd <= 0, cd;
 end
 
 ----------------------------------------------
 -- Spell Cooldown
 ----------------------------------------------
-function TD_Cooldown(spell, minus)
-	minus = minus or 0;
+function TD_Cooldown(spell, timeShift)
 	local start, duration, enabled = GetSpellCooldown(spell);
 	if enabled and duration == 0 and start == 0 then
 		return 0;
 	elseif enabled then
-		return (duration - (GetTime() - start) - minus);
+		return (duration - (GetTime() - start) - (timeShift or 0));
 	else
 		return 100000;
 	end;
@@ -147,20 +150,19 @@ end
 ----------------------------------------------
 -- Current or Future Mana Percent
 ----------------------------------------------
-function TD_Mana(minus, afterTime)
+function TD_Mana(minus, timeShift)
 	local _, casting = GetManaRegen();
-	local mana = UnitPower('player', 0) - minus + (casting * afterTime);
+	local mana = UnitPower('player', 0) - minus + (casting * timeShift);
 	return mana / UnitPowerMax('player', 0), mana;
 end
 
 ----------------------------------------------
 -- Is bloodlust or similar effect
 ----------------------------------------------
-function TD_Bloodlust(minus)
-	minus = minus or 0;
+function TD_Bloodlust(timeShift)
 	-- @TODO: detect exhausted/seated debuff instead of 6 auras
 	for k, v in pairs (_Bloodlusts) do
-		if TD_Aura(v, minus) then return true; end
+		if TD_Aura(v, timeShift or 0) then return true; end
 	end
 
 	return false;

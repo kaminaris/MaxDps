@@ -44,11 +44,7 @@ end
 -- Main rotation: [Spec1]
 ----------------------------------------------
 TDDps_[Class]_[Spec1] = function()
-	local lcd, currentSpell, gcd = TD_EndCast();
-	local timeShift = lcd;
-	if gcd > timeShift then
-		timeShift = gcd;
-	end
+	local timeShift, currentSpell, gcd = TD_EndCast();
 
 	return _Spell;
 end
@@ -57,11 +53,7 @@ end
 -- Main rotation: [Spec2]
 ----------------------------------------------
 TDDps_[Class]_[Spec2] = function()
-	local lcd, currentSpell, gcd = TD_EndCast();
-	local timeShift = lcd;
-	if gcd > timeShift then
-		timeShift = gcd;
-	end
+	local timeShift, currentSpell, gcd = TD_EndCast();
 
 	return _Spell;
 end
@@ -70,11 +62,7 @@ end
 -- Main rotation: [Spec3]
 ----------------------------------------------
 TDDps_[Class]_[Spec3] = function()
-	local lcd, currentSpell, gcd = TD_EndCast();
-	local timeShift = lcd;
-	if gcd > timeShift then
-		timeShift = gcd;
-	end
+	local timeShift, currentSpell, gcd = TD_EndCast();
 
 	return _Spell;
 end
