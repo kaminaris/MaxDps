@@ -2,22 +2,19 @@
 -- Create Date : 13:03 2015-04-20
 
 -- Spells
-local _Spell			= 23881;
+local _Spell = 23881;
 
 -- Auras
-local _Aura				= 12880;
+local _Aura = 12880;
 
 -- Talents
 local _isTalent = false;
-
--- Flags for glow independent
-local _FlagHigh = false;
 
 ----------------------------------------------
 -- Pre enable, checking talents
 ----------------------------------------------
 TDDps_[Class]_CheckTalents = function()
-	_isTalent = TDTalentEnabled('Talent Name');
+	_isTalent = TD_TalentEnabled('Talent Name');
 	-- other checking functions
 end
 
@@ -44,7 +41,7 @@ end
 -- Main rotation: [Spec1]
 ----------------------------------------------
 TDDps_[Class]_[Spec1] = function()
-	local timeShift, currentSpell, gcd = TD_EndCast();
+	local timeShift, currentSpell = TD_EndCast();
 
 	return _Spell;
 end
@@ -53,7 +50,7 @@ end
 -- Main rotation: [Spec2]
 ----------------------------------------------
 TDDps_[Class]_[Spec2] = function()
-	local timeShift, currentSpell, gcd = TD_EndCast();
+	local timeShift, currentSpell = TD_EndCast();
 
 	return _Spell;
 end
@@ -62,7 +59,7 @@ end
 -- Main rotation: [Spec3]
 ----------------------------------------------
 TDDps_[Class]_[Spec3] = function()
-	local timeShift, currentSpell, gcd = TD_EndCast();
+	local timeShift, currentSpell = TD_EndCast();
 
 	return _Spell;
 end

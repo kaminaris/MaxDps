@@ -1,8 +1,8 @@
 ## Title: TDDps
 ## Notes: Rotation helper framework.
-## Version: 1.4
+## Version: 1.4.1
 ## Author: Kaminari
-## Interface: 62000
+## Interface: 60200
 ## SavedVariables: TDDps_Options
 
 Libs\LibStub\LibStub.lua
