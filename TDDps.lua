@@ -15,6 +15,19 @@ _tdError = '|cFFF0563D';
 _tdSuccess = '|cFFBCCF02';
 
 local _DPS_time = 0;
+local Classes = {
+	[1] = 'Warrior',
+	[2] = 'Paladin',
+	[3] = 'Hunter',
+	[4] = 'Rogue',
+	[5] = 'Priest',
+	[6] = 'DeathKnight',
+	[7] = 'Shaman',
+	[8] = 'Mage',
+	[9] = 'Warlock',
+	[10] = 'Monk',
+	[11] = 'Druid',
+}
 local TDDps_Frame = CreateFrame('Frame', 'TDDps_Frame');
 TDDps_Frame.rotationEnabled = false;
 
@@ -136,9 +149,13 @@ end
 function TDDps_LoadModule()
 	TDDps_Frame.rotationEnabled = true;
 
-	local class = UnitClass('player');
-	class = class:gsub(' ', '');
-	local module = 'TDDps_' .. class;
+	local _, _, classId = UnitClass('player');
+	if Classes[classId] == nil then
+		print(_tdError .. TDDpsName .. ': Invalid player class, please contact author of addon.');
+		return;
+	end
+
+	local module = 'TDDps_' .. Classes[classId];
 
 	if not IsAddOnLoaded(module) then
 		LoadAddOn(module)
