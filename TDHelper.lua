@@ -116,9 +116,17 @@ end
 ----------------------------------------------
 -- Stacked spell CD, charges and max charges
 ----------------------------------------------
-function TD_SpellCharges(spell)
+function TD_SpellCharges(spell, timeShift)
 	local currentCharges, maxCharges, cooldownStart, cooldownDuration = GetSpellCharges(spell);
-	local cd = cooldownDuration - (GetTime() - cooldownStart);
+	if currentCharges == nil then
+		local cd = TD_Cooldown(spell, timeShift);
+		if cd <= 0 then
+			return 0, 1, 0;
+		else
+			return cd, 0, 1;
+		end
+	end
+	local cd = cooldownDuration - (GetTime() - cooldownStart) - (timeShift or 0);
 	if cd > cooldownDuration then
 		cd = 0;
 	end
