@@ -54,8 +54,9 @@ function TDDps_InitAddon()
 
 	TDDps_Frame:RegisterEvent('PLAYER_TARGET_CHANGED');
 	TDDps_Frame:RegisterEvent('PLAYER_TALENT_UPDATE');
+	TDDps_Frame:RegisterEvent('ACTIONBAR_SLOT_CHANGED');
 	TDDps_Frame:RegisterEvent('PLAYER_REGEN_DISABLED');
-	TDDps_Frame:RegisterEvent('PLAYER_REGEN_ENABLED');
+--	TDDps_Frame:RegisterEvent('PLAYER_REGEN_ENABLED');
 
 	TDDps_Frame:SetScript('OnEvent', TDDps_OnEvent);
 
@@ -109,6 +110,11 @@ end
 -- Event Script, Target Change, Specializaton Change
 ----------------------------------------------
 function TDDps_OnEvent(self, event)
+	if event == 'PLAYER_TALENT_UPDATE' then
+		TDDps_DisableAddon();
+	elseif event == 'ACTIONBAR_SLOT_CHANGED' then
+		TDDps_DisableAddon();
+	end
 	if TDDps_Frame.rotationEnabled then
 		if event == 'PLAYER_TARGET_CHANGED' then
 			if (UnitIsFriend('player', 'target')) then
@@ -118,9 +124,7 @@ function TDDps_OnEvent(self, event)
 			end
 		end
 	end
-	if event == 'PLAYER_TALENT_UPDATE' then
-		TDDps_DisableAddon();
-	elseif event == 'PLAYER_REGEN_DISABLED' and TDDps_Options.onCombatEnter and not TDDps_Frame.rotationEnabled then
+	if event == 'PLAYER_REGEN_DISABLED' and TDDps_Options.onCombatEnter and not TDDps_Frame.rotationEnabled then
 		print(_tdSuccess .. TDDpsName .. ': Auto enable on combat!');
 		TDDps_Frame.rotationEnabled = true;
 		TDDps_LoadModule();
