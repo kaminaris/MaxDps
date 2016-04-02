@@ -113,7 +113,7 @@ function TDDps_OnEvent(self, event)
 	if event == 'PLAYER_TALENT_UPDATE' then
 		TDDps_DisableAddon();
 	elseif event == 'ACTIONBAR_SLOT_CHANGED' then
-		TDDps_DisableAddon();
+		--TDDps_DisableAddon();
 	end
 	if TDDps_Frame.rotationEnabled then
 		if event == 'PLAYER_TARGET_CHANGED' then
