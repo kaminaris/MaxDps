@@ -55,6 +55,41 @@ function TDButton_DestroyAllOverlays()
 	end
 end
 
+function TDButton_UpdateButtonGlow()
+	local LAB;
+	local LBG;
+	local origShow;
+	local noFunction = function() end;
+
+	if IsAddOnLoaded('ElvUI') then
+		LAB = LibStub:GetLibrary('LibActionButton-1.0-ElvUI');
+		LBG = LibStub:GetLibrary('LibButtonGlow-1.0');
+		origShow = LBG.ShowOverlayGlow;
+	elseif IsAddOnLoaded('Bartender4') then
+		LAB = LibStub:GetLibrary('LibActionButton-1.0');
+	end
+
+	if TDDps_Options.disableButtonGlow then
+		ActionBarActionEventsFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+		if LAB then
+			LAB.eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+		end
+
+		if LBG then
+			LBG.ShowOverlayGlow = noFunction;
+		end
+	else
+		ActionBarActionEventsFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+		if LAB then
+			LAB.eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+		end
+
+		if LBG then
+			LBG.ShowOverlayGlow = origShow;
+		end
+	end
+end
+
 ----------------------------------------------
 -- Show Overlay on button
 ----------------------------------------------

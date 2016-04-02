@@ -1,6 +1,6 @@
 local AceGUI = LibStub('AceGUI-3.0');
-local lsm = LibStub("AceGUISharedMediaWidgets-1.0");
-local media = LibStub("LibSharedMedia-3.0");
+local lsm = LibStub('AceGUISharedMediaWidgets-1.0');
+local media = LibStub('LibSharedMedia-3.0');
 
 TDDps_textures = {
 	['Ping'] = 'Interface\\Cooldown\\ping4',
@@ -10,6 +10,7 @@ TDDps_textures = {
 
 TDDps_Options = {
 	enabled = true,
+	disableButtonGlow = false,
 	onCombatEnter = true,
 	texture = '',
 	customTexture = '',
@@ -50,6 +51,17 @@ local options = {
 			end,
 			get = function(info) return TDDps_Options.enabled end
 		},
+		disableButtonGlow = {
+			name = 'Dissable blizzard button glow (experimental)',
+			desc = 'Disables original blizzard button glow',
+			type = 'toggle',
+			width = 'full',
+			set = function(info, val)
+				TDDps_Options.disableButtonGlow = val;
+				TDButton_UpdateButtonGlow();
+			end,
+			get = function(info) return TDDps_Options.disableButtonGlow end
+		},
 		onCombatEnter = {
 			name = 'Enable upon entering combat',
 			desc = 'Automatically enables helper upon entering combat',
@@ -68,10 +80,10 @@ local options = {
 			get = function(info) return strtrim(TDDps_Options.customTexture or '') end
 		},
 		texture = {
-			type = "select",
+			type = 'select',
 			dialogControl = 'LSM30_Background',
-			name = "Texture",
-			desc = "Sets Highlight texture (changing this requires UI Reload)",
+			name = 'Texture',
+			desc = 'Sets Highlight texture (changing this requires UI Reload)',
 			values = function()
 				return TDDps_textures;
 			end,
@@ -98,9 +110,9 @@ local options = {
 			hasAlpha = true
 		},
 		interval = {
-			name = "Interval in seconds",
-			desc = "Sets how frequent rotation updates will be. Low value will result in fps drops.",
-			type = "range",
+			name = 'Interval in seconds',
+			desc = 'Sets how frequent rotation updates will be. Low value will result in fps drops.',
+			type = 'range',
 			min = 0.01,
 			max = 2,
 			set = function(info,val) TDDps_Options.interval = val end,

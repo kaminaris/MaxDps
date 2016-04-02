@@ -56,6 +56,7 @@ function TDDps_InitAddon()
 	TDDps_Frame:RegisterEvent('PLAYER_TALENT_UPDATE');
 	TDDps_Frame:RegisterEvent('ACTIONBAR_SLOT_CHANGED');
 	TDDps_Frame:RegisterEvent('PLAYER_REGEN_DISABLED');
+	TDDps_Frame:RegisterEvent('PLAYER_ENTERING_WORLD');
 --	TDDps_Frame:RegisterEvent('PLAYER_REGEN_ENABLED');
 
 	TDDps_Frame:SetScript('OnEvent', TDDps_OnEvent);
@@ -114,6 +115,8 @@ function TDDps_OnEvent(self, event)
 		TDDps_DisableAddon();
 	elseif event == 'ACTIONBAR_SLOT_CHANGED' then
 		--TDDps_DisableAddon();
+	elseif event == 'PLAYER_ENTERING_WORLD' then
+		TDButton_UpdateButtonGlow();
 	end
 	if TDDps_Frame.rotationEnabled then
 		if event == 'PLAYER_TARGET_CHANGED' then

@@ -1,9 +1,10 @@
 ## Title: TDDps
 ## Notes: Rotation helper framework.
-## Version: 1.7.1
+## Version: 1.8
 ## Author: Kaminaris
 ## Interface: 60200
 ## SavedVariables: TDDps_Options
+## OptionalDependencies: Bartender4, ElvUI
 
 Libs\LibStub\LibStub.lua
 Libs\AceGUI-3.0\AceGUI-3.0.xml
