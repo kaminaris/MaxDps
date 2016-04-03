@@ -133,6 +133,12 @@ function TDButton_Fetch()
 	else
 		TDButton_FetchBlizzard();
 	end
+
+	-- It does not alter original button frames so it needs to be fetched too
+	if IsAddOnLoaded('ButtonForge') then
+		TDButton_FetchButtonForge();
+	end
+
 	print(_tdInfo .. TDDpsName .. ': Fetched action bars!');
 end
 
@@ -161,6 +167,44 @@ function TDButton_FetchBlizzard()
 
 					tinsert(TDButton_Spells[actionName], button);
 				end
+			end
+		end
+	end
+end
+
+----------------------------------------------
+-- Button spells on original button forge
+----------------------------------------------
+function TDButton_FetchButtonForge()
+	local i = 1;
+	while true do
+		local button = _G['ButtonForge' .. i];
+		if not button then
+			break;
+		end
+		i = i + 1;
+
+		local type = button:GetAttribute('type');
+		if type then
+			local actionType = button:GetAttribute(type);
+			local id;
+			local actionName;
+			if type == 'macro' then
+				local id = GetMacroSpell(actionType);
+				if id then
+					actionName = GetSpellInfo(id);
+				end
+			elseif type == 'item' then
+				actionName = GetItemInfo(actionType);
+			elseif type == 'spell' then
+				actionName = GetSpellInfo(actionType);
+			end
+			if actionName then
+				if TDButton_Spells[actionName] == nil then
+					TDButton_Spells[actionName] = {};
+				end
+
+				tinsert(TDButton_Spells[actionName], button);
 			end
 		end
 	end
