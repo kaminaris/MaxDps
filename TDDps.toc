@@ -1,10 +1,10 @@
 ## Title: TDDps
 ## Notes: Rotation helper framework.
-## Version: 1.10
+## Version: 1.11
 ## Author: Kaminaris
 ## Interface: 60200
 ## SavedVariables: TDDps_Options
-## OptionalDependencies: Bartender4, ElvUI, ButtonForge
+## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml

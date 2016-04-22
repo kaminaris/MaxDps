@@ -125,11 +125,14 @@ function TDButton_Fetch()
 	TDButton_SpellsGlowing = {};
 	local isBartender = IsAddOnLoaded('Bartender4');
 	local isElv = IsAddOnLoaded('ElvUI');
+	local isSv = IsAddOnLoaded('SVUI_ActionBars');
 
 	if (isBartender) then
 		TDButton_FetchBartender4();
 	elseif (isElv) then
 		TDButton_FetchElvUI();
+	elseif (isSv) then
+		TDButton_FetchSuperVillain();
 	else
 		TDButton_FetchBlizzard();
 	end
@@ -218,6 +221,32 @@ function TDButton_FetchElvUI()
 	for x = 1, 10 do
 		for i = 1, 12 do
 			local button = _G['ElvUI_Bar' .. x .. 'Button' .. i];
+			if button then
+				local spellId = button:GetSpellId();
+				if spellId then
+					local actionName, _ = GetSpellInfo(spellId);
+					if actionName then
+						if TDButton_Spells[actionName] == nil then
+							TDButton_Spells[actionName] = {};
+						end
+						ret = true;
+						tinsert(TDButton_Spells[actionName], button);
+					end
+				end
+			end
+		end
+	end
+	return ret;
+end
+
+----------------------------------------------
+-- Button spells on SuperVillain
+----------------------------------------------
+function TDButton_FetchSuperVillain()
+	local ret = false;
+	for x = 1, 10 do
+		for i = 1, 12 do
+			local button = _G['SVUI_ActionBar' .. x .. 'Button' .. i];
 			if button then
 				local spellId = button:GetSpellId();
 				if spellId then

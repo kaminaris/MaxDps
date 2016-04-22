@@ -69,26 +69,26 @@ end
 ----------------------------------------------
 function TDDps_EnableAddon(mode)
 	print(_tdInfo .. TDDpsName .. ': Enabling');
-	
+
 	if _TD['DPS_NextSpell'] == nil then
 		print(_tdError .. TDDpsName .. ': No addon selected, cannot enable');
 		return;
 	end
-	
+
 	if _TD['DPS_Enabled'] == 1 then
 		return;
 	end
-	
+
 	_TD['DPS_Mode'] = mode;
 
 	TDButton_Fetch();
-	
+
 	if _TD['DPS_OnEnable'] then
 		_TD['DPS_OnEnable']();
 	end
 
 	TDDps_Frame:SetScript('OnUpdate', TDDps_OnUpdate);
-	
+
 	_TD['DPS_Enabled'] = 1;
 	print(_tdSuccess .. TDDpsName .. ': Enabled');
 end
@@ -99,7 +99,7 @@ end
 function TDDps_InvokeNextSpell()
 	-- invoke spell check
 	local oldSkill = DPS_Skill;
-	
+
 	DPS_Skill = _TD['DPS_NextSpell']();
 
 	if (oldSkill ~= DPS_Skill or oldSkill == nil) and DPS_Skill ~= nil then
