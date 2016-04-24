@@ -349,6 +349,8 @@ function TDButton_GlowSpell(spellName)
 			TDButton_Glow(button, 'next');
 		end
 		TDButton_SpellsGlowing[spellName] = 1;
+	else
+		print(_tdError .. TDDpsName .. ': Spell not found on action bars: ' .. spellName);
 	end
 end
 

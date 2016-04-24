@@ -1,6 +1,6 @@
 ## Title: TDDps
 ## Notes: Rotation helper framework.
-## Version: 1.11
+## Version: 1.12
 ## Author: Kaminaris
 ## Interface: 60200
 ## SavedVariables: TDDps_Options
@@ -8,13 +8,10 @@
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
-Libs\AceGUI-3.0\AceGUI-3.0.xml
-Libs\AceGUI-3.0\AceGUI-3.0.lua
-Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 Libs\LibSharedMedia-3.0\lib.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
-Libs\AceConfig-3.0\AceConfig-3.0.lua
 
 TDSettings.lua
 TDButtons.lua
