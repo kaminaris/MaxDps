@@ -10,6 +10,7 @@ TDDps_textures = {
 
 TDDps_Options = {
 	enabled = true,
+	disabledInfo = false,
 	disableButtonGlow = false,
 	onCombatEnter = true,
 	texture = '',
@@ -50,6 +51,16 @@ local options = {
 				TDDps_Options.enabled = val;
 			end,
 			get = function(info) return TDDps_Options.enabled end
+		},
+		disabledInfo = {
+			name = 'Disable info messages',
+			desc = 'Enables / disables info messages, if you have issues with addon, make sure to deselect this.',
+			type = 'toggle',
+			width = 'full',
+			set = function(info, val)
+				TDDps_Options.disabledInfo = val;
+			end,
+			get = function(info) return TDDps_Options.disabledInfo end
 		},
 		disableButtonGlow = {
 			name = 'Dissable blizzard button glow (experimental)',

@@ -142,7 +142,7 @@ function TDButton_Fetch()
 		TDButton_FetchButtonForge();
 	end
 
-	print(_tdInfo .. TDDpsName .. ': Fetched action bars!');
+	TDDps_Print(_tdInfo, 'Fetched action bars!');
 end
 
 ----------------------------------------------
@@ -218,6 +218,14 @@ end
 ----------------------------------------------
 function TDButton_FetchElvUI()
 	local ret = false;
+--	local slotID = rememberedActionSlot[spellName];
+--	local bonusOffset = ((NUM_ACTIONBAR_PAGES + GetBonusBarOffset() - 1) * NUM_ACTIONBAR_BUTTONS);
+--	slotID = slotID - bonusOffset;
+--	local bar = math.floor(slotID / 10) + 1;
+--	local btn = slotID % 10;
+--
+--	local button = _G['ElvUI_Bar' .. bar .. 'Button' .. btn];
+
 	for x = 1, 10 do
 		for i = 1, 12 do
 			local button = _G['ElvUI_Bar' .. x .. 'Button' .. i];
@@ -276,7 +284,6 @@ function TDButton_FetchBartender4()
 			local spellId = button:GetSpellId();
 			if spellId then
 				local actionName, _ = GetSpellInfo(spellId);
-				print(actionName, spellId);
 				if actionName then
 					if TDButton_Spells[actionName] == nil then
 						TDButton_Spells[actionName] = {};
@@ -350,7 +357,7 @@ function TDButton_GlowSpell(spellName)
 		end
 		TDButton_SpellsGlowing[spellName] = 1;
 	else
-		print(_tdError .. TDDpsName .. ': Spell not found on action bars: ' .. spellName);
+		TDDps_Print(_tdError, 'Spell not found on action bars: ' .. spellName);
 	end
 end
 
