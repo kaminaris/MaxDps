@@ -27,6 +27,7 @@ local Classes = {
 	[9] = 'Warlock',
 	[10] = 'Monk',
 	[11] = 'Druid',
+	[12] = 'DemonHunter',
 }
 local TDDps_Frame = CreateFrame('Frame', 'TDDps_Frame');
 TDDps_Frame.rotationEnabled = false;

@@ -2,7 +2,7 @@
 ## Notes: Rotation helper framework.
 ## Version: 1.13
 ## Author: Kaminaris
-## Interface: 60200
+## Interface: 70000
 ## SavedVariables: TDDps_Options
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars
 

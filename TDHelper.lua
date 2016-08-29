@@ -60,9 +60,10 @@ function TD_TargetAura(name, timeShift)
 	local spellName = GetSpellInfo(name) or name;
 	local _, _, _, _, _, _, expirationTime = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL'); 
 	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
-		return true;
+		local cd = expirationTime - GetTime() - (timeShift or 0);
+		return true, cd;
 	end
-	return false;
+	return false, 0;
 end
 
 ----------------------------------------------
@@ -139,6 +140,34 @@ end
 function TD_SpellAvailable(spell, timeShift)
 	local cd = TD_Cooldown(spell, timeShift);
 	return cd <= 0, cd;
+end
+
+----------------------------------------------
+-- Extract tooltip number
+----------------------------------------------
+function TD_ExtractTooltip(spell, pattern)
+	local _pattern = gsub(pattern, "%%s", "([%%d%.,]+)");
+
+	if not TDSpellTooltip then
+		CreateFrame('GameTooltip', 'TDSpellTooltip', UIParent, 'GameTooltipTemplate');
+		TDSpellTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	end
+	TDSpellTooltip:SetSpellByID(spell);
+
+	for i = 2, 4 do
+		local line = _G['TDSpellTooltipTextLeft' .. i];
+		local text = line:GetText();
+
+		if text then
+			local cost = strmatch(text, _pattern);
+			if cost then
+				cost = cost and tonumber((gsub(cost, "%D", "")));
+				return cost;
+			end
+		end
+	end
+
+	return 0;
 end
 
 ----------------------------------------------
