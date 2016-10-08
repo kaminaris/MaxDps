@@ -1,6 +1,6 @@
 ## Title: TDDps
 ## Notes: Rotation helper framework.
-## Version: 1.14
+## Version: 1.16
 ## Author: Kaminaris
 ## Interface: 70000
 ## SavedVariables: TDDps_Options
