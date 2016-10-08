@@ -15,6 +15,10 @@ _tdError = '|cFFF0563D';
 _tdSuccess = '|cFFBCCF02';
 
 local _DPS_time = 0;
+-- Globals for time to die
+TDDps_TargetGuid = nil;
+TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
+
 local Classes = {
 	[1] = 'Warrior',
 	[2] = 'Paladin',
@@ -125,6 +129,15 @@ function TDDps_OnEvent(self, event)
 		--TDDps_DisableAddon();
 	elseif event == 'PLAYER_ENTERING_WORLD' then
 		TDButton_UpdateButtonGlow();
+	end
+	if event == 'PLAYER_TARGET_CHANGED' then
+		TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
+
+		if UnitExists('target') and not UnitIsFriend('player', 'target') then
+			TDDps_TargetGuid = UnitGUID('target');
+		else
+			TDDps_TargetGuid = nil;
+		end
 	end
 	if TDDps_Frame.rotationEnabled then
 		if event == 'PLAYER_TARGET_CHANGED' then

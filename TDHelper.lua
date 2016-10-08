@@ -11,6 +11,8 @@ _Netherwinds		= 160452;
 _DrumsOfFury		= 178207;
 _Exhaustion			= 57723;
 
+local INF = 2147483647;
+
 local _Bloodlusts = {_Bloodlust, _TimeWrap, _Heroism, _AncientHysteria, _Netherwinds, _DrumsOfFury};
 
 ----------------------------------------------
@@ -51,6 +53,18 @@ function TD_Aura(name, timeShift)
 	return false, 0;
 end
 
+----------------------------------------------
+-- Is aura on specific unit
+----------------------------------------------
+function TD_UnitAura(name, timeShift, unit)
+	timeShift = timeShift or 0.2;
+	local spellName = GetSpellInfo(name);
+	local _, _, _, count, _, _, expirationTime = UnitAura(unit, spellName);
+	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
+		return true, count;
+	end
+	return false, 0;
+end
 
 ----------------------------------------------
 -- Is aura on target
@@ -182,6 +196,44 @@ function TD_Cooldown(spell, timeShift)
 	else
 		return 100000;
 	end;
+end
+
+----------------------------------------------
+-- Time to die - NOT YET WORKING
+----------------------------------------------
+--TD_Hp0, TD_T0, TD_Hpm, TD_Tm
+function TD_TimeToDie(health)
+	local unit = UnitGUID('target');
+	if unit ~= TDDps_TargetGuid then
+		--print('phial');
+		return INF;
+	end
+
+	health = health or UnitHealth('target');
+
+	if health == UnitHealthMax('target') then
+		TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
+		--print('phial2');
+		return INF;
+	end
+
+	local time = GetTime();
+
+	if not TD_Hp0 then
+		TD_Hp0, TD_T0 = health, time;
+		TD_Hpm, TD_Tm = health, time;
+		--print('phial3');
+		return INF;
+	end
+
+	TD_Hpm = (TD_Hpm + health) * .5;
+	TD_Tm = (TD_Tm + time) * .5;
+
+	if TD_Hpm >= TD_Hp0 then
+		TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
+	else
+		return health * (TD_T0 - TD_Tm) / (TD_Hpm - TD_Hp0);
+	end
 end
 
 ----------------------------------------------
