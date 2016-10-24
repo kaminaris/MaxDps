@@ -117,6 +117,9 @@ function TDDps_InvokeNextSpell()
 	if (oldSkill ~= DPS_Skill or oldSkill == nil) and DPS_Skill ~= nil then
 		TDButton_GlowNextSpellId(DPS_Skill);
 	end
+	if DPS_Skill == nill and oldSkill ~= nil then
+		TDButton_GlowClear();
+	end
 end
 
 ----------------------------------------------
