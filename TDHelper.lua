@@ -43,6 +43,18 @@ end
 ----------------------------------------------
 -- Is aura on player
 ----------------------------------------------
+function TD_PersistentAura(name)
+	local spellName = GetSpellInfo(name);
+	local aura, _, _, count = UnitAura('player', spellName);
+	if aura then
+		return true, count;
+	end
+	return false, 0;
+end
+
+----------------------------------------------
+-- Is aura on player
+----------------------------------------------
 function TD_Aura(name, timeShift)
 	timeShift = timeShift or 0.2;
 	local spellName = GetSpellInfo(name);
