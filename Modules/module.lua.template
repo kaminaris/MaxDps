@@ -23,18 +23,18 @@ end
 ----------------------------------------------
 function TDDps_[Class]_EnableAddon(mode)
 	mode = mode or 1;
-	_TD["DPS_Description"] = "TD [Class] DPS supports: [Spec1], [Spec2], [Spec3]";
-	_TD["DPS_OnEnable"] = TDDps_[Class]_CheckTalents;
+	TDDps.Description = "TD [Class] DPS supports: [Spec1], [Spec2], [Spec3]";
+	TDDps.OnEnable = TDDps_[Class]_CheckTalents;
 	if mode == 1 then
-		_TD["DPS_NextSpell"] = TDDps_[Class]_[Spec1];
+		TDDps.NextSpell = TDDps_[Class]_[Spec1];
 	end;
 	if mode == 2 then
-		_TD["DPS_NextSpell"] = TDDps_[Class]_[Spec2];
+		TDDps.NextSpell = TDDps_[Class]_[Spec2];
 	end;
 	if mode == 3 then
-		_TD["DPS_NextSpell"] = TDDps_[Class]_[Spec3];
+		TDDps.NextSpell = TDDps_[Class]_[Spec3];
 	end;
-	TDDps_EnableAddon();
+	TDDps:EnableAddon();
 end
 
 ----------------------------------------------

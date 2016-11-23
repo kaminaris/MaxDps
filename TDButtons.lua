@@ -1,12 +1,12 @@
+TDButton = {};
+TDButton.Spells = {};
+TDButton.Flags = {};
+TDButton.SpellsGlowing = {};
+TDButton.FramePool = {};
+TDButton.Frames = {};
 
-local TDButton_Spells = {};
-local TDButton_Flags = {};
-local TDButton_SpellsGlowing = {};
-TDButton_FramePool = {};
-TDButton_Frames = {};
-
-function TDButton_CreateOverlay(parent, id, texture, r, g, b)
-	local frame = tremove(TDButton_FramePool);
+function TDButton.CreateOverlay(parent, id, texture, r, g, b)
+	local frame = tremove(TDButton.FramePool);
 	if not frame then
 		frame = CreateFrame('Frame', 'TDButton_Overlay_' .. id, parent);
 	else
@@ -35,13 +35,13 @@ function TDButton_CreateOverlay(parent, id, texture, r, g, b)
 		TDDps_Options.highlightColor.a
 	);
 
-	tinsert(TDButton_Frames, frame);
+	tinsert(TDButton.Frames, frame);
 	return frame;
 end
 
-function TDButton_DestroyAllOverlays()
+function TDButton.DestroyAllOverlays()
 	local frame;
-	for key, frame in pairs(TDButton_Frames) do
+	for key, frame in pairs(TDButton.Frames) do
 		frame:GetParent().tdOverlays = nil;
 		frame:ClearAllPoints();
 		frame:Hide();
@@ -49,13 +49,13 @@ function TDButton_DestroyAllOverlays()
 		frame.width = nil;
 		frame.height = nil;
 	end
-	for key, frame in pairs(TDButton_Frames) do
-		tinsert(TDButton_FramePool, frame);
-		TDButton_Frames[key] = nil;
+	for key, frame in pairs(TDButton.Frames) do
+		tinsert(TDButton.FramePool, frame);
+		TDButton.Frames[key] = nil;
 	end
 end
 
-function TDButton_UpdateButtonGlow()
+function TDButton.UpdateButtonGlow()
 	local LAB;
 	local LBG;
 	local origShow;
@@ -93,7 +93,7 @@ end
 ----------------------------------------------
 -- Show Overlay on button
 ----------------------------------------------
-function TDButton_Glow(button, id, r, g, b, texture)
+function TDButton.Glow(button, id, r, g, b, texture)
 	if button.tdOverlays and button.tdOverlays[id] then
 		button.tdOverlays[id]:Show();
 	else
@@ -101,7 +101,7 @@ function TDButton_Glow(button, id, r, g, b, texture)
 			button.tdOverlays = {};
 		end
 
-		button.tdOverlays[id] = TDButton_CreateOverlay(button, id, texture, r, g, b);
+		button.tdOverlays[id] = TDButton.CreateOverlay(button, id, texture, r, g, b);
 		button.tdOverlays[id]:Show();
 	end
 end
@@ -109,7 +109,7 @@ end
 ----------------------------------------------
 -- Hide Overlay on button
 ----------------------------------------------
-function TDButton_HideGlow(button, id)
+function TDButton.HideGlow(button, id)
 	if button.tdOverlays and button.tdOverlays[id] then
 		button.tdOverlays[id]:Hide();
 	end
@@ -118,37 +118,46 @@ end
 ----------------------------------------------
 -- Fetch button spells
 ----------------------------------------------
-function TDButton_Fetch()
-	TDButton_GlowClear();
-	TDButton_Spells = {};
-	TDButton_Flags = {};
-	TDButton_SpellsGlowing = {};
+function TDButton.Fetch()
+	local origEna = TDDps.rotationEnabled;
+	TDDps.rotationEnabled = false;
+	TDDps.Spell = nil;
+
+	TDButton.GlowClear();
+	TDButton.Spells = {};
+	TDButton.Flags = {};
+	TDButton.SpellsGlowing = {};
 	local isBartender = IsAddOnLoaded('Bartender4');
 	local isElv = IsAddOnLoaded('ElvUI');
 	local isSv = IsAddOnLoaded('SVUI_ActionBars');
 
 	if (isBartender) then
-		TDButton_FetchBartender4();
+		TDButton.FetchBartender4();
 	elseif (isElv) then
-		TDButton_FetchElvUI();
+		TDButton.FetchElvUI();
 	elseif (isSv) then
-		TDButton_FetchSuperVillain();
+		TDButton.FetchSuperVillain();
 	else
-		TDButton_FetchBlizzard();
+		TDButton.FetchBlizzard();
 	end
 
 	-- It does not alter original button frames so it needs to be fetched too
 	if IsAddOnLoaded('ButtonForge') then
-		TDButton_FetchButtonForge();
+		TDButton.FetchButtonForge();
 	end
 
-	TDDps_Print(_tdInfo, 'Fetched action bars!');
+	TDDps.rotationEnabled = origEna;
+	TDDps:Print(_tdInfo, 'Fetched action bars!');
+	-- after fetching invoke spell check
+	if TDDps.rotationEnabled then
+		TDDps:InvokeNextSpell();
+	end
 end
 
 ----------------------------------------------
 -- Button spells on original blizzard UI
 ----------------------------------------------
-function TDButton_FetchBlizzard()
+function TDButton.FetchBlizzard()
 	local TDActionBarsBlizzard = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft'};
 	for _, barName in pairs(TDActionBarsBlizzard) do
 		for i = 1, 12 do
@@ -164,11 +173,11 @@ function TDButton_FetchBlizzard()
 					actionName = GetSpellInfo(id);
 				end
 				if actionName then
-					if TDButton_Spells[actionName] == nil then
-						TDButton_Spells[actionName] = {};
+					if TDButton.Spells[actionName] == nil then
+						TDButton.Spells[actionName] = {};
 					end
 
-					tinsert(TDButton_Spells[actionName], button);
+					tinsert(TDButton.Spells[actionName], button);
 				end
 			end
 		end
@@ -178,7 +187,7 @@ end
 ----------------------------------------------
 -- Button spells on original button forge
 ----------------------------------------------
-function TDButton_FetchButtonForge()
+function TDButton.FetchButtonForge()
 	local i = 1;
 	while true do
 		local button = _G['ButtonForge' .. i];
@@ -203,11 +212,11 @@ function TDButton_FetchButtonForge()
 				actionName = GetSpellInfo(actionType);
 			end
 			if actionName then
-				if TDButton_Spells[actionName] == nil then
-					TDButton_Spells[actionName] = {};
+				if TDButton.Spells[actionName] == nil then
+					TDButton.Spells[actionName] = {};
 				end
 
-				tinsert(TDButton_Spells[actionName], button);
+				tinsert(TDButton.Spells[actionName], button);
 			end
 		end
 	end
@@ -216,16 +225,8 @@ end
 ----------------------------------------------
 -- Button spells on ElvUI
 ----------------------------------------------
-function TDButton_FetchElvUI()
+function TDButton.FetchElvUI()
 	local ret = false;
---	local slotID = rememberedActionSlot[spellName];
---	local bonusOffset = ((NUM_ACTIONBAR_PAGES + GetBonusBarOffset() - 1) * NUM_ACTIONBAR_BUTTONS);
---	slotID = slotID - bonusOffset;
---	local bar = math.floor(slotID / 10) + 1;
---	local btn = slotID % 10;
---
---	local button = _G['ElvUI_Bar' .. bar .. 'Button' .. btn];
-
 	for x = 1, 10 do
 		for i = 1, 12 do
 			local button = _G['ElvUI_Bar' .. x .. 'Button' .. i];
@@ -234,11 +235,11 @@ function TDButton_FetchElvUI()
 				if spellId then
 					local actionName, _ = GetSpellInfo(spellId);
 					if actionName then
-						if TDButton_Spells[actionName] == nil then
-							TDButton_Spells[actionName] = {};
+						if TDButton.Spells[actionName] == nil then
+							TDButton.Spells[actionName] = {};
 						end
 						ret = true;
-						tinsert(TDButton_Spells[actionName], button);
+						tinsert(TDButton.Spells[actionName], button);
 					end
 				end
 			end
@@ -250,7 +251,7 @@ end
 ----------------------------------------------
 -- Button spells on SuperVillain
 ----------------------------------------------
-function TDButton_FetchSuperVillain()
+function TDButton.FetchSuperVillain()
 	local ret = false;
 	for x = 1, 10 do
 		for i = 1, 12 do
@@ -260,11 +261,11 @@ function TDButton_FetchSuperVillain()
 				if spellId then
 					local actionName, _ = GetSpellInfo(spellId);
 					if actionName then
-						if TDButton_Spells[actionName] == nil then
-							TDButton_Spells[actionName] = {};
+						if TDButton.Spells[actionName] == nil then
+							TDButton.Spells[actionName] = {};
 						end
 						ret = true;
-						tinsert(TDButton_Spells[actionName], button);
+						tinsert(TDButton.Spells[actionName], button);
 					end
 				end
 			end
@@ -276,7 +277,7 @@ end
 ----------------------------------------------
 -- Button spells on Bartender4
 ----------------------------------------------
-function TDButton_FetchBartender4()
+function TDButton.FetchBartender4()
 	local ret = false;
 	for i = 1, 120 do
 		local button = _G['BT4Button' .. i];
@@ -285,11 +286,11 @@ function TDButton_FetchBartender4()
 			if spellId then
 				local actionName, _ = GetSpellInfo(spellId);
 				if actionName then
-					if TDButton_Spells[actionName] == nil then
-						TDButton_Spells[actionName] = {};
+					if TDButton.Spells[actionName] == nil then
+						TDButton.Spells[actionName] = {};
 					end
 					ret = true;
-					tinsert(TDButton_Spells[actionName], button);
+					tinsert(TDButton.Spells[actionName], button);
 				end
 			end
 		end
@@ -300,20 +301,30 @@ end
 ----------------------------------------------
 -- Dump spells for debug
 ----------------------------------------------
-function TDButton_Dump()
-	for k, button in pairs(TDButton_Spells) do
-		print(k, button);
+function TDButton.Dump()
+	local s = '';
+	for k, v in pairs(TDButton.Spells) do
+		s = s .. ', ' .. k;
 	end
+	print(s);
+end
+
+----------------------------------------------
+-- Find button on action bars
+----------------------------------------------
+function TDButton.FindSpell(spellName)
+	local name = GetSpellInfo(spellName) or spellName;
+	return TDButton.Spells[name];
 end
 
 ----------------------------------------------
 -- Glow independent button by spell name
 ----------------------------------------------
-function TDButton_GlowIndependent(spellName, id, r, g, b, texture)
+function TDButton.GlowIndependent(spellName, id, r, g, b, texture)
 	local name = GetSpellInfo(spellName) or spellName;
-	if TDButton_Spells[name] ~= nil then
-		for k, button in pairs(TDButton_Spells[name]) do
-			TDButton_Glow(button, id, r, g, b, texture);
+	if TDButton.Spells[name] ~= nil then
+		for k, button in pairs(TDButton.Spells[name]) do
+			TDButton.Glow(button, id, r, g, b, texture);
 		end
 	end
 end
@@ -321,11 +332,11 @@ end
 ----------------------------------------------
 -- Clear glow independent button by spell name
 ----------------------------------------------
-function TDButton_ClearGlowIndependent(spellName, id)
+function TDButton.ClearGlowIndependent(spellName, id)
 	local name = GetSpellInfo(spellName) or spellName;
-	if TDButton_Spells[name] ~= nil then
-		for k, button in pairs(TDButton_Spells[name]) do
-			TDButton_HideGlow(button, id);
+	if TDButton.Spells[name] ~= nil then
+		for k, button in pairs(TDButton.Spells[name]) do
+			TDButton.HideGlow(button, id);
 		end
 	end
 end
@@ -333,69 +344,72 @@ end
 ----------------------------------------------
 -- Glow cooldown
 ----------------------------------------------
-function TDButton_GlowCooldown(spell, condition)
-	if TDButton_Flags[spell] == nil then
-		TDButton_Flags[spell] = false;
+function TDButton.GlowCooldown(spell, condition)
+	if TDButton.Flags[spell] == nil then
+		TDButton.Flags[spell] = false;
 	end
-	if condition and not TDButton_Flags[spell] then
-		TDButton_Flags[spell] = true;
-		TDButton_GlowIndependent(spell, spell, 0, 1, 0);
+	if condition and not TDButton.Flags[spell] then
+		TDButton.Flags[spell] = true;
+		TDButton.GlowIndependent(spell, spell, 0, 1, 0);
 	end
-	if not condition and TDButton_Flags[spell] then
-		TDButton_Flags[spell] = false;
-		TDButton_ClearGlowIndependent(spell, spell);
+	if not condition and TDButton.Flags[spell] then
+		TDButton.Flags[spell] = false;
+		TDButton.ClearGlowIndependent(spell, spell);
 	end
 end
 
+function TDButton_GlowCooldown(spell, condition)
+	TDButton.GlowCooldown(spell, condition);
+end
 ----------------------------------------------
 -- Glow spell by name
 ----------------------------------------------
-function TDButton_GlowSpell(spellName)
-	if TDButton_Spells[spellName] ~= nil then
-		for k, button in pairs(TDButton_Spells[spellName]) do
-			TDButton_Glow(button, 'next');
+function TDButton.GlowSpell(spellName)
+	if TDButton.Spells[spellName] ~= nil then
+		for k, button in pairs(TDButton.Spells[spellName]) do
+			TDButton.Glow(button, 'next');
 		end
-		TDButton_SpellsGlowing[spellName] = 1;
+		TDButton.SpellsGlowing[spellName] = 1;
 	else
-		TDDps_Print(_tdError, 'Spell not found on action bars: ' .. spellName);
+		TDDps:Print(_tdError, 'Spell not found on action bars: ' .. spellName);
 	end
 end
 
 ----------------------------------------------
 -- Glow spell by id
 ----------------------------------------------
-function TDButton_GlowSpellId(spellId)
+function TDButton.GlowSpellId(spellId)
 	local name = GetSpellInfo(spellId);
-	TDButton_GlowSpell(name);
+	TDButton.GlowSpell(name);
 end
 
 ----------------------------------------------
 -- Glow next spell by name
 ----------------------------------------------
-function TDButton_GlowNextSpell(spellName)
-	TDButton_GlowClear();
-	TDButton_GlowSpell(spellName);
+function TDButton.GlowNextSpell(spellName)
+	TDButton.GlowClear();
+	TDButton.GlowSpell(spellName);
 end
 
 ----------------------------------------------
 -- Glow next spell by id
 ----------------------------------------------
-function TDButton_GlowNextSpellId(spellId)
+function TDButton.GlowNextSpellId(spellId)
 	local spellName = GetSpellInfo(spellId);
-	TDButton_GlowClear();
-	TDButton_GlowSpell(spellName);
+	TDButton.GlowClear();
+	TDButton.GlowSpell(spellName);
 end
 
 ----------------------------------------------
 -- Clear next spell glows
 ----------------------------------------------
-function TDButton_GlowClear()
-	for spellName, v in pairs(TDButton_SpellsGlowing) do
+function TDButton.GlowClear()
+	for spellName, v in pairs(TDButton.SpellsGlowing) do
 		if v == 1 then
-			for k, button in pairs(TDButton_Spells[spellName]) do
-				TDButton_HideGlow(button, 'next');
+			for k, button in pairs(TDButton.Spells[spellName]) do
+				TDButton.HideGlow(button, 'next');
 			end
-			TDButton_SpellsGlowing[spellName] = 0;
+			TDButton.SpellsGlowing[spellName] = 0;
 		end
 	end
 end

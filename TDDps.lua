@@ -1,25 +1,17 @@
-_TD = _TD or {};
+_TD = _TD or {}; -- depreciated
 
-_TD['DPS_Enabled'] 	= 0;
-_TD['DPS_OnEnable'] = nil;
-_TD['DPS_NextSpell'] = nil;
-_TD['DPS_Description'] = '';
-_TD['DPS_Mode'] = 1;
+local timer = LibStub:GetLibrary("BigLibTimer6"):Register(timer);
 
-DPS_Skill = nil;
+local TDDps = CreateFrame('Frame', 'TDDps');
+TDDps.AddonEnabled = false;
+TDDps.rotationEnabled = false;
+TDDps.ModuleOnEnable = nil;
+TDDps.NextSpell = nil;
+TDDps.Spell = nil;
+TDDps.Description = nil;
+TDDps.Time = 0;
 
--- Name and colors
-TDDpsName = 'TDDPS';
-_tdInfo = '|cFF1394CC';
-_tdError = '|cFFF0563D';
-_tdSuccess = '|cFFBCCF02';
-
-local _DPS_time = 0;
--- Globals for time to die
-TDDps_TargetGuid = nil;
-TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
-
-local Classes = {
+TDDps.Classes = {
 	[1] = 'Warrior',
 	[2] = 'Paladin',
 	[3] = 'Hunter',
@@ -33,11 +25,19 @@ local Classes = {
 	[11] = 'Druid',
 	[12] = 'DemonHunter',
 }
-local TDDps_Frame = CreateFrame('Frame', 'TDDps_Frame');
-TDDps_Frame.rotationEnabled = false;
 
-function TDDps_Print(color, message)
-	if TDDps_Options.disabledInfo then
+-- Name and colors
+TDDpsName = 'TDDPS';
+_tdInfo = '|cFF1394CC';
+_tdError = '|cFFF0563D';
+_tdSuccess = '|cFFBCCF02';
+
+-- Globals for time to die
+TDDps_TargetGuid = nil;
+TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
+
+function TDDps:Print(color, message, force)
+	if (TDDps_Options.disabledInfo and not TDDps_Options.debugMode) or force then
 		return;
 	end
 
@@ -47,91 +47,111 @@ end
 ----------------------------------------------
 -- Disable dps addon functionality
 ----------------------------------------------
-function TDDps_DisableAddon()
-	if _TD['DPS_Enabled'] == 0 then
+function TDDps:DisableAddon()
+	if not TDDps.AddonEnabled then
 		return;
 	end
-	TDButton_DestroyAllOverlays();
-	TDDps_Print(_tdInfo, 'Disabling');
-	TDDps_Frame:SetScript('OnUpdate', nil);
-	DPS_Skill = nil;
-	TDDps_Frame.rotationEnabled = false;
-	_TD['DPS_Enabled'] = 0;
+
+	TDButton.DestroyAllOverlays();
+	TDDps:Print(_tdInfo, 'Disabling', true);
+	TDDps:SetScript('OnUpdate', nil);
+	TDDps.Spell = nil;
+	TDDps.rotationEnabled = false;
+	TDDps.AddonEnabled = false;
 end
 
 ----------------------------------------------
 -- Initialize dps addon functionality
 ----------------------------------------------
-function TDDps_InitAddon()
-	TDDps_Frame:Show();
+function TDDps:InitAddon()
+	TDDps:Show();
 
-	TDDps_Frame:RegisterEvent('PLAYER_TARGET_CHANGED');
-	TDDps_Frame:RegisterEvent('PLAYER_TALENT_UPDATE');
-	TDDps_Frame:RegisterEvent('ACTIONBAR_SLOT_CHANGED');
-	TDDps_Frame:RegisterEvent('PLAYER_REGEN_DISABLED');
-	TDDps_Frame:RegisterEvent('PLAYER_ENTERING_WORLD');
---	TDDps_Frame:RegisterEvent('PLAYER_REGEN_ENABLED');
+	TDDps:RegisterEvent('PLAYER_TARGET_CHANGED');
+	TDDps:RegisterEvent('PLAYER_TALENT_UPDATE');
+	TDDps:RegisterEvent('ACTIONBAR_SLOT_CHANGED');
+	TDDps:RegisterEvent('PLAYER_REGEN_DISABLED');
+	TDDps:RegisterEvent('PLAYER_ENTERING_WORLD');
 
-	TDDps_Frame:SetScript('OnEvent', TDDps_OnEvent);
+	TDDps:RegisterEvent('ACTIONBAR_HIDEGRID');
+	TDDps:RegisterEvent('ACTIONBAR_PAGE_CHANGED');
+	TDDps:RegisterEvent('LEARNED_SPELL_IN_TAB');
+	TDDps:RegisterEvent('CHARACTER_POINTS_CHANGED');
+	TDDps:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED');
+	TDDps:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED');
+	TDDps:RegisterEvent('UPDATE_MACROS');
+	TDDps:RegisterEvent('VEHICLE_UPDATE');
+--	TDDps:RegisterEvent('PLAYER_REGEN_ENABLED');
 
-	TDDps_Print(_tdInfo, 'Initialized');
+	TDDps:SetScript('OnEvent', self.OnEvent);
+
+	TDDps:Print(_tdInfo, 'Initialized');
 end
 
 ----------------------------------------------
 -- Enable dps addon functionality
 ----------------------------------------------
-function TDDps_EnableAddon(mode)
-	TDDps_Print(_tdInfo, 'Enabling');
+function TDDps:EnableAddon()
+	TDDps:Print(_tdInfo, 'Enabling');
 
-	if _TD['DPS_NextSpell'] == nil then
+	if TDDps.NextSpell == nil or TDDps.AddonEnabled then
+		TDDps:Print(_tdError, 'Failed to enable addon!', true);
 		return;
 	end
+	TDDps:Print(_tdInfo, 'Fetching');
+	TDButton.Fetch();
 
-	if _TD['DPS_Enabled'] == 1 then
-		return;
+	if TDDps.ModuleOnEnable then
+		TDDps.ModuleOnEnable();
 	end
 
-	_TD['DPS_Mode'] = mode;
+	TDDps:SetScript('OnUpdate', TDDps.OnUpdate);
 
-	TDButton_Fetch();
+	TDDps.AddonEnabled = true;
+	TDDps:Print(_tdSuccess, 'Enabled', true);
+end
 
-	if _TD['DPS_OnEnable'] then
-		_TD['DPS_OnEnable']();
-	end
-
-	TDDps_Frame:SetScript('OnUpdate', TDDps_OnUpdate);
-
-	_TD['DPS_Enabled'] = 1;
-	TDDps_Print(_tdSuccess, 'Enabled');
+function TDDps_EnableAddon()
+	-- backwards compatibility, don't load it until we say so
 end
 
 ----------------------------------------------
 -- Event Script, Target Change, Specializaton Change
 ----------------------------------------------
-function TDDps_InvokeNextSpell()
+function TDDps:InvokeNextSpell()
 	-- invoke spell check
-	local oldSkill = DPS_Skill;
+	local oldSkill = TDDps.Spell;
 
-	DPS_Skill = _TD['DPS_NextSpell']();
+	TDDps.Spell = TDDps.NextSpell();
 
-	if (oldSkill ~= DPS_Skill or oldSkill == nil) and DPS_Skill ~= nil then
-		TDButton_GlowNextSpellId(DPS_Skill);
+	if (oldSkill ~= TDDps.Spell or oldSkill == nil) and TDDps.Spell ~= nil then
+		TDButton.GlowNextSpellId(TDDps.Spell);
 	end
-	if DPS_Skill == nill and oldSkill ~= nil then
-		TDButton_GlowClear();
+	if TDDps.Spell == nil and oldSkill ~= nil then
+		TDButton.GlowClear();
 	end
 end
 
 ----------------------------------------------
 -- Event Script, Target Change, Specializaton Change
 ----------------------------------------------
-function TDDps_OnEvent(self, event)
+function TDDps.OnEvent(self, event)
 	if event == 'PLAYER_TALENT_UPDATE' then
-		TDDps_DisableAddon();
-	elseif event == 'ACTIONBAR_SLOT_CHANGED' then
-		--TDDps_DisableAddon();
+		TDDps:DisableAddon();
 	elseif event == 'PLAYER_ENTERING_WORLD' then
-		TDButton_UpdateButtonGlow();
+		TDButton.UpdateButtonGlow();
+	elseif event == 'ACTIONBAR_SLOT_CHANGED' or
+			event == 'ACTIONBAR_HIDEGRID' or
+			event == 'ACTIONBAR_PAGE_CHANGED' or
+			event == 'LEARNED_SPELL_IN_TAB' or
+			event == 'CHARACTER_POINTS_CHANGED' or
+			event == 'ACTIVE_TALENT_GROUP_CHANGED' or
+			event == 'PLAYER_SPECIALIZATION_CHANGED' or
+			event == 'UPDATE_MACROS' or
+			event == 'VEHICLE_UPDATE' then
+			if TDDps.rotationEnabled then
+				timer:SetTimer("TDButton_Fetch", 0.5, 0, TDButton.Fetch);
+			end
+		return;
 	end
 	if event == 'PLAYER_TARGET_CHANGED' then
 		TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
@@ -142,58 +162,59 @@ function TDDps_OnEvent(self, event)
 			TDDps_TargetGuid = nil;
 		end
 	end
-	if TDDps_Frame.rotationEnabled then
+	if TDDps.rotationEnabled then
 		if event == 'PLAYER_TARGET_CHANGED' then
 			if (UnitIsFriend('player', 'target')) then
 				return;
 			else
-				TDDps_InvokeNextSpell();
+				TDDps:InvokeNextSpell();
 			end
 		end
 	end
-	if event == 'PLAYER_REGEN_DISABLED' and TDDps_Options.onCombatEnter and not TDDps_Frame.rotationEnabled then
-		TDDps_Print(_tdSuccess, 'Auto enable on combat!');
-		TDDps_Frame.rotationEnabled = true;
-		TDDps_LoadModule();
+	if event == 'PLAYER_REGEN_DISABLED' and TDDps_Options.onCombatEnter and not TDDps.rotationEnabled then
+		TDDps:Print(_tdSuccess, 'Auto enable on combat!');
+		TDDps.rotationEnabled = true;
+		TDDps:LoadModule();
 	end
 --	if event == 'PLAYER_REGEN_ENABLED' then
---		TDDps_Print(_tdSuccess, 'Auto disable on combat!');
---		TDDps_Frame.rotationEnabled = false;
---		TDDps_DisableAddon();
+--		TDDps:Print(_tdSuccess, 'Auto disable on combat!');
+--		TDDps.rotationEnabled = false;
+--		TDDps:DisableAddon();
 --	end
 end
 
 ----------------------------------------------
 -- Update script (timer)
 ----------------------------------------------
-function TDDps_OnUpdate(self, elapsed)
-	_DPS_time = _DPS_time + elapsed;
-	if _DPS_time >= TDDps_Options.interval then
-		_DPS_time = 0;
-		TDDps_InvokeNextSpell();
+function TDDps.OnUpdate(self, elapsed)
+	TDDps.Time = TDDps.Time + elapsed;
+	if TDDps.Time >= TDDps_Options.interval then
+		TDDps.Time = 0;
+		TDDps:InvokeNextSpell();
 	end
 end
 
 ----------------------------------------------
 -- Load appropriate addon for class
 ----------------------------------------------
-function TDDps_LoadModule()
-	TDDps_Frame.rotationEnabled = true;
+function TDDps:LoadModule()
+	TDDps.rotationEnabled = true;
 
+	TDDps:Print(_tdInfo, 'Loading class module');
 	local _, _, classId = UnitClass('player');
-	if Classes[classId] == nil then
-		TDDps_Print(_tdError, 'Invalid player class, please contact author of addon.');
+	if TDDps.Classes[classId] == nil then
+		TDDps:Print(_tdError, 'Invalid player class, please contact author of addon.', true);
 		return;
 	end
 
-	local module = 'TDDps_' .. Classes[classId];
+	local module = 'TDDps_' .. TDDps.Classes[classId];
 
 	if not IsAddOnLoaded(module) then
 		LoadAddOn(module);
 	end
 
 	if not IsAddOnLoaded(module) then
-		TDDps_Print(_tdError, 'Could not find class module.');
+		TDDps:Print(_tdError, 'Could not find class module.', true);
 		return;
 	end
 
@@ -202,10 +223,21 @@ function TDDps_LoadModule()
 
 	_G[init](mode);
 
-	if _TD['DPS_NextSpell'] == nil then
-		TDDps_Frame.rotationEnabled = false;
-		TDDps_Print(_tdError, 'Specialization is not supported.');
+	-- backward compatiblity
+	if _TD['DPS_NextSpell'] ~= nil then
+		TDDps:Print(_tdInfo, 'Backward compatibility mode');
+		TDDps.NextSpell = _TD['DPS_NextSpell'];
+		TDDps.ModuleOnEnable = _TD['DPS_OnEnable'];
+		TDDps.Description = _TD['DPS_Description'];
 	end
+
+	TDDps:EnableAddon();
+
+	if TDDps.NextSpell == nil then
+		TDDps.rotationEnabled = false;
+		TDDps:Print(_tdError, 'Specialization is not supported.', true);
+	end
+	TDDps:Print(_tdSuccess, 'Finished Loading class module');
 end
 
-TDDps_InitAddon();
+TDDps:InitAddon();

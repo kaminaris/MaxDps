@@ -11,6 +11,7 @@ TDDps_textures = {
 TDDps_Options = {
 	enabled = true,
 	disabledInfo = false,
+	debugMode = false,
 	disableButtonGlow = false,
 	onCombatEnter = true,
 	texture = '',
@@ -61,6 +62,16 @@ local options = {
 				TDDps_Options.disabledInfo = val;
 			end,
 			get = function(info) return TDDps_Options.disabledInfo end
+		},
+		debugMode = {
+			name = 'Enable debug mode',
+			desc = 'Enables spammy chat messages (use this when addon does not work for you)',
+			type = 'toggle',
+			width = 'full',
+			set = function(info, val)
+				TDDps_Options.debugMode = val;
+			end,
+			get = function(info) return TDDps_Options.debugMode end
 		},
 		disableButtonGlow = {
 			name = 'Dissable blizzard button glow (experimental)',
