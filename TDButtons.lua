@@ -147,7 +147,7 @@ function TDButton.Fetch()
 	end
 
 	TDDps.rotationEnabled = origEna;
-	TDDps:Print(_tdInfo, 'Fetched action bars!');
+	--TDDps:Print(_tdInfo, 'Fetched action bars!');
 	-- after fetching invoke spell check
 	if TDDps.rotationEnabled then
 		TDDps:InvokeNextSpell();

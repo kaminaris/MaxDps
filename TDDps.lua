@@ -37,11 +37,9 @@ TDDps_TargetGuid = nil;
 TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
 
 function TDDps:Print(color, message, force)
-	if (TDDps_Options.disabledInfo and not TDDps_Options.debugMode) or force then
-		return;
+	if force or TDDps_Options.debugMode or (not TDDps_Options.disabledInfo and color == _tdError) then
+		print(color .. TDDpsName .. ': ' .. message);
 	end
-
-	print(color .. TDDpsName .. ': ' .. message);
 end
 
 ----------------------------------------------
