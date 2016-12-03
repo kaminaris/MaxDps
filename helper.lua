@@ -15,22 +15,16 @@ local INF = 2147483647;
 
 local _Bloodlusts = {_Bloodlust, _TimeWrap, _Heroism, _AncientHysteria, _Netherwinds, _DrumsOfFury};
 
-----------------------------------------------
--- Current Specialisation name
-----------------------------------------------
-function TD_SpecName()
+function MaxDps:SpecName()
 	local currentSpec = GetSpecialization();
 	local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or 'None';
 	return currentSpecName;
 end
 
-----------------------------------------------
--- Is talent enabled
-----------------------------------------------
-function TD_TalentEnabled(talent)
+function MaxDps:TalentEnabled(talent)
 	local found = false;
 	for i=1,7 do
-		for j=1,3 do 
+		for j=1,3 do
 			local id, n, x, sel = GetTalentInfo(i,j,GetActiveSpecGroup());
 			if (id == talent or n == talent) and sel then
 				found = true;
@@ -40,10 +34,7 @@ function TD_TalentEnabled(talent)
 	return found;
 end
 
-----------------------------------------------
--- Is aura on player
-----------------------------------------------
-function TD_PersistentAura(name)
+function MaxDps:PersistentAura(name)
 	local spellName = GetSpellInfo(name);
 	local aura, _, _, count = UnitAura('player', spellName);
 	if aura then
@@ -52,23 +43,18 @@ function TD_PersistentAura(name)
 	return false, 0;
 end
 
-----------------------------------------------
--- Is aura on player
-----------------------------------------------
-function TD_Aura(name, timeShift)
+function MaxDps:Aura(name, timeShift)
 	timeShift = timeShift or 0.2;
 	local spellName = GetSpellInfo(name);
-	local _, _, _, count, _, _, expirationTime = UnitAura('player', spellName); 
-	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
-		return true, count;
+	local _, _, _, count, _, _, expirationTime = UnitAura('player', spellName);
+	local time = GetTime();
+	if expirationTime ~= nil and (expirationTime - time) > timeShift then
+		return true, count, (expirationTime - time);
 	end
-	return false, 0;
+	return false, 0, 0;
 end
 
-----------------------------------------------
--- Is aura on specific unit
-----------------------------------------------
-function TD_UnitAura(name, timeShift, unit)
+function MaxDps:UnitAura(name, timeShift, unit)
 	timeShift = timeShift or 0.2;
 	local spellName = GetSpellInfo(name);
 	local _, _, _, count, _, _, expirationTime = UnitAura(unit, spellName);
@@ -78,13 +64,10 @@ function TD_UnitAura(name, timeShift, unit)
 	return false, 0;
 end
 
-----------------------------------------------
--- Is aura on target
-----------------------------------------------
-function TD_TargetAura(name, timeShift)
+function MaxDps:TargetAura(name, timeShift)
 	timeShift = timeShift or 0;
 	local spellName = GetSpellInfo(name) or name;
-	local _, _, _, _, _, _, expirationTime = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL'); 
+	local _, _, _, _, _, _, expirationTime = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL');
 	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
 		local cd = expirationTime - GetTime() - (timeShift or 0);
 		return true, cd;
@@ -92,10 +75,7 @@ function TD_TargetAura(name, timeShift)
 	return false, 0;
 end
 
-----------------------------------------------
--- When current cast will end
-----------------------------------------------
-function TD_EndCast(target)
+function MaxDps:EndCast(target)
 	local t = GetTime();
 	local c = t * 1000;
 	local spell, _, _, _, _, endTime = UnitCastingInfo(target or 'player');
@@ -112,10 +92,7 @@ function TD_EndCast(target)
 	return timeShift, spell, gcd;
 end
 
-----------------------------------------------
--- Target Percent Health
-----------------------------------------------
-function TD_TargetPercentHealth()
+function MaxDps:TargetPercentHealth()
 	local health = UnitHealth('target');
 	if health <= 0 then
 		return 0;
@@ -127,10 +104,7 @@ function TD_TargetPercentHealth()
 	return health/healthMax;
 end
 
-----------------------------------------------
--- Simple calculation of global cooldown
-----------------------------------------------
-function TD_GlobalCooldown()
+function MaxDps:GlobalCooldown()
 	local haste = UnitSpellHaste('player');
 	local gcd = 1.5 / ((haste / 100) + 1);
 	if gcd < 1 then
@@ -139,14 +113,10 @@ function TD_GlobalCooldown()
 	return gcd;
 end
 
-
-----------------------------------------------
--- Stacked spell CD, charges and max charges
-----------------------------------------------
-function TD_SpellCharges(spell, timeShift)
+function MaxDps:SpellCharges(spell, timeShift)
 	local currentCharges, maxCharges, cooldownStart, cooldownDuration = GetSpellCharges(spell);
 	if currentCharges == nil then
-		local cd = TD_Cooldown(spell, timeShift);
+		local cd = MaxDps:Cooldown(spell, timeShift);
 		if cd <= 0 then
 			return 0, 1, 0;
 		else
@@ -160,18 +130,12 @@ function TD_SpellCharges(spell, timeShift)
 	return cd, currentCharges, maxCharges;
 end
 
-----------------------------------------------
--- Is Spell Available
-----------------------------------------------
-function TD_SpellAvailable(spell, timeShift)
-	local cd = TD_Cooldown(spell, timeShift);
+function MaxDps:SpellAvailable(spell, timeShift)
+	local cd = MaxDps:Cooldown(spell, timeShift);
 	return cd <= 0, cd;
 end
 
-----------------------------------------------
--- Extract tooltip number
-----------------------------------------------
-function TD_ExtractTooltip(spell, pattern)
+function MaxDps:ExtractTooltip(spell, pattern)
 	local _pattern = gsub(pattern, "%%s", "([%%d%.,]+)");
 
 	if not TDSpellTooltip then
@@ -196,10 +160,7 @@ function TD_ExtractTooltip(spell, pattern)
 	return 0;
 end
 
-----------------------------------------------
--- Spell Cooldown
-----------------------------------------------
-function TD_Cooldown(spell, timeShift)
+function MaxDps:Cooldown(spell, timeShift)
 	local start, duration, enabled = GetSpellCooldown(spell);
 	if enabled and duration == 0 and start == 0 then
 		return 0;
@@ -210,14 +171,9 @@ function TD_Cooldown(spell, timeShift)
 	end;
 end
 
-----------------------------------------------
--- Time to die - NOT YET WORKING
-----------------------------------------------
---TD_Hp0, TD_T0, TD_Hpm, TD_Tm
-function TD_TimeToDie(health)
+function MaxDps:TimeToDie(health)
 	local unit = UnitGUID('target');
 	if unit ~= TDDps_TargetGuid then
-		--print('phial');
 		return INF;
 	end
 
@@ -225,7 +181,6 @@ function TD_TimeToDie(health)
 
 	if health == UnitHealthMax('target') then
 		TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
-		--print('phial2');
 		return INF;
 	end
 
@@ -248,22 +203,16 @@ function TD_TimeToDie(health)
 	end
 end
 
-----------------------------------------------
--- Current or Future Mana Percent
-----------------------------------------------
-function TD_Mana(minus, timeShift)
+function MaxDps:Mana(minus, timeShift)
 	local _, casting = GetManaRegen();
 	local mana = UnitPower('player', 0) - minus + (casting * timeShift);
 	return mana / UnitPowerMax('player', 0), mana;
 end
 
-----------------------------------------------
--- Is bloodlust or similar effect
-----------------------------------------------
-function TD_Bloodlust(timeShift)
+function MaxDps:Bloodlust(timeShift)
 	-- @TODO: detect exhausted/seated debuff instead of 6 auras
 	for k, v in pairs (_Bloodlusts) do
-		if TD_Aura(v, timeShift or 0) then return true; end
+		if MaxDps:Aura(v, timeShift or 0) then return true; end
 	end
 
 	return false;

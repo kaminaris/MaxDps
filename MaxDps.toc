@@ -1,20 +1,22 @@
-## Title: TDDps
+## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 2.0
+## Version: 7.1.0
 ## Author: Kaminaris
 ## Interface: 70100
-## SavedVariables: TDDps_Options
+## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceTimer-3.0\AceTimer-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
-Libs\BigLibTimer\BigLibTimer.lua
 
-TDSettings.lua
-TDButtons.lua
-TDHelper.lua
-TDDps.lua
+core.lua
+buttons.lua
+helper.lua
