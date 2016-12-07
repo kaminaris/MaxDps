@@ -259,6 +259,7 @@ function MaxDps:PLAYER_REGEN_DISABLED()
 	if self.db.global.onCombatEnter and not self.rotationEnabled then
 		self:Print(self.Colors.Success .. 'Auto enable on combat!');
 		self:LoadModule();
+		self:CheckSpecialization();
 		self:EnableRotation();
 	end
 end
@@ -326,4 +327,10 @@ function MaxDps:LoadModule()
 
 	self:Print(self.Colors.Info .. 'Finished Loading class module');
 	self.ModuleLoaded = true;
+end
+
+function MaxDps:CheckSpecialization()
+	local mode = GetSpecialization();
+
+	self:EnableRotationModule(mode);
 end
