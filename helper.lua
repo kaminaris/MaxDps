@@ -21,6 +21,28 @@ function MaxDps:SpecName()
 	return currentSpecName;
 end
 
+function MaxDps:CheckTalents()
+	self.PlayerTalents = {};
+	self.PlayerSpec = GetActiveSpecGroup();
+	for talentRow = 1, 7 do
+		for talentCol = 1, 3 do
+			local _, name, _, sel, _, id = GetTalentInfo(talentRow, talentCol, self.PlayerSpec);
+			if sel then
+				self.PlayerTalents[id] = name;
+			end
+		end
+	end
+end
+
+function MaxDps:HasTalent(talent)
+	for id, name in pairs(self.PlayerTalents) do
+		if id == talent or name == talent then
+			return true;
+		end
+	end
+	return false;
+end
+
 function MaxDps:TalentEnabled(talent)
 	local found = false;
 	for i=1,7 do
@@ -45,7 +67,7 @@ end
 
 function MaxDps:Aura(name, timeShift)
 	timeShift = timeShift or 0.2;
-	local spellName = GetSpellInfo(name);
+	local spellName = GetSpellInfo(name) or name;
 	local _, _, _, count, _, _, expirationTime = UnitAura('player', spellName);
 	local time = GetTime();
 	if expirationTime ~= nil and (expirationTime - time) > timeShift then
@@ -56,7 +78,7 @@ end
 
 function MaxDps:UnitAura(name, timeShift, unit)
 	timeShift = timeShift or 0.2;
-	local spellName = GetSpellInfo(name);
+	local spellName = GetSpellInfo(name) or name;
 	local _, _, _, count, _, _, expirationTime = UnitAura(unit, spellName);
 	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
 		return true, count;

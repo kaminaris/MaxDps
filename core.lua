@@ -173,6 +173,14 @@ function MaxDps:OnInitialize()
 	self.optionsFrame = LibStub('AceConfigDialog-3.0'):AddToBlizOptions('MaxDps', 'MaxDps');
 end
 
+MaxDps.DefaultPrint = MaxDps.Print;
+function MaxDps:Print(...)
+	if self.db.global.disabledInfo then
+		return;
+	end
+	MaxDps:DefaultPrint(...);
+end
+
 function MaxDps:EnableRotation()
 	self:Print(self.Colors.Info .. 'Enabling');
 
@@ -232,6 +240,9 @@ function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED');
 	self:RegisterEvent('UPDATE_MACROS');
 	self:RegisterEvent('VEHICLE_UPDATE');
+
+	self:RegisterEvent('UNIT_ENTERED_VEHICLE');
+	self:RegisterEvent('UNIT_EXITED_VEHICLE');
 	--	self:RegisterEvent('PLAYER_REGEN_ENABLED');
 
 	self:Print(self.Colors.Info .. 'Initialized');
@@ -239,6 +250,18 @@ end
 
 function MaxDps:PLAYER_TALENT_UPDATE()
 	self:DisableRotation();
+end
+
+function MaxDps:UNIT_ENTERED_VEHICLE(event, unit)
+	if unit == 'player' and self.rotationEnabled then
+		self:DisableRotation();
+	end
+end
+
+function MaxDps:UNIT_EXITED_VEHICLE(event, unit)
+	if unit == 'player' and self.ModuleLoaded then
+		self:EnableRotation();
+	end
 end
 
 function MaxDps:PLAYER_ENTERING_WORLD()
