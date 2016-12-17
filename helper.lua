@@ -114,6 +114,12 @@ function MaxDps:EndCast(target)
 	return timeShift, spell, gcd;
 end
 
+function MaxDps:SameSpell(spell1, spell2)
+	local spellName1 = GetSpellInfo(spell1);
+	local spellName2 = GetSpellInfo(spell2);
+	return spellName1 == spellName2;
+end
+
 function MaxDps:TargetPercentHealth()
 	local health = UnitHealth('target');
 	if health <= 0 then
@@ -193,38 +199,6 @@ function MaxDps:Cooldown(spell, timeShift)
 	end;
 end
 
-function MaxDps:TimeToDie(health)
-	local unit = UnitGUID('target');
-	if unit ~= TDDps_TargetGuid then
-		return INF;
-	end
-
-	health = health or UnitHealth('target');
-
-	if health == UnitHealthMax('target') then
-		TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
-		return INF;
-	end
-
-	local time = GetTime();
-
-	if not TD_Hp0 then
-		TD_Hp0, TD_T0 = health, time;
-		TD_Hpm, TD_Tm = health, time;
-		--print('phial3');
-		return INF;
-	end
-
-	TD_Hpm = (TD_Hpm + health) * .5;
-	TD_Tm = (TD_Tm + time) * .5;
-
-	if TD_Hpm >= TD_Hp0 then
-		TD_Hp0, TD_T0, TD_Hpm, TD_Tm = nil, nil, nil, nil;
-	else
-		return health * (TD_T0 - TD_Tm) / (TD_Hpm - TD_Hp0);
-	end
-end
-
 function MaxDps:Mana(minus, timeShift)
 	local _, casting = GetManaRegen();
 	local mana = UnitPower('player', 0) - minus + (casting * timeShift);
@@ -238,4 +212,24 @@ function MaxDps:Bloodlust(timeShift)
 	end
 
 	return false;
+end
+
+function MaxDps:FormatTime(left)
+	local seconds = left >= 0        and math.floor((left % 60)    / 1   ) or 0;
+	local minutes = left >= 60       and math.floor((left % 3600)  / 60  ) or 0;
+	local hours   = left >= 3600     and math.floor((left % 86400) / 3600) or 0;
+	local days    = left >= 86400    and math.floor((left % 31536000) / 86400) or 0;
+	local years   = left >= 31536000 and math.floor( left / 31536000) or 0;
+
+	if years > 0 then
+		return string.format("%d [Y] %d [D] %d:%d:%d [H]", years, days, hours, minutes, seconds);
+	elseif days > 0 then
+		return string.format("%d [D] %d:%d:%d [H]", days, hours, minutes, seconds);
+	elseif hours > 0 then
+		return string.format("%d:%d:%d [H]", hours, minutes, seconds);
+	elseif minutes > 0 then
+		return string.format("%d:%d [M]", minutes, seconds);
+	else
+		return string.format("%d [S]", seconds);
+	end
 end

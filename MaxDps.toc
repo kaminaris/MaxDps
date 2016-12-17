@@ -1,6 +1,6 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 7.1.3
+## Version: 7.1.4
 ## Author: Kaminaris
 ## Interface: 70100
 ## SavedVariables: MaxDpsOptions
@@ -21,3 +21,4 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 core.lua
 buttons.lua
 helper.lua
+timetodie.lua
