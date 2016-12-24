@@ -65,10 +65,11 @@ function MaxDps:PersistentAura(name)
 	return false, 0;
 end
 
-function MaxDps:Aura(name, timeShift)
+function MaxDps:Aura(name, timeShift, filter)
+	filter = filter or nil;
 	timeShift = timeShift or 0.2;
 	local spellName = GetSpellInfo(name) or name;
-	local _, _, _, count, _, _, expirationTime = UnitAura('player', spellName);
+	local _, _, _, count, _, _, expirationTime = UnitAura('player', spellName, nil, filter);
 	local time = GetTime();
 	if expirationTime ~= nil and (expirationTime - time) > timeShift then
 		return true, count, (expirationTime - time);
