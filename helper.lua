@@ -142,6 +142,11 @@ function MaxDps:GlobalCooldown()
 	return gcd;
 end
 
+function MaxDps:AttackHaste()
+	local haste = UnitSpellHaste('player');
+	return 1/((haste / 100) + 1);
+end
+
 function MaxDps:SpellCharges(spell, timeShift)
 	local currentCharges, maxCharges, cooldownStart, cooldownDuration = GetSpellCharges(spell);
 	if currentCharges == nil then
@@ -155,6 +160,9 @@ function MaxDps:SpellCharges(spell, timeShift)
 	local cd = cooldownDuration - (GetTime() - cooldownStart) - (timeShift or 0);
 	if cd > cooldownDuration then
 		cd = 0;
+	end
+	if cd > 0 then
+		currentCharges = currentCharges + (1 - (cd / cooldownDuration));
 	end
 	return cd, currentCharges, maxCharges;
 end
@@ -213,6 +221,59 @@ function MaxDps:Bloodlust(timeShift)
 	end
 
 	return false;
+end
+
+MaxDps.Spellbook = {};
+function MaxDps:FindSpellInSpellbook(spell)
+	local spellName = GetSpellInfo(spell);
+	if MaxDps.Spellbook[spellName] then
+		return MaxDps.Spellbook[spellName];
+	end
+
+	local _, _, offset, numSpells = GetSpellTabInfo(2);
+
+	local booktype = 'spell';
+
+	for index = offset + 1, numSpells + offset do
+		local spellID = select(2, GetSpellBookItemInfo(index, booktype));
+		if spellID and spellName == GetSpellBookItemName(index, booktype) then
+			MaxDps.Spellbook[spellName] = index;
+			return index;
+		end
+	end
+
+	return nil;
+end
+
+function MaxDps:IsSpellInRange(spell, unit)
+	unit = unit or 'target';
+
+	local inRange = IsSpellInRange(spell, unit);
+
+	if inRange == nil then
+		local booktype = 'spell';
+		local myIndex = MaxDps:FindSpellInSpellbook(spell)
+		if myIndex then
+			return IsSpellInRange(myIndex, booktype, unit);
+		end
+		return inRange;
+	end
+	return inRange;
+end
+
+function MaxDps:TargetsInRange(spell)
+	local count = 0;
+	for i = 0, 1000, 1 do
+		local np = _G['NamePlate' .. i];
+		if np ~= nil and
+			np:IsVisible() and
+			MaxDps:IsSpellInRange(spell, np.UnitFrame.unit) == 1
+		then
+			count = count + 1;
+		end
+	end
+
+	return count;
 end
 
 function MaxDps:FormatTime(left)
