@@ -197,6 +197,16 @@ function MaxDps:ExtractTooltip(spell, pattern)
 	return 0;
 end
 
+function MaxDps:SetBonus(items)
+	local c = 0;
+	for _, item in ipairs(items) do
+		if IsEquippedItem(item) then
+			c = c + 1;
+		end
+	end
+	return c;
+end
+
 function MaxDps:Cooldown(spell, timeShift)
 	local start, duration, enabled = GetSpellCooldown(spell);
 	if enabled and duration == 0 and start == 0 then
