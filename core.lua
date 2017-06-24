@@ -171,6 +171,11 @@ function MaxDps:OnInitialize()
 	LibStub('AceConfig-3.0'):RegisterOptionsTable('MaxDps', options, {'/maxdps'});
 	self.db = LibStub('AceDB-3.0'):New('MaxDpsOptions', defaultOptions);
 	self.optionsFrame = LibStub('AceConfigDialog-3.0'):AddToBlizOptions('MaxDps', 'MaxDps');
+	self:RegisterChatCommand('maxdps', 'ShowCustomWindow');
+
+	if not self.db.global.customRotations then
+		self.db.global.customRotations = {};
+	end
 end
 
 MaxDps.DefaultPrint = MaxDps.Print;
@@ -191,6 +196,7 @@ function MaxDps:EnableRotation()
 	self:Print(self.Colors.Info .. 'Fetching');
 	self.Fetch();
 
+	MaxDps:CheckTalents();
 	if self.ModuleOnEnable then
 		self.ModuleOnEnable();
 	end
@@ -259,7 +265,8 @@ function MaxDps:UNIT_ENTERED_VEHICLE(event, unit)
 end
 
 function MaxDps:UNIT_EXITED_VEHICLE(event, unit)
-	if unit == 'player' and self.ModuleLoaded then
+	if unit == 'player' then
+		self:InitRotations();
 		self:EnableRotation();
 	end
 end
@@ -281,8 +288,7 @@ end
 function MaxDps:PLAYER_REGEN_DISABLED()
 	if self.db.global.onCombatEnter and not self.rotationEnabled then
 		self:Print(self.Colors.Success .. 'Auto enable on combat!');
-		self:LoadModule();
-		self:CheckSpecialization();
+		self:InitRotations();
 		self:EnableRotation();
 	end
 end
@@ -310,7 +316,8 @@ function MaxDps:InvokeNextSpell()
 	-- invoke spell check
 	local oldSkill = self.Spell;
 
-	self.Spell = self:NextSpell();
+	local timeShift, currentSpell, gcd = MaxDps:EndCast();
+	self.Spell = self:NextSpell(timeShift, currentSpell, gcd, self.PlayerTalents);
 
 	if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil then
 		self:GlowNextSpellId(self.Spell);
@@ -320,40 +327,48 @@ function MaxDps:InvokeNextSpell()
 	end
 end
 
-function MaxDps:LoadModule()
-	if self.ModuleLoaded then
-		return;
-	end
+function MaxDps:InitRotations()
+	self:Print(self.Colors.Info .. 'Initializing rotations');
 
-	self:Print(self.Colors.Info .. 'Loading class module');
 	local _, _, classId = UnitClass('player');
-	if self.Classes[classId] == nil then
-		self:Print(_tdError, 'Invalid player class, please contact author of addon.');
-		return;
+	local spec = GetSpecialization();
+	self.ClassId = classId;
+	self.Spec = spec;
+
+	self:LoadCustomRotations();
+	if self.CustomRotations[classId] and self.CustomRotations[classId][spec] then
+		self.CurrentRotation = self.CustomRotations[classId][spec];
+		self.NextSpell = self.CurrentRotation.fn;
+		self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. self.CurrentRotation.name);
+	else
+		self:LoadModule();
 	end
-
-	local module = 'MaxDps_' .. self.Classes[classId];
-
-	if not IsAddOnLoaded(module) then
-		LoadAddOn(module);
-	end
-
-	if not IsAddOnLoaded(module) then
-		self:Print(self.Colors.Error .. 'Could not find class module.');
-		return;
-	end
-
-	local mode = GetSpecialization();
-
-	self:EnableRotationModule(mode);
-	self:Print(self.Colors.Info .. self.Description);
-
-	self:Print(self.Colors.Info .. 'Finished Loading class module');
-	self.ModuleLoaded = true;
 end
 
-function MaxDps:CheckSpecialization()
-	local mode = GetSpecialization();
+function MaxDps:LoadModule()
+	if self.Classes[self.ClassId] == nil then
+		self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.');
+		return;
+	end
 
-	self:EnableRotationModule(mode);
+	local module = 'MaxDps_' .. self.Classes[self.ClassId];
+	local _, _, _, loadable, reason = GetAddOnInfo(module);
+
+	if IsAddOnLoaded(module) then
+		self:Print(self.Colors.Info .. self.Description);
+		self:EnableRotationModule(self.Spec);
+		self:Print(self.Colors.Info .. 'Finished Loading class module');
+		return;
+	end
+
+	if reason == 'MISSING' or reason == 'DISABLED' then
+		self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ' or it was disabled.');
+		return;
+	end
+
+	LoadAddOn(module);
+
+	self:EnableRotationModule(self.Spec);
+	self:Print(self.Colors.Info .. self.Description);
+	self:Print(self.Colors.Info .. 'Finished Loading class module');
 end
