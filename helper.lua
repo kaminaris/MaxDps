@@ -23,10 +23,9 @@ end
 
 function MaxDps:CheckTalents()
 	self.PlayerTalents = {};
-	self.PlayerSpec = GetActiveSpecGroup();
 	for talentRow = 1, 7 do
 		for talentCol = 1, 3 do
-			local _, name, _, sel, _, id = GetTalentInfo(talentRow, talentCol, self.PlayerSpec);
+			local _, name, _, sel, _, id = GetTalentInfo(talentRow, talentCol, 1);
 			if sel then
 				self.PlayerTalents[id] = name;
 			end
@@ -56,9 +55,10 @@ function MaxDps:TalentEnabled(talent)
 	return found;
 end
 
-function MaxDps:PersistentAura(name)
+function MaxDps:PersistentAura(name, unit)
+	unit = unit or 'player';
 	local spellName = GetSpellInfo(name);
-	local aura, _, _, count = UnitAura('player', spellName);
+	local aura, _, _, count = UnitAura(unit, spellName);
 	if aura then
 		return true, count;
 	end
@@ -176,13 +176,13 @@ function MaxDps:ExtractTooltip(spell, pattern)
 	local _pattern = gsub(pattern, "%%s", "([%%d%.,]+)");
 
 	if not TDSpellTooltip then
-		CreateFrame('GameTooltip', 'TDSpellTooltip', UIParent, 'GameTooltipTemplate');
+		CreateFrame('GameTooltip', 'MaxDpsSpellTooltip', UIParent, 'GameTooltipTemplate');
 		TDSpellTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	end
 	TDSpellTooltip:SetSpellByID(spell);
 
 	for i = 2, 4 do
-		local line = _G['TDSpellTooltipTextLeft' .. i];
+		local line = _G['MaxDpsSpellTooltipTextLeft' .. i];
 		local text = line:GetText();
 
 		if text then
@@ -273,12 +273,8 @@ end
 
 function MaxDps:TargetsInRange(spell)
 	local count = 0;
-	for i = 0, 1000, 1 do
-		local np = _G['NamePlate' .. i];
-		if np ~= nil and
-			np:IsVisible() and
-			MaxDps:IsSpellInRange(spell, np.UnitFrame.unit) == 1
-		then
+	for i, frame in pairs(C_NamePlate.GetNamePlates()) do
+		if frame:IsVisible() and MaxDps:IsSpellInRange(spell, frame.UnitFrame.unit) == 1 then
 			count = count + 1;
 		end
 	end
