@@ -175,11 +175,11 @@ end
 function MaxDps:ExtractTooltip(spell, pattern)
 	local _pattern = gsub(pattern, "%%s", "([%%d%.,]+)");
 
-	if not TDSpellTooltip then
+	if not MaxDpsSpellTooltip then
 		CreateFrame('GameTooltip', 'MaxDpsSpellTooltip', UIParent, 'GameTooltipTemplate');
-		TDSpellTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+		MaxDpsSpellTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	end
-	TDSpellTooltip:SetSpellByID(spell);
+	MaxDpsSpellTooltip:SetSpellByID(spell);
 
 	for i = 2, 4 do
 		local line = _G['MaxDpsSpellTooltipTextLeft' .. i];
