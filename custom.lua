@@ -326,7 +326,7 @@ function MaxDps:LoadCustomRotations()
 	end
 
 	for k, rotation in pairs(self.db.global.customRotations) do
-		if rotation.enabled then
+		if rotation.enabled and rotation.class ~= nil and rotation.spec ~= nil then
 			local fn = MaxDps.LoadFunction(rotation.fn);
 			if not self.CustomRotations[rotation.class] then
 				self.CustomRotations[rotation.class] = {}
