@@ -10,11 +10,12 @@ function MaxDps:CreateOverlay(parent, id, texture, r, g, b)
 		frame = CreateFrame('Frame', 'MaxDps_Overlay_' .. id, parent);
 	end
 
+	local sizeMult = self.db.global.sizeMult or 1.4;
 	frame:SetParent(parent);
 	frame:SetFrameStrata('HIGH');
 	frame:SetPoint('CENTER', 0, 0);
-	frame:SetWidth(parent:GetWidth() * 1.4);
-	frame:SetHeight(parent:GetHeight() * 1.4);
+	frame:SetWidth(parent:GetWidth() * sizeMult);
+	frame:SetHeight(parent:GetHeight() * sizeMult);
 
 	local t = frame.texture;
 	if not t then
@@ -106,6 +107,50 @@ function MaxDps:HideGlow(button, id)
 	end
 end
 
+function MaxDps:AddButton(actionName, button)
+	if actionName then
+		if self.Spells[actionName] == nil then
+			self.Spells[actionName] = {};
+		end
+		tinsert(self.Spells[actionName], button);
+	end
+end
+
+function MaxDps:AddStandardButton(button)
+	local type = button:GetAttribute('type');
+	if type then
+		local actionType = button:GetAttribute(type);
+		local id;
+		local actionName;
+
+		if type == 'action' then
+			local slot = ActionButton_GetPagedID(button) or ActionButton_CalculateAction(button)
+					or button:GetAttribute('action') or 0;
+
+			if HasAction(slot) then
+				type, actionType = GetActionInfo(slot);
+			else
+				return;
+			end
+		end
+
+		if type == 'macro' then
+			local name, rank, spellId = GetMacroSpell(actionType);
+			if spellId then
+				actionName = GetSpellInfo(spellId);
+			else
+				return;
+			end
+		elseif type == 'item' then
+			actionName = GetItemInfo(actionType);
+		elseif type == 'spell' then
+			actionName = GetSpellInfo(actionType);
+		end
+
+		self:AddButton(actionName, button)
+	end
+end
+
 function MaxDps:Fetch()
 	self = MaxDps;
 	if self.rotationEnabled then
@@ -117,23 +162,17 @@ function MaxDps:Fetch()
 	self.Spells = {};
 	self.Flags = {};
 	self.SpellsGlowing = {};
-	local isBartender = IsAddOnLoaded('Bartender4');
-	local isElv = IsAddOnLoaded('ElvUI');
-	local isSv = IsAddOnLoaded('SVUI_ActionBars');
 
-	if (isBartender) then
-		self:FetchBartender4();
-	elseif (isElv) then
-		self:FetchElvUI();
-	elseif (isSv) then
-		self:FetchSuperVillain();
-	else
-		self:FetchBlizzard();
-	end
+	self:FetchLibActionButton();
+	self:FetchBlizzard();
 
 	-- It does not alter original button frames so it needs to be fetched too
 	if IsAddOnLoaded('ButtonForge') then
 		self:FetchButtonForge();
+	end
+
+	if IsAddOnLoaded('G15Buttons') then
+		self:FetchG15Buttons();
 	end
 
 	if self.rotationEnabled then
@@ -142,30 +181,45 @@ function MaxDps:Fetch()
 	end
 end
 
-function MaxDps:FetchBlizzard()
-	local TDActionBarsBlizzard = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft'};
-	for _, barName in pairs(TDActionBarsBlizzard) do
-		for i = 1, 12 do
-			local button = _G[barName .. 'Button' .. i];
-			local slot = ActionButton_GetPagedID(button) or ActionButton_CalculateAction(button) or button:GetAttribute('action') or 0;
-			if HasAction(slot) then
-				local actionName, _;
-				local actionType, id = GetActionInfo(slot);
-				if actionType == 'macro' then _, _ , id = GetMacroSpell(id) end
-				if actionType == 'item' then
-					actionName = GetItemInfo(id);
-				elseif actionType == 'spell' or (actionType == 'macro' and id) then
-					actionName = GetSpellInfo(id);
-				end
-				if actionName then
-					if self.Spells[actionName] == nil then
-						self.Spells[actionName] = {};
-					end
+function MaxDps:FetchLibActionButton()
+	local LAB = {
+		original = LibStub:GetLibrary('LibActionButton-1.0', true),
+		elvui = LibStub:GetLibrary('LibActionButton-1.0-ElvUI', true),
+	}
 
-					tinsert(self.Spells[actionName], button);
+	for _, lib in pairs(LAB) do
+		if lib and lib.GetAllButtons then
+			for button in pairs(lib:GetAllButtons()) do
+				local spellId = button:GetSpellId();
+				if spellId then
+					local actionName, _ = GetSpellInfo(spellId);
+					self:AddButton(actionName, button);
 				end
 			end
 		end
+	end
+end
+
+function MaxDps:FetchBlizzard()
+	local BlizzardBars = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft'};
+	for _, barName in pairs(BlizzardBars) do
+		for i = 1, 12 do
+			local button = _G[barName .. 'Button' .. i];
+			self:AddStandardButton(button);
+		end
+	end
+end
+
+function MaxDps:FetchG15Buttons()
+	local i = 2; -- it starts from 2
+	while true do
+		local button = _G['objG15_btn_' .. i];
+		if not button then
+			break;
+		end
+		i = i + 1;
+
+		self:AddStandardButton(button);
 	end
 end
 
@@ -178,97 +232,8 @@ function MaxDps:FetchButtonForge()
 		end
 		i = i + 1;
 
-		local type = button:GetAttribute('type');
-		if type then
-			local actionType = button:GetAttribute(type);
-			local id;
-			local actionName;
-			if type == 'macro' then
-				local id = GetMacroSpell(actionType);
-				if id then
-					actionName = GetSpellInfo(id);
-				end
-			elseif type == 'item' then
-				actionName = GetItemInfo(actionType);
-			elseif type == 'spell' then
-				actionName = GetSpellInfo(actionType);
-			end
-			if actionName then
-				if self.Spells[actionName] == nil then
-					self.Spells[actionName] = {};
-				end
-
-				tinsert(self.Spells[actionName], button);
-			end
-		end
+		MaxDps:AddStandardButton(button)
 	end
-end
-
-function MaxDps:FetchElvUI()
-	local ret = false;
-	for x = 1, 10 do
-		for i = 1, 12 do
-			local button = _G['ElvUI_Bar' .. x .. 'Button' .. i];
-			if button then
-				local spellId = button:GetSpellId();
-				if spellId then
-					local actionName, _ = GetSpellInfo(spellId);
-					if actionName then
-						if self.Spells[actionName] == nil then
-							self.Spells[actionName] = {};
-						end
-						ret = true;
-						tinsert(self.Spells[actionName], button);
-					end
-				end
-			end
-		end
-	end
-	return ret;
-end
-
-function MaxDps:FetchSuperVillain()
-	local ret = false;
-	for x = 1, 10 do
-		for i = 1, 12 do
-			local button = _G['SVUI_ActionBar' .. x .. 'Button' .. i];
-			if button then
-				local spellId = button:GetSpellId();
-				if spellId then
-					local actionName, _ = GetSpellInfo(spellId);
-					if actionName then
-						if self.Spells[actionName] == nil then
-							self.Spells[actionName] = {};
-						end
-						ret = true;
-						tinsert(self.Spells[actionName], button);
-					end
-				end
-			end
-		end
-	end
-	return ret;
-end
-
-function MaxDps:FetchBartender4()
-	local ret = false;
-	for i = 1, 120 do
-		local button = _G['BT4Button' .. i];
-		if button then
-			local spellId = button:GetSpellId();
-			if spellId then
-				local actionName, _ = GetSpellInfo(spellId);
-				if actionName then
-					if self.Spells[actionName] == nil then
-						self.Spells[actionName] = {};
-					end
-					ret = true;
-					tinsert(self.Spells[actionName], button);
-				end
-			end
-		end
-	end
-	return ret;
 end
 
 function MaxDps:Dump()

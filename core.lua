@@ -150,6 +150,15 @@ local options = {
 			set = function(info,val) MaxDps.db.global.interval = val end,
 			get = function(info) return MaxDps.db.global.interval end
 		},
+		sizeMult = {
+			name = 'Overlay size multiplier',
+			desc = 'Sets how big will be overlay on the button. 1 = exactly the same as button',
+			type = 'range',
+			min = 0.5,
+			max = 2,
+			set = function(info,val) MaxDps.db.global.sizeMult = val end,
+			get = function(info) return MaxDps.db.global.sizeMult or 1.4 end
+		},
 	},
 }
 
