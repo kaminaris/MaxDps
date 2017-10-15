@@ -1,8 +1,8 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 7.2.6
+## Version: 7.3.0
 ## Author: Kaminaris
-## Interface: 70200
+## Interface: 70300
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars
 
