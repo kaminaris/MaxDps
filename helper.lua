@@ -90,12 +90,12 @@ end
 function MaxDps:TargetAura(name, timeShift)
 	timeShift = timeShift or 0;
 	local spellName = GetSpellInfo(name) or name;
-	local _, _, _, _, _, _, expirationTime = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL');
+	local _, _, _, count, _, _, expirationTime = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL');
 	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
 		local cd = expirationTime - GetTime() - (timeShift or 0);
-		return true, cd;
+		return true, cd, count;
 	end
-	return false, 0;
+	return false, 0, 0;
 end
 
 function MaxDps:EndCast(target)
