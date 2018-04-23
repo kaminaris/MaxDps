@@ -157,8 +157,8 @@ function MaxDps:AddStandardButton(button)
 		local actionName;
 
 		if type == 'action' then
-			local slot = ActionButton_GetPagedID(button) or ActionButton_CalculateAction(button)
-					or button:GetAttribute('action') or 0;
+			local slot = button:GetAttribute('action') or ActionButton_GetPagedID(button) or
+				ActionButton_CalculateAction(button) or 0;
 
 			if HasAction(slot) then
 				type, actionType = GetActionInfo(slot);
@@ -208,9 +208,68 @@ function MaxDps:Fetch()
 		self:FetchG15Buttons();
 	end
 
+	if IsAddOnLoaded('SyncUI') then
+		self:FetchSyncUI();
+	end
+
+	if IsAddOnLoaded('LUI') then
+		self:FetchLUI();
+	end
+
+	if IsAddOnLoaded('Dominos') then
+		self:FetchDominos();
+	end
+
 	if self.rotationEnabled then
 		self:EnableRotationTimer();
 		self:InvokeNextSpell();
+	end
+end
+
+function MaxDps:FetchDominos()
+	-- Dominos is using half of the blizzard frames so we just fetch the missing one
+
+	for i = 1, 60 do
+		local button = _G['DominosActionButton' .. i];
+		if button then
+			self:AddStandardButton(button);
+		end
+	end
+end
+
+function MaxDps:FetchLUI()
+	local luiBars = {
+		'LUIBarBottom1', 'LUIBarBottom2', 'LUIBarBottom3', 'LUIBarBottom4', 'LUIBarBottom5', 'LUIBarBottom6',
+		'LUIBarRight1', 'LUIBarRight2', 'LUIBarLeft1', 'LUIBarLeft2'
+	};
+
+	for _, bar in pairs(luiBars) do
+		for i = 1, 12 do
+			local button = _G[bar .. 'Button' .. i];
+			if button then
+				self:AddStandardButton(button);
+			end
+		end
+	end
+end
+
+function MaxDps:FetchSyncUI()
+	local syncbars = {};
+
+	syncbars[1] = SyncUI_ActionBar;
+	syncbars[2] = SyncUI_MultiBar;
+	syncbars[3] = SyncUI_SideBar.Bar1;
+	syncbars[4] = SyncUI_SideBar.Bar2;
+	syncbars[5] = SyncUI_SideBar.Bar3;
+	syncbars[6] = SyncUI_PetBar;
+
+	for _, bar in pairs(syncbars) do
+		for i = 1, 12 do
+			local button = bar['Button' .. i];
+			if button then
+				self:AddStandardButton(button);
+			end
+		end
 	end
 end
 
