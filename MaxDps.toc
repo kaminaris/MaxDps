@@ -5,6 +5,8 @@
 ## Interface: 80000
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos
+## X-Curse-Project-ID: 91970
+## X-WoWI-ID: 24637
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
