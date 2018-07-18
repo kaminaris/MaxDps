@@ -1,10 +1,10 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 7.3.5
+## Version: 8.0
 ## Author: Kaminaris
-## Interface: 70300
+## Interface: 80000
 ## SavedVariables: MaxDpsOptions
-## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars
+## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
@@ -20,7 +20,9 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\ForAllIndentsAndPurposes.lua
 
 core.lua
+options.lua
 buttons.lua
 helper.lua
 timetodie.lua
 custom.lua
+Modules/profiler.lua

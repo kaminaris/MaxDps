@@ -53,7 +53,6 @@ function MaxDps:CreateOverlay(parent, id, texture, type, color)
 end
 
 function MaxDps:DestroyAllOverlays()
-	local frame;
 	for key, frame in pairs(self.Frames) do
 		frame:GetParent().MaxDpsOverlays = nil;
 		frame:ClearAllPoints();
@@ -62,6 +61,7 @@ function MaxDps:DestroyAllOverlays()
 		frame.width = nil;
 		frame.height = nil;
 	end
+
 	for key, frame in pairs(self.Frames) do
 		tinsert(self.FramePool, frame);
 		self.Frames[key] = nil;
@@ -140,12 +140,12 @@ function MaxDps:HideGlow(button, id)
 	end
 end
 
-function MaxDps:AddButton(actionName, button)
-	if actionName then
-		if self.Spells[actionName] == nil then
-			self.Spells[actionName] = {};
+function MaxDps:AddButton(spellId, button)
+	if spellId then
+		if self.Spells[spellId] == nil then
+			self.Spells[spellId] = {};
 		end
-		tinsert(self.Spells[actionName], button);
+		tinsert(self.Spells[spellId], button);
 	end
 end
 
@@ -154,7 +154,7 @@ function MaxDps:AddStandardButton(button)
 	if type then
 		local actionType = button:GetAttribute(type);
 		local id;
-		local actionName;
+		local spellId;
 
 		if type == 'action' then
 			local slot = button:GetAttribute('action') or ActionButton_GetPagedID(button) or
@@ -168,19 +168,17 @@ function MaxDps:AddStandardButton(button)
 		end
 
 		if type == 'macro' then
-			local name, rank, spellId = GetMacroSpell(actionType);
-			if spellId then
-				actionName = GetSpellInfo(spellId);
-			else
+			spellId = GetMacroSpell(actionType);
+			if not spellId then
 				return;
 			end
 		elseif type == 'item' then
 			actionName = GetItemInfo(actionType);
 		elseif type == 'spell' then
-			actionName = GetSpellInfo(actionType);
+			spellId = select(7, GetSpellInfo(actionType));
 		end
 
-		self:AddButton(actionName, button)
+		self:AddButton(spellId, button);
 	end
 end
 
@@ -283,10 +281,7 @@ function MaxDps:FetchLibActionButton()
 		if lib and lib.GetAllButtons then
 			for button in pairs(lib:GetAllButtons()) do
 				local spellId = button:GetSpellId();
-				if spellId then
-					local actionName, _ = GetSpellInfo(spellId);
-					self:AddButton(actionName, button);
-				end
+				self:AddButton(spellId, button);
 			end
 		end
 	end
@@ -329,83 +324,70 @@ function MaxDps:FetchButtonForge()
 end
 
 function MaxDps:Dump()
-	local s = '';
 	for k, v in pairs(self.Spells) do
 		print(k);
 	end
 end
 
-function MaxDps:FindSpell(spellName)
-	local name = GetSpellInfo(spellName) or spellName;
-	return self.Spells[name];
+function MaxDps:FindSpell(spellId)
+	return self.Spells[spellId];
 end
 
-function MaxDps:GlowIndependent(spellName, id, texture, color)
-	local name = GetSpellInfo(spellName) or spellName;
-	if self.Spells[name] ~= nil then
-		for k, button in pairs(self.Spells[name]) do
+function MaxDps:GlowIndependent(spellId, id, texture, color)
+	if self.Spells[spellId] ~= nil then
+		for k, button in pairs(self.Spells[spellId]) do
 			self:Glow(button, id, texture, 'cooldown', color);
 		end
 	end
 end
 
-function MaxDps:ClearGlowIndependent(spellName, id)
-	local name = GetSpellInfo(spellName) or spellName;
-	if self.Spells[name] ~= nil then
-		for k, button in pairs(self.Spells[name]) do
+function MaxDps:ClearGlowIndependent(spellId, id)
+	if self.Spells[spellId] ~= nil then
+		for k, button in pairs(self.Spells[spellId]) do
 			self:HideGlow(button, id);
 		end
 	end
 end
 
-function MaxDps:GlowCooldown(spell, condition)
-	if self.Flags[spell] == nil then
-		self.Flags[spell] = false;
+function MaxDps:GlowCooldown(spellId, condition)
+	if self.Flags[spellId] == nil then
+		self.Flags[spellId] = false;
 	end
-	if condition and not self.Flags[spell] then
-		self.Flags[spell] = true;
-		self:GlowIndependent(spell, spell);
+	if condition and not self.Flags[spellId] then
+		self.Flags[spellId] = true;
+		self:GlowIndependent(spellId, spellId);
 	end
-	if not condition and self.Flags[spell] then
-		self.Flags[spell] = false;
-		self:ClearGlowIndependent(spell, spell);
+	if not condition and self.Flags[spellId] then
+		self.Flags[spellId] = false;
+		self:ClearGlowIndependent(spellId, spellId);
 	end
 end
 
-function MaxDps:GlowSpell(spellName)
-	if self.Spells[spellName] ~= nil then
-		for k, button in pairs(self.Spells[spellName]) do
+function MaxDps:GlowSpell(spellId)
+	if self.Spells[spellId] ~= nil then
+		for k, button in pairs(self.Spells[spellId]) do
 			self:Glow(button, 'next', nil, 'normal');
 		end
-		self.SpellsGlowing[spellName] = 1;
+
+		self.SpellsGlowing[spellId] = 1;
 	else
-		self:Print(self.Colors.Error .. 'Spell not found on action bars: ' .. spellName);
+		local spellName = GetSpellInfo(spellId);
+		self:Print(self.Colors.Error .. 'Spell not found on action bars: ' .. spellName .. '(' .. spellId .. ')');
 	end
 end
 
-function MaxDps:GlowSpellId(spellId)
-	local name = GetSpellInfo(spellId);
-	self:GlowSpell(name);
-end
-
-function MaxDps:GlowNextSpell(spellName)
+function MaxDps:GlowNextSpell(spellId)
 	self:GlowClear();
-	self:GlowSpell(spellName);
-end
-
-function MaxDps:GlowNextSpellId(spellId)
-	local spellName = GetSpellInfo(spellId);
-	self:GlowClear();
-	self:GlowSpell(spellName);
+	self:GlowSpell(spellId);
 end
 
 function MaxDps:GlowClear()
-	for spellName, v in pairs(self.SpellsGlowing) do
+	for spellId, v in pairs(self.SpellsGlowing) do
 		if v == 1 then
-			for k, button in pairs(self.Spells[spellName]) do
+			for k, button in pairs(self.Spells[spellId]) do
 				self:HideGlow(button, 'next');
 			end
-			self.SpellsGlowing[spellName] = 0;
+			self.SpellsGlowing[spellId] = 0;
 		end
 	end
 end

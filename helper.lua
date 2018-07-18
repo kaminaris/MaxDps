@@ -1,3 +1,4 @@
+--- @type MaxDps MaxDps
 
 -- Global cooldown spell id
 _GlobalCooldown		= 61304;
@@ -15,6 +16,62 @@ local INF = 2147483647;
 
 local _Bloodlusts = {_Bloodlust, _TimeWrap, _Heroism, _AncientHysteria, _Netherwinds, _DrumsOfFury};
 
+-----------------------------------------------------------------
+--- Internal replacement for UnitAura that no longer has ability
+--- to filter by spell name
+-----------------------------------------------------------------
+
+function MaxDps:IntUnitAura(unit, nameOrId, filter)
+	for i = 1, 40 do
+		local sname, icon, count, debuffType, duration, expirationTime, _, _, _, sId = UnitAura(unit, i, filter);
+
+		if sname == nameOrId or sId == nameOrId then
+			return {
+				name = sname,
+				count = count,
+				expirationTime = expirationTime
+			};
+		end
+
+		if not sname then
+			return nil;
+		end
+	end
+
+	return nil;
+end
+
+function MaxDps:CollectAura(unit)
+	local auras = {};
+	local filter = unit == 'target' and 'PLAYER|HARMFUL' or nil;
+
+	for i = 1, 40 do
+		local name, _, count, _, _, expirationTime, _, _, _, id = UnitAura(unit, i, filter);
+
+		if not name then
+			break;
+		end
+
+		auras[id] = {
+			name = name,
+			count = count,
+			expirationTime = expirationTime
+		};
+	end
+
+	return auras;
+end
+
+function MaxDps:CollectAuras()
+	self.PlayerAuras = self:CollectAura('player');
+	self.TargetAuras = self:CollectAura('target');
+	return self.PlayerAuras, self.TargetAuras;
+end
+
+-----------------------------------------------------------------
+--- Talents and specializations functions
+-----------------------------------------------------------------
+
 function MaxDps:SpecName()
 	local currentSpec = GetSpecialization();
 	local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or 'None';
@@ -23,6 +80,7 @@ end
 
 function MaxDps:CheckTalents()
 	self.PlayerTalents = {};
+
 	for talentRow = 1, 7 do
 		for talentCol = 1, 3 do
 			local _, name, _, sel, _, id = GetTalentInfo(talentRow, talentCol, 1);
@@ -34,111 +92,107 @@ function MaxDps:CheckTalents()
 end
 
 function MaxDps:HasTalent(talent)
-	for id, name in pairs(self.PlayerTalents) do
-		if id == talent or name == talent then
-			return true;
-		end
-	end
-	return false;
+	return self.PlayerTalents[talent];
 end
 
 function MaxDps:TalentEnabled(talent)
-	local found = false;
-	for i=1,7 do
-		for j=1,3 do
-			local id, n, x, sel = GetTalentInfo(i,j,GetActiveSpecGroup());
-			if (id == talent or n == talent) and sel then
-				found = true;
-			end
-		end
-	end
-	return found;
+	self:Print(self.Colors.Error .. 'MaxDps:TalentEnabled is deprecated, please use table `talents` to check talents');
 end
 
-function MaxDps:PersistentAura(name, unit)
-	unit = unit or 'player';
-	local spellName = GetSpellInfo(name);
-	local aura, _, _, count = UnitAura(unit, spellName);
-	if aura then
-		return true, count;
-	end
-	return false, 0;
-end
+-----------------------------------------------------------------
+--- Aura helper functions
+-----------------------------------------------------------------
 
-function MaxDps:Aura(name, timeShift, filter)
-	filter = filter or nil;
-	timeShift = timeShift or 0.2;
-	local spellName = GetSpellInfo(name) or name;
-	local _, _, _, count, _, _, expirationTime = UnitAura('player', spellName, nil, filter);
-	local time = GetTime();
-	if expirationTime ~= nil and (expirationTime - time) > timeShift then
-		return true, count, (expirationTime - time);
-	end
-	return false, 0, 0;
-end
-
-function MaxDps:UnitAura(name, timeShift, unit)
-	timeShift = timeShift or 0.2;
-	local spellName = GetSpellInfo(name) or name;
-	local _, _, _, count, _, _, expirationTime = UnitAura(unit, spellName);
-	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
-		return true, count;
-	end
-	return false, 0;
-end
-
-function MaxDps:TargetAura(name, timeShift)
+-- Aura on specific unit
+function MaxDps:UnitAura(auraId, timeShift, unit, filter)
 	timeShift = timeShift or 0;
-	local spellName = GetSpellInfo(name) or name;
-	local _, _, _, count, _, _, expirationTime = UnitAura('target', spellName, nil, 'PLAYER|HARMFUL');
-	if expirationTime ~= nil and (expirationTime - GetTime()) > timeShift then
-		local cd = expirationTime - GetTime() - (timeShift or 0);
-		return true, cd, count;
+	local aura;
+
+	if unit == 'target' then
+		aura = self.TargetAuras[auraId];
+	elseif unit == 'player' then
+		aura = self.PlayerAuras[auraId];
+	else
+		aura = self:IntUnitAura(unit, auraId, filter);
 	end
+
+	local t = GetTime();
+
+	if not aura then
+		return false, 0, 0;
+	end
+
+	if aura.expirationTime == nil then
+		return true, aura.count, 0;
+	elseif (aura.expirationTime - t) > timeShift then
+		local cd = aura.expirationTime - t - timeShift;
+
+		return true, aura.count, cd;
+	end
+
 	return false, 0, 0;
 end
+
+-- Aura on player
+function MaxDps:Aura(name, timeShift)
+	return self:UnitAura(name, timeShift, 'player');
+end
+
+
+-- Aura on target
+function MaxDps:TargetAura(name, timeShift)
+	return self:UnitAura(name, timeShift, 'target');
+end
+
+-----------------------------------------------------------------
+--- Casting info helpers
+-----------------------------------------------------------------
 
 function MaxDps:EndCast(target)
+	target = target or 'player';
 	local t = GetTime();
 	local c = t * 1000;
-	local spell, _, _, _, _, endTime = UnitCastingInfo(target or 'player');
-	local gstart, gduration = GetSpellCooldown(_GlobalCooldown);
-	local gcd = gduration - (t - gstart);
-	if gcd < 0 then gcd = 0; end;
-	if endTime == nil then
-		return gcd, '', gcd;
+	local gcd = 0;
+	local _, _, _, _, endTime, _, _, _, spellId = UnitCastingInfo(target or 'player');
+
+	-- we can only check player global cooldown
+	if target == 'player' then
+		local gstart, gduration = GetSpellCooldown(_GlobalCooldown);
+		gcd = gduration - (t - gstart);
+
+		if gcd < 0 then
+			gcd = 0;
+		end;
 	end
+
+
+	if not endTime then
+		return gcd, nil, gcd;
+	end
+
 	local timeShift = (endTime - c) / 1000;
 	if gcd > timeShift then
 		timeShift = gcd;
 	end
-	return timeShift, spell, gcd;
+
+	return timeShift, spellId, gcd;
 end
 
 function MaxDps:SameSpell(spell1, spell2)
+	self:Print('MaxDps:SameSpell is deprecated, please compare spellId directly');
 	local spellName1 = GetSpellInfo(spell1);
 	local spellName2 = GetSpellInfo(spell2);
 	return spellName1 == spellName2;
 end
 
-function MaxDps:TargetPercentHealth()
-	local health = UnitHealth('target');
-	if health <= 0 then
-		return 0;
-	end;
-	local healthMax = UnitHealthMax('target');
-	if healthMax <= 0 then
-		return 0;
-	end;
-	return health/healthMax;
-end
-
 function MaxDps:GlobalCooldown()
 	local haste = UnitSpellHaste('player');
 	local gcd = 1.5 / ((haste / 100) + 1);
+
 	if gcd < 1 then
 		gcd = 1;
 	end
+
 	return gcd;
 end
 
@@ -147,8 +201,24 @@ function MaxDps:AttackHaste()
 	return 1/((haste / 100) + 1);
 end
 
+-----------------------------------------------------------------
+--- Spell helpers
+-----------------------------------------------------------------
+
+function MaxDps:Cooldown(spell, timeShift)
+	local start, duration, enabled = GetSpellCooldown(spell);
+	if enabled and duration == 0 and start == 0 then
+		return 0;
+	elseif enabled then
+		return (duration - (GetTime() - start) - (timeShift or 0));
+	else
+		return 100000;
+	end;
+end
+
 function MaxDps:SpellCharges(spell, timeShift)
 	local currentCharges, maxCharges, cooldownStart, cooldownDuration = GetSpellCharges(spell);
+
 	if currentCharges == nil then
 		local cd = MaxDps:Cooldown(spell, timeShift);
 		if cd <= 0 then
@@ -157,13 +227,16 @@ function MaxDps:SpellCharges(spell, timeShift)
 			return cd, 0, 1;
 		end
 	end
+
 	local cd = cooldownDuration - (GetTime() - cooldownStart) - (timeShift or 0);
 	if cd > cooldownDuration then
 		cd = 0;
 	end
+
 	if cd > 0 then
 		currentCharges = currentCharges + (1 - (cd / cooldownDuration));
 	end
+
 	return cd, currentCharges, maxCharges;
 end
 
@@ -171,6 +244,41 @@ function MaxDps:SpellAvailable(spell, timeShift)
 	local cd = MaxDps:Cooldown(spell, timeShift);
 	return cd <= 0, cd;
 end
+
+-----------------------------------------------------------------
+--- Utility functions
+-----------------------------------------------------------------
+
+function MaxDps:TargetPercentHealth()
+	local health = UnitHealth('target');
+	if health <= 0 then
+		return 0;
+	end;
+
+	local healthMax = UnitHealthMax('target');
+	if healthMax <= 0 then
+		return 0;
+	end;
+
+	return health/healthMax;
+end
+
+function MaxDps:SetBonus(items)
+	local c = 0;
+	for _, item in ipairs(items) do
+		if IsEquippedItem(item) then
+			c = c + 1;
+		end
+	end
+	return c;
+end
+
+function MaxDps:Mana(minus, timeShift)
+	local _, casting = GetManaRegen();
+	local mana = UnitPower('player', 0) - minus + (casting * timeShift);
+	return mana / UnitPowerMax('player', 0), mana;
+end
+
 
 function MaxDps:ExtractTooltip(spell, pattern)
 	local _pattern = gsub(pattern, "%%s", "([%%d%.,]+)");
@@ -195,33 +303,6 @@ function MaxDps:ExtractTooltip(spell, pattern)
 	end
 
 	return 0;
-end
-
-function MaxDps:SetBonus(items)
-	local c = 0;
-	for _, item in ipairs(items) do
-		if IsEquippedItem(item) then
-			c = c + 1;
-		end
-	end
-	return c;
-end
-
-function MaxDps:Cooldown(spell, timeShift)
-	local start, duration, enabled = GetSpellCooldown(spell);
-	if enabled and duration == 0 and start == 0 then
-		return 0;
-	elseif enabled then
-		return (duration - (GetTime() - start) - (timeShift or 0));
-	else
-		return 100000;
-	end;
-end
-
-function MaxDps:Mana(minus, timeShift)
-	local _, casting = GetManaRegen();
-	local mana = UnitPower('player', 0) - minus + (casting * timeShift);
-	return mana / UnitPowerMax('player', 0), mana;
 end
 
 function MaxDps:Bloodlust(timeShift)
@@ -268,6 +349,7 @@ function MaxDps:IsSpellInRange(spell, unit)
 		end
 		return inRange;
 	end
+
 	return inRange;
 end
 
