@@ -1,6 +1,5 @@
 
 local Profiler = MaxDps:NewModule('Profiler', 'AceEvent-3.0');
-local AceGUI = LibStub('AceGUI-3.0');
 
 
 function Profiler:Enable()

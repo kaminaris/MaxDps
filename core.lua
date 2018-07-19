@@ -1,49 +1,22 @@
-local AceGUI = LibStub('AceGUI-3.0');
-local lsm = LibStub('AceGUISharedMediaWidgets-1.0');
-local media = LibStub('LibSharedMedia-3.0');
 
 --- @class MaxDps
 MaxDps = LibStub('AceAddon-3.0'):NewAddon('MaxDps', 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0');
 
-MaxDps.Textures = {
-	['Ping'] = 'Interface\\Cooldown\\ping4',
-	['Star'] = 'Interface\\Cooldown\\star4',
-	['Starburst'] = 'Interface\\Cooldown\\starburst',
-};
-MaxDps.FinalTexture = nil;
-
-MaxDps.Colors = {
-	Info = '|cFF1394CC',
-	Error = '|cFFF0563D',
-	Success = '|cFFBCCF02',
-}
-
-MaxDps.Classes = {
-	[1] = 'Warrior',
-	[2] = 'Paladin',
-	[3] = 'Hunter',
-	[4] = 'Rogue',
-	[5] = 'Priest',
-	[6] = 'DeathKnight',
-	[7] = 'Shaman',
-	[8] = 'Mage',
-	[9] = 'Warlock',
-	[10] = 'Monk',
-	[11] = 'Druid',
-	[12] = 'DemonHunter',
-}
-
 function MaxDps:OnInitialize()
-	LibStub('AceConfig-3.0'):RegisterOptionsTable('MaxDps', MaxDps.options, { '/maxdpsopts' });
-
 	self.db = LibStub('AceDB-3.0'):New('MaxDpsOptions', self.defaultOptions);
-	self.optionsFrame = LibStub('AceConfigDialog-3.0'):AddToBlizOptions('MaxDps', 'MaxDps');
 
 	self:RegisterChatCommand('maxdps', 'ShowCustomWindow');
 
 	if not self.db.global.customRotations then
 		self.db.global.customRotations = {};
 	end
+
+	self:AddToBlizzardOptions();
+end
+
+function MaxDps:ShowCustomWindow()
+	local custom = self:EnableModule('Custom');
+	custom:ShowCustomWindow();
 end
 
 function MaxDps:GetTexture()
@@ -52,7 +25,7 @@ function MaxDps:GetTexture()
 		return self.FinalTexture;
 	end
 
-	self.FinalTexture = self.Textures[self.db.global.texture];
+	self.FinalTexture = self.db.global.texture;
 	if self.FinalTexture == '' or self.FinalTexture == nil then
 		self.FinalTexture = 'Interface\\Cooldown\\ping4';
 	end
@@ -207,6 +180,7 @@ function MaxDps:InvokeNextSpell()
 			WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', self.Spell);
 		end
 	end
+
 	if self.Spell == nil and oldSkill ~= nil then
 		self:GlowClear();
 		if WeakAuras then
@@ -236,6 +210,7 @@ function MaxDps:InitRotations()
 end
 
 function MaxDps:LoadModule()
+	print('shits not working');
 	if self.Classes[self.ClassId] == nil then
 		self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.');
 		return;

@@ -10,21 +10,19 @@
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-Libs\LibSharedMedia-3.0\lib.xml
 Libs\AceAddon-3.0\AceAddon-3.0.xml
 Libs\AceTimer-3.0\AceTimer-3.0.xml
 Libs\AceEvent-3.0\AceEvent-3.0.xml
-Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceDB-3.0\AceDB-3.0.xml
-Libs\AceGUI-3.0\AceGUI-3.0.xml
-Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
-Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\LibSharedMedia-3.0\lib.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\ForAllIndentsAndPurposes.lua
+Libs\StdUi\StdUi.xml
 
 core.lua
 options.lua
 buttons.lua
 helper.lua
 timetodie.lua
-custom.lua
+Modules/custom.lua
 Modules/profiler.lua
