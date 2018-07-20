@@ -5,6 +5,8 @@ local StdUi = LibStub('StdUi');
 local Custom = MaxDps:NewModule('Custom');
 
 function Custom:Enable()
+	LoadAddOn('Blizzard_DebugTools') ----- RRRRRRRRRRRREEEEEEEEEEMOOOOOOOVEEEEEEEEE
+
 	self.CustomRotations = {};
 	self.Specs = {};
 	-- private for dropdowns
@@ -21,10 +23,10 @@ function Custom:Enable()
 			local specId, specName = GetSpecializationInfoForClassID(classId, sI);
 
 			if not self.Specs[classId] then self.Specs[classId] = {}; end;
-			self.Specs[classId][specId] = specName;
+			self.Specs[classId][sI] = specName;
 
 			if not self.specList[classId] then self.specList[classId] = {}; end
-			tinsert(self.specList[classId], {text = specName, value = specId});
+			tinsert(self.specList[classId], {text = specName, value = sI});
 		end
 	end
 
@@ -61,7 +63,7 @@ print('sss');
 		Custom:AddCustomRotation();
 	end);
 
-	local rotations = StdUi:FauxScrollFrame(self.CustomWindow, 200, 500, 20, 20);
+	local rotations = StdUi:FauxScrollFrame(self.CustomWindow, 200, 500, 20, 24);
 
 	--		Rotation Name
 	local rotationName = StdUi:EditBox(self.CustomWindow, 140, 24);
@@ -76,13 +78,13 @@ print('sss');
 	local rotationClass = StdUi:Dropdown(self.CustomWindow, 140, 24, self.classList);
 	StdUi:AddLabel(self.CustomWindow, rotationClass, 'Class', 'TOP');
 	rotationClass.OnValueChanged = function(self, value)
-		if not Custom.CurrentEditRotation then return end;
+		if not Custom.CurrentEditRotation or Custom.EditingRotation then return end;
 
 		Custom.CurrentEditRotation.class = value;
 
-		local specs = Custom.Specs[value];
+		local specs = Custom.specList[value];
 		if specs then
-			Custom.CustomWindow.rotationSpec:SetValue(nil);
+			--Custom.CustomWindow.rotationSpec:SetValue(Custom.CurrentEditRotation.spec);
 			Custom.CustomWindow.rotationSpec:SetOptions(Custom.specList[value]);
 		end
 	end;
@@ -91,7 +93,9 @@ print('sss');
 	local rotationSpec = StdUi:Dropdown(self.CustomWindow, 140, 24, self.classList);
 	StdUi:AddLabel(self.CustomWindow, rotationSpec, 'Specialization', 'TOP');
 	rotationSpec.OnValueChanged = function(self, value)
-		if not Custom.CurrentEditRotation then return end;
+		if not Custom.CurrentEditRotation or Custom.EditingRotation then return end;
+		print(Custom.CurrentEditRotation.spec);
+		print(value);
 		Custom.CurrentEditRotation.spec = value;
 	end;
 
@@ -110,7 +114,7 @@ print('sss');
 	end);
 
 	--		Editor
-	local editor = StdUi:MultiLineBox(self.CustomWindow, 100, 200);
+	local editor = StdUi:MultiLineBox(self.CustomWindow, 400, 200, 'adasda');
 	local fontPath = SharedMedia:Fetch('font', 'Fira Mono Medium');
 	if fontPath then
 		editor:SetFont(fontPath, 12);
@@ -131,7 +135,7 @@ print('sss');
 	StdUi:GlueRight(rotationSpec, rotationClass, 10, 0);
 	StdUi:GlueBelow(rotationEnabled, rotationName, 0, -10, 'LEFT');
 	StdUi:GlueRight(rotationDelete, rotationEnabled, 100, 0);
-	StdUi:GlueAcross(editor, self.CustomWindow, 220, -200, -10, 20);
+	StdUi:GlueAcross(editor.panel, self.CustomWindow, 220, -200, -10, 20);
 
 	self.CustomWindow.rotations = rotations;
 	self.CustomWindow.rotationName = rotationName;
@@ -150,20 +154,30 @@ print('sss');
 end
 
 function Custom:UpdateCustomRotationButtons()
-	if not self.rotationFrames then
-		self.rotationFrames = {};
-	end
+	local scrollChild = self.CustomWindow.rotations.scrollChild;
 
 	local updateBtn = function(parent, btn, rotation)
+		btn.rotation = rotation;
+		StdUi:SetObjSize(btn, 60, 24);
+		btn:SetPoint('LEFT', 1, 0);
+		btn:SetPoint('RIGHT', -2, 0);
 		btn:SetText(rotation.name);
-		btn:SetScript('OnClick', function(self)
-			self:SetTextColor(0, 1, 0);
-			Custom:EditRotation(rotation);
-		end);
+
+		if not btn.hooked then
+			btn:SetScript('OnClick', function(self)
+				--self:SetTextColor(0, 1, 0);
+				Custom:EditRotation(self.rotation);
+			end);
+			btn.hooked = true;
+		end
 	end
 
-	StdUi:ObjectList(self.CustomWindow.rotations.scrollChild, self.rotationFrames, 'Button', updateBtn,
-		MaxDps.db.global.customRotations);
+	if not scrollChild.items then
+		scrollChild.items = {};
+	end
+
+	StdUi:ObjectList(scrollChild, scrollChild.items, 'Button', updateBtn, MaxDps.db.global.customRotations);
+	self.CustomWindow.rotations:UpdateItemsCount(#MaxDps.db.global.customRotations);
 end
 
 function Custom:AddCustomRotation()
@@ -193,13 +207,14 @@ function Custom:RemoveCustomRotation()
 end
 
 function Custom:EditRotation(rotation)
+	Custom.EditingRotation = true;
 	self.CurrentEditRotation = rotation;
 
 	self.CustomWindow.rotationName:SetText(rotation.name);
 	self.CustomWindow.rotationEnabled:SetChecked(rotation.enabled);
-	self.CustomWindow.rotationClass:SetChecked(rotation.class);
+	self.CustomWindow.rotationClass:SetValue(rotation.class);
 
-	local specs = Custom.Specs[rotation.class];
+	local specs = Custom.specList[rotation.class];
 
 	if specs then
 		self.CustomWindow.rotationSpec:SetOptions(specs);
@@ -210,6 +225,7 @@ function Custom:EditRotation(rotation)
 	self.CustomWindow.rotationSpec:SetValue(rotation.spec);
 	self.CustomWindow.editor:SetText(IndentationLib.encode(rotation.fn));
 	self:EnableDisableCustomFields(false);
+	Custom.EditingRotation = false;
 end
 
 function Custom:EnableDisableCustomFields(flag, clear)
