@@ -10,4 +10,4 @@ script: curl -s [url]https://raw.githubusercontent.com/BigWigsMods/packager/mast
 
 branches:
     only:
-        - /^\d+\.\d+(\.\d+)?(-\S*)?$/
+        - /v\d+(\.\d+)?(\.\d+)?(-\S*)?$/
