@@ -87,20 +87,21 @@ function Profiler:ShowWindow()
 	if self.frame then
 		self.editBox:SetText(self:GenerateLua());
 		self.frame:Show();
-	else
-		local f = AceGUI:Create('Window');
-		f:SetTitle('MaxDps Profiler');
-		f:SetLayout('Flow');
-
-		local editBox = AceGUI:Create('MultiLineEditBox');
-		editBox:SetFullWidth(true);
-		editBox:SetFullHeight(true);
-		editBox:SetText(self:GenerateLua());
-
-		f:AddChild(editBox);
-		f:Show();
-
-		self.frame = f;
-		self.editBox = editBox;
+		return;
 	end
+
+	local f = AceGUI:Create('Window');
+	f:SetTitle('MaxDps Profiler');
+	f:SetLayout('Flow');
+
+	local editBox = AceGUI:Create('MultiLineEditBox');
+	editBox:SetFullWidth(true);
+	editBox:SetFullHeight(true);
+	editBox:SetText(self:GenerateLua());
+
+	f:AddChild(editBox);
+	f:Show();
+
+	self.frame = f;
+	self.editBox = editBox;
 end

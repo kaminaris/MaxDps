@@ -165,7 +165,6 @@ function MaxDps:EndCast(target)
 		end;
 	end
 
-
 	if not endTime then
 		return gcd, nil, gcd;
 	end

@@ -4,8 +4,16 @@ local StdUi = LibStub('StdUi');
 
 local Custom = MaxDps:NewModule('Custom');
 
+function Custom:GetClassIcon(classTag)
+	local x1, x2, y1, y2 = unpack(CLASS_ICON_TCOORDS[classTag]);
+
+	return string.format('|TInterface\\TARGETINGFRAME\\UI-CLASSES-CIRCLES:14:14:0:0:256:256:%u:%u:%u:%u|t',
+		x1 * 256, x2 * 256, y1 * 256, y2 * 256);
+end
+
 function Custom:Enable()
-	LoadAddOn('Blizzard_DebugTools') ----- RRRRRRRRRRRREEEEEEEEEEMOOOOOOOVEEEEEEEEE
+	--LoadAddOn('Blizzard_DebugTools') ----- RRRRRRRRRRRREEEEEEEEEEMOOOOOOOVEEEEEEEEE
+	SharedMedia:Register('font', 'Inconsolata', [[Interface\Addons\MaxDps\media\Inconsolata.otf]]);
 
 	self.CustomRotations = {};
 	self.Specs = {};
@@ -16,12 +24,13 @@ function Custom:Enable()
 	local x = GetNumClasses();
 	for i = 1, x do
 		local classDisplayName, classTag, classId = GetClassInfo(i);
-		tinsert(self.classList, {text = classDisplayName, value = classId});
+		tinsert(self.classList, {text = self:GetClassIcon(classTag) .. ' ' .. classDisplayName, value = classId});
 
 		local specNum = GetNumSpecializationsForClassID(classId);
 		for sI = 1, specNum do
-			local specId, specName = GetSpecializationInfoForClassID(classId, sI);
+			local specId, specName, _ , specIcon = GetSpecializationInfoForClassID(classId, sI);
 
+			specName = '|T' .. specIcon .. ':0|t ' .. specName;
 			if not self.Specs[classId] then self.Specs[classId] = {}; end;
 			self.Specs[classId][sI] = specName;
 
@@ -51,7 +60,7 @@ function Custom:ShowCustomWindow()
 		self.CustomWindow:Show();
 		return;
 	end
-print('sss');
+
 	self.CustomWindow = StdUi:Window(nil, 'MaxDps Custom Rotations', 700, 550);
 	self.CustomWindow:SetPoint('CENTER');
 	self.CustomWindow:SetScript('OnHide', function()
@@ -114,12 +123,13 @@ print('sss');
 	end);
 
 	--		Editor
-	local editor = StdUi:MultiLineBox(self.CustomWindow, 400, 200, 'adasda');
-	local fontPath = SharedMedia:Fetch('font', 'Fira Mono Medium');
+	local editor = StdUi:MultiLineBox(self.CustomWindow, 100, 200, 'adasda');
+	local fontPath = SharedMedia:Fetch('font', 'Inconsolata');
+
 	if fontPath then
-		editor:SetFont(fontPath, 12);
+		editor:SetFont(fontPath, 14);
 	end
-	editor.OnValueChanged = function(self, event, value)
+	editor.OnValueChanged = function(self, value)
 		if not Custom.CurrentEditRotation then return end;
 
 		value = IndentationLib.decode(value);
@@ -134,7 +144,7 @@ print('sss');
 	StdUi:GlueRight(rotationClass, rotationName, 10, 0);
 	StdUi:GlueRight(rotationSpec, rotationClass, 10, 0);
 	StdUi:GlueBelow(rotationEnabled, rotationName, 0, -10, 'LEFT');
-	StdUi:GlueRight(rotationDelete, rotationEnabled, 100, 0);
+	StdUi:GlueBelow(rotationDelete, rotationSpec, 0, -10, 'RIGHT');
 	StdUi:GlueAcross(editor.panel, self.CustomWindow, 220, -200, -10, 20);
 
 	self.CustomWindow.rotations = rotations;
@@ -165,7 +175,7 @@ function Custom:UpdateCustomRotationButtons()
 
 		if not btn.hooked then
 			btn:SetScript('OnClick', function(self)
-				--self:SetTextColor(0, 1, 0);
+				StdUi:SetTextColor(self, 'header');
 				Custom:EditRotation(self.rotation);
 			end);
 			btn.hooked = true;
@@ -271,7 +281,8 @@ function Custom:LoadCustomRotations()
 			}
 		end
 	end
-	self:Print(self.Colors.Info .. 'Custom Rotations Loaded!');
+
+	MaxDps:Print(MaxDps.Colors.Info .. 'Custom Rotations Loaded!');
 end
 
 --[[

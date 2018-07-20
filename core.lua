@@ -15,8 +15,10 @@ function MaxDps:OnInitialize()
 end
 
 function MaxDps:ShowCustomWindow()
-	local custom = self:EnableModule('Custom');
-	custom:ShowCustomWindow();
+	if not self.Custom then
+		self.Custom = self:EnableModule('Custom');
+	end
+	self.Custom:ShowCustomWindow();
 end
 
 function MaxDps:GetTexture()
@@ -197,11 +199,14 @@ function MaxDps:InitRotations()
 	self.ClassId = classId;
 	self.Spec = spec;
 
-	self:LoadCustomRotations();
+	if not self.Custom then
+		self.Custom = self:EnableModule('Custom');
+	end
+	self.Custom:LoadCustomRotations();
 
-	if self.CustomRotations[classId] and self.CustomRotations[classId][spec] then
-		self.CurrentRotation = self.CustomRotations[classId][spec];
-		self.NextSpell = self.CurrentRotation.fn;
+	if self.Custom.CustomRotations[classId] and self.Custom.CustomRotations[classId][spec] then
+		self.CurrentRotation = self.Custom.CustomRotations[classId][spec];
+		self.NextSpell = self.Custom.CurrentRotation.fn;
 
 		self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. self.CurrentRotation.name);
 	else
