@@ -128,6 +128,8 @@ function MaxDps:UnitAura(auraId, timeShift, unit, filter)
 		local cd = aura.expirationTime - t - timeShift;
 
 		return true, aura.count, cd;
+	elseif aura.expirationTime == 0 then
+		return true, 1, 99999; -- Persistent auras
 	end
 
 	return false, 0, 0;

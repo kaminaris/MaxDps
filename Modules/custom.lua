@@ -207,7 +207,7 @@ end
 function Custom:RemoveCustomRotation()
 	for k, rotation in pairs(MaxDps.db.global.customRotations) do
 		if rotation == Custom.CurrentEditRotation then
-			self.db.global.customRotations[k] = nil;
+			MaxDps.db.global.customRotations[k] = nil;
 		end
 	end
 
