@@ -285,6 +285,14 @@ function Custom:LoadCustomRotations()
 	MaxDps:Print(MaxDps.Colors.Info .. 'Custom Rotations Loaded!');
 end
 
+function Custom:GetCustomRotation(classId, spec)
+	if self.CustomRotations[classId] and self.CustomRotations[classId][spec] then
+		return self.CustomRotations[classId][spec];
+	else
+		return nil;
+	end
+end
+
 --[[
 	Borrowed from WeakAuras
 

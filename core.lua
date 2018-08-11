@@ -202,20 +202,20 @@ function MaxDps:InitRotations()
 	if not self.Custom then
 		self.Custom = self:EnableModule('Custom');
 	end
+
 	self.Custom:LoadCustomRotations();
+	local customRotation = self.Custom:GetCustomRotation(classId, spec);
 
-	if self.Custom.CustomRotations[classId] and self.Custom.CustomRotations[classId][spec] then
-		self.CurrentRotation = self.Custom.CustomRotations[classId][spec];
-		self.NextSpell = self.Custom.CurrentRotation.fn;
+	if customRotation then
+		self.NextSpell = customRotation.fn;
 
-		self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. self.CurrentRotation.name);
+		self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name);
 	else
 		self:LoadModule();
 	end
 end
 
 function MaxDps:LoadModule()
-	print('shits not working');
 	if self.Classes[self.ClassId] == nil then
 		self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.');
 		return;
