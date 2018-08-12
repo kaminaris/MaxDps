@@ -1,6 +1,3 @@
-[submodule "LibsStdUi"]
-	path = LibsStdUi
-	url = https://github.com/kaminaris/StdUi.git
 [submodule "Libs/StdUi"]
 	path = Libs/StdUi
 	url = https://github.com/kaminaris/StdUi.git
