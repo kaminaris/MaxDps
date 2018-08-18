@@ -157,8 +157,13 @@ function MaxDps:AddStandardButton(button)
 		local spellId;
 
 		if type == 'action' then
-			local slot = button:GetAttribute('action') or ActionButton_GetPagedID(button) or
-				ActionButton_CalculateAction(button) or 0;
+			local slot = button:GetAttribute('action');
+			if not slot or slot == 0 then
+				slot = ActionButton_GetPagedID(button);
+			end
+			if not slot or slot == 0 then
+				slot = ActionButton_CalculateAction(button);
+			end
 
 			if HasAction(slot) then
 				type, actionType = GetActionInfo(slot);
@@ -218,9 +223,25 @@ function MaxDps:Fetch()
 		self:FetchDominos();
 	end
 
+	if IsAddOnLoaded('DiabolicUI') then
+		self:FetchDiabolic();
+	end
+
 	if self.rotationEnabled then
 		self:EnableRotationTimer();
 		self:InvokeNextSpell();
+	end
+end
+
+function MaxDps:FetchDiabolic()
+	local diabolicBars = {'EngineBar1', 'EngineBar2', 'EngineBar3', 'EngineBar4', 'EngineBar5'};
+	for _, bar in pairs(diabolicBars) do
+		for i = 1, 12 do
+			local button = _G[bar .. 'Button' .. i];
+			if button then
+				self:AddStandardButton(button);
+			end
+		end
 	end
 end
 
