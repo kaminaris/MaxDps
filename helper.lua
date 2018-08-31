@@ -186,12 +186,16 @@ function MaxDps:SameSpell(spell1, spell2)
 	return spellName1 == spellName2;
 end
 
-function MaxDps:GlobalCooldown()
+function MaxDps:GlobalCooldown(spellId)
+	local baseGCD = 1.5;
+	if spellId then
+		baseGCD = select(2, GetSpellBaseCooldown(spellId)) / 1000;
+	end
 	local haste = UnitSpellHaste('player');
-	local gcd = 1.5 / ((haste / 100) + 1);
+	local gcd = baseGCD / ((haste / 100) + 1);
 
-	if gcd < 1 then
-		gcd = 1;
+	if gcd < 0.75 then
+		gcd = 0.75;
 	end
 
 	return gcd;
