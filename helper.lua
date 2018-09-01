@@ -68,6 +68,18 @@ function MaxDps:CollectAuras()
 	return self.PlayerAuras, self.TargetAuras;
 end
 
+function MaxDps:DumpAuras()
+	print('Player Auras');
+	for id, aura in pairs(self.PlayerAuras) do
+		print(aura.name .. '('.. id ..'): ' .. aura.count);
+	end
+
+	print('Target Auras');
+	for id, aura in pairs(self.TargetAuras) do
+		print(aura.name .. '('.. id ..'): ' .. aura.count);
+	end
+end
+
 -----------------------------------------------------------------
 --- Talents and specializations functions
 -----------------------------------------------------------------
@@ -129,7 +141,11 @@ function MaxDps:UnitAura(auraId, timeShift, unit, filter)
 
 		return true, aura.count, cd;
 	elseif aura.expirationTime == 0 then
-		return true, 1, 99999; -- Persistent auras
+		local count = 1;
+		if aura.count > 0 then
+			count = aura.count;
+		end
+		return true, count, 99999; -- Persistent auras
 	end
 
 	return false, 0, 0;
@@ -254,13 +270,13 @@ end
 --- Utility functions
 -----------------------------------------------------------------
 
-function MaxDps:TargetPercentHealth()
-	local health = UnitHealth('target');
+function MaxDps:TargetPercentHealth(unit)
+	local health = UnitHealth(unit or 'target');
 	if health <= 0 then
 		return 0;
 	end;
 
-	local healthMax = UnitHealthMax('target');
+	local healthMax = UnitHealthMax(unit or 'target');
 	if healthMax <= 0 then
 		return 0;
 	end;
