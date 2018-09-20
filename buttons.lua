@@ -227,6 +227,10 @@ function MaxDps:Fetch()
 		self:FetchDiabolic();
 	end
 
+	if IsAddOnLoaded('AzeriteUI') then
+		self:FetchAzeriteUI();
+	end
+
 	if self.rotationEnabled then
 		self:EnableRotationTimer();
 		self:InvokeNextSpell();
@@ -250,6 +254,15 @@ function MaxDps:FetchDominos()
 
 	for i = 1, 60 do
 		local button = _G['DominosActionButton' .. i];
+		if button then
+			self:AddStandardButton(button);
+		end
+	end
+end
+
+function MaxDps:FetchAzeriteUI()
+	for i = 1, 24 do
+		local button = _G['AzeriteUIActionButton' .. i];
 		if button then
 			self:AddStandardButton(button);
 		end
