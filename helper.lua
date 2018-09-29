@@ -1,20 +1,47 @@
 --- @type MaxDps MaxDps
 
 -- Global cooldown spell id
-_GlobalCooldown		= 61304;
+local _GlobalCooldown	= 61304;
 
 -- Bloodlust effects
-_Bloodlust			= 2825;
-_TimeWrap			= 80353;
-_Heroism			= 32182;
-_AncientHysteria	= 90355;
-_Netherwinds		= 160452;
-_DrumsOfFury		= 178207;
-_Exhaustion			= 57723;
+local _Bloodlust		= 2825;
+local _TimeWrap			= 80353;
+local _Heroism			= 32182;
+local _AncientHysteria	= 90355;
+local _Netherwinds		= 160452;
+local _DrumsOfFury		= 178207;
+local _Exhaustion		= 57723;
 
-local INF = 2147483647;
 
 local _Bloodlusts = {_Bloodlust, _TimeWrap, _Heroism, _AncientHysteria, _Netherwinds, _DrumsOfFury};
+
+-- Global functions
+local UnitAura = UnitAura;
+local pairs = pairs;
+local GetTalentInfo = GetTalentInfo;
+local C_AzeriteEmpoweredItem = C_AzeriteEmpoweredItem;
+local GetSpecialization = GetSpecialization;
+local GetSpecializationInfo = GetSpecializationInfo;
+local AzeriteUtil = AzeriteUtil;
+local UnitCastingInfo = UnitCastingInfo;
+local GetTime = GetTime;
+local GetSpellCooldown = GetSpellCooldown;
+local GetSpellInfo = GetSpellInfo;
+local GetSpellBaseCooldown = GetSpellBaseCooldown;
+local IsSpellInRange = IsSpellInRange;
+local UnitSpellHaste = UnitSpellHaste;
+local GetSpellCharges = GetSpellCharges;
+local C_NamePlate = C_NamePlate;
+local UnitPower = UnitPower;
+local UnitPowerMax = UnitPowerMax;
+local UnitHealth = UnitHealth;
+local UnitHealthMax = UnitHealthMax;
+local IsEquippedItem = IsEquippedItem;
+local GetManaRegen = GetManaRegen;
+local GetSpellTabInfo = GetSpellTabInfo;
+local GetSpellBookItemInfo = GetSpellBookItemInfo;
+local GetSpellBookItemName = GetSpellBookItemName;
+
 
 -----------------------------------------------------------------
 --- Internal replacement for UnitAura that no longer has ability
@@ -97,7 +124,7 @@ function MaxDps:CheckTalents()
 		for talentCol = 1, 3 do
 			local _, name, _, sel, _, id = GetTalentInfo(talentRow, talentCol, 1);
 			if sel then
-				self.PlayerTalents[id] = name;
+				self.PlayerTalents[id] = 1;
 			end
 		end
 	end
@@ -109,6 +136,39 @@ end
 
 function MaxDps:TalentEnabled(talent)
 	self:Print(self.Colors.Error .. 'MaxDps:TalentEnabled is deprecated, please use table `talents` to check talents');
+end
+
+function MaxDps:GetAzeriteTraits()
+	local t = setmetatable({}, {__index = function() return 0; end});
+
+	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
+		local tierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo(itemLocation);
+		for i = 1, #tierInfo do
+			for x = 1, #tierInfo[i].azeritePowerIDs do
+				local powerId = tierInfo[i].azeritePowerIDs[x];
+				if C_AzeriteEmpoweredItem.IsPowerSelected(itemLocation, powerId) then
+					local spellId = C_AzeriteEmpoweredItem.GetPowerInfo(powerId).spellID;
+					if t[spellId] then
+						t[spellId] = t[spellId] + 1;
+					else
+						t[spellId] = 1;
+					end
+
+				end
+
+			end
+		end
+	end
+
+	self.AzeriteTraits = t;
+	return t;
+end
+
+function MaxDps:DumpAzeriteTraits()
+	for id, rank in pairs(self.AzeriteTraits) do
+		local n = GetSpellInfo(id);
+		print(n .. ' (' .. id .. '): ' .. rank);
+	end
 end
 
 -----------------------------------------------------------------

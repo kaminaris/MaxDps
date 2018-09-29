@@ -53,6 +53,7 @@ function MaxDps:EnableRotation()
 	self:Fetch();
 
 	self:CheckTalents();
+	self:GetAzeriteTraits();
 	if self.ModuleOnEnable then
 		self.ModuleOnEnable();
 	end
@@ -174,7 +175,7 @@ function MaxDps:InvokeNextSpell()
 	local timeShift, currentSpell, gcd = MaxDps:EndCast();
 	local auras, targetAuras = MaxDps:CollectAuras();
 
-	self.Spell = self:NextSpell(timeShift, currentSpell, gcd, self.PlayerTalents);
+	self.Spell = self:NextSpell(timeShift, currentSpell, gcd, self.PlayerTalents, self.AzeriteTraits);
 
 	if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil then
 		self:GlowNextSpell(self.Spell);
