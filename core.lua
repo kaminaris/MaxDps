@@ -44,6 +44,25 @@ function MaxDps:Print(...)
 	MaxDps:DefaultPrint(...);
 end
 
+MaxDps.profilerStatus = 0;
+function MaxDps:ProfilerStart()
+	self:EnableModule('Profiler');
+	self.profilerStatus = 1;
+end
+
+function MaxDps:ProfilerStop()
+	self:DisableModule('Profiler');
+	self.profilerStatus = 0;
+end
+
+function MaxDps:ProfilerToggle()
+	if self.profilerStatus == 0 then
+		self:ProfilerStart();
+	else
+		self:ProfilerStop();
+	end
+end
+
 function MaxDps:EnableRotation()
 	if self.NextSpell == nil or self.rotationEnabled then
 		self:Print(self.Colors.Error .. 'Failed to enable addon!');
@@ -54,6 +73,7 @@ function MaxDps:EnableRotation()
 
 	self:CheckTalents();
 	self:GetAzeriteTraits();
+	self:CheckIsPlayerMelee();
 	if self.ModuleOnEnable then
 		self.ModuleOnEnable();
 	end
@@ -90,22 +110,39 @@ end
 function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_TARGET_CHANGED');
 	self:RegisterEvent('PLAYER_TALENT_UPDATE');
-	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED');
 	self:RegisterEvent('PLAYER_REGEN_DISABLED');
 	self:RegisterEvent('PLAYER_ENTERING_WORLD');
 
-	self:RegisterEvent('ACTIONBAR_HIDEGRID');
-	self:RegisterEvent('ACTIONBAR_PAGE_CHANGED');
-	self:RegisterEvent('LEARNED_SPELL_IN_TAB');
-	self:RegisterEvent('CHARACTER_POINTS_CHANGED');
-	self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED');
-	self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED');
-	self:RegisterEvent('UPDATE_MACROS');
-	self:RegisterEvent('VEHICLE_UPDATE');
+	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch');
+	self:RegisterEvent('ACTIONBAR_HIDEGRID', 'ButtonFetch');
+	self:RegisterEvent('ACTIONBAR_PAGE_CHANGED', 'ButtonFetch');
+	self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch');
+	self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch');
+	self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch');
+	self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'ButtonFetch');
+	self:RegisterEvent('UPDATE_MACROS', 'ButtonFetch');
+	self:RegisterEvent('VEHICLE_UPDATE', 'ButtonFetch');
+	self:RegisterEvent('UPDATE_STEALTH', 'ButtonFetch');
 
 	self:RegisterEvent('UNIT_ENTERED_VEHICLE');
 	self:RegisterEvent('UNIT_EXITED_VEHICLE');
 	--	self:RegisterEvent('PLAYER_REGEN_ENABLED');
+
+	if not self.playerUnitFrame then
+		self.spellHistory = {};
+
+		self.playerUnitFrame = CreateFrame('Frame');
+		self.playerUnitFrame:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', 'player');
+		self.playerUnitFrame:SetScript('OnEvent', function(_, event, unit, lineId, spellId)
+			if IsPlayerSpell(spellId) then
+				tinsert(self.spellHistory, 1, spellId);
+
+				if #self.spellHistory > 5 then
+					tremove(self.spellHistory);
+				end
+			end
+		end);
+	end
 
 	self:Print(self.Colors.Info .. 'Initialized');
 end
@@ -158,24 +195,29 @@ function MaxDps:ButtonFetch()
 	end
 end
 
-MaxDps.ACTIONBAR_SLOT_CHANGED = MaxDps.ButtonFetch;
-MaxDps.ACTIONBAR_HIDEGRID = MaxDps.ButtonFetch;
-MaxDps.ACTIONBAR_PAGE_CHANGED = MaxDps.ButtonFetch;
-MaxDps.LEARNED_SPELL_IN_TAB = MaxDps.ButtonFetch;
-MaxDps.CHARACTER_POINTS_CHANGED = MaxDps.ButtonFetch;
-MaxDps.ACTIVE_TALENT_GROUP_CHANGED = MaxDps.ButtonFetch;
-MaxDps.PLAYER_SPECIALIZATION_CHANGED = MaxDps.ButtonFetch;
-MaxDps.UPDATE_MACROS = MaxDps.ButtonFetch;
-MaxDps.VEHICLE_UPDATE = MaxDps.ButtonFetch;
+function MaxDps:PrepareFrameData()
+	if not self.FrameData then
+		self.FrameData = {
+			cooldown = self.PlayerCooldowns,
+		};
+	end
+
+	self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcdRemains = MaxDps:EndCast();
+	self.FrameData.gcd = self:GlobalCooldown();
+	self.FrameData.buff, self.FrameData.debuff = MaxDps:CollectAuras();
+	self.FrameData.talents = self.PlayerTalents;
+	self.FrameData.azerite = self.AzeriteTraits;
+	self.FrameData.spellHistory = self.spellHistory;
+end
 
 function MaxDps:InvokeNextSpell()
 	-- invoke spell check
 	local oldSkill = self.Spell;
 
-	local timeShift, currentSpell, gcd = MaxDps:EndCast();
-	local auras, targetAuras = MaxDps:CollectAuras();
+	self:PrepareFrameData();
 
-	self.Spell = self:NextSpell(timeShift, currentSpell, gcd, self.PlayerTalents, self.AzeriteTraits);
+	--For backward compatibility only
+	self.Spell = self:NextSpell(self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcd, self.PlayerTalents, self.AzeriteTraits);
 
 	if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil then
 		self:GlowNextSpell(self.Spell);

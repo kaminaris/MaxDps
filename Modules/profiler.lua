@@ -1,6 +1,6 @@
+local StdUi = LibStub('StdUi');
 
 local Profiler = MaxDps:NewModule('Profiler', 'AceEvent-3.0');
-
 
 function Profiler:Enable()
 	self.Spells = {};
@@ -65,20 +65,23 @@ function Profiler:SanitizeSpellName(spellName)
 end
 
 function Profiler:GenerateLua()
-	local output = '-- Spells\n';
+	local output = '-- Spells\nlocal S = {\n';
 	for spellId, spellName in pairs(self.Spells) do
-		output = output .. 'local _' .. self:SanitizeSpellName(spellName) .. ' = ' .. spellId .. ';\n';
+		output = output .. '    ' .. self:SanitizeSpellName(spellName) .. ' = ' .. spellId .. ',\n';
 	end
+	output = output .. '};\n'
 
-	output = output .. '\n-- Player Auras\n';
+	output = output .. '\n-- Player Auras\nlocal A = {\n';
 	for auraId, auraName in pairs(self.PlayerAuras) do
-		output = output .. 'local _' .. self:SanitizeSpellName(auraName) .. ' = ' .. auraId .. ';\n';
+		output = output .. '    ' .. self:SanitizeSpellName(auraName) .. ' = ' .. auraId .. ',\n';
 	end
+	output = output .. '};\n'
 
-	output = output .. '\n-- Target Auras\n';
+	output = output .. '\n-- Target Auras\nlocal TA = {\n';
 	for auraId, auraName in pairs(self.TargetAuras) do
-		output = output .. 'local _' .. self:SanitizeSpellName(auraName) .. ' = ' .. auraId .. ';\n';
+		output = output .. '    ' .. self:SanitizeSpellName(auraName) .. ' = ' .. auraId .. ',\n';
 	end
+	output = output .. '};\n'
 
 	return output;
 end
@@ -90,16 +93,13 @@ function Profiler:ShowWindow()
 		return;
 	end
 
-	local f = AceGUI:Create('Window');
-	f:SetTitle('MaxDps Profiler');
-	f:SetLayout('Flow');
+	local f = StdUi:Window(UIParent, 'MaxDps Profiler', 500, 600);
+	f:SetPoint('CENTER');
 
-	local editBox = AceGUI:Create('MultiLineEditBox');
-	editBox:SetFullWidth(true);
-	editBox:SetFullHeight(true);
+	local editBox = StdUi:MultiLineBox(f, 480, 550);
 	editBox:SetText(self:GenerateLua());
+	StdUi:GlueTop(editBox.panel, f, 0, -30, 'CENTER');
 
-	f:AddChild(editBox);
 	f:Show();
 
 	self.frame = f;
