@@ -81,9 +81,13 @@ function MaxDps:IntUnitAura(unit, nameOrId, filter, timeShift)
 				remains = 99999;
 			end
 
+			if count == 0 then
+				count = 1;
+			end
+
 			return {
 				name           = name,
-				up             = true,
+				up             = remains > 0,
 				count          = count,
 				expirationTime = expirationTime,
 				remains        = remains,
@@ -97,8 +101,8 @@ function MaxDps:IntUnitAura(unit, nameOrId, filter, timeShift)
 	return aura;
 end
 
-function MaxDps:CollectAura(unit, timeShift, output)
-	local filter = unit == 'target' and 'PLAYER|HARMFUL' or nil;
+function MaxDps:CollectAura(unit, timeShift, output, filter)
+	filter = filter and filter or (unit == 'target' and 'PLAYER|HARMFUL' or nil);
 
 	local t = GetTime();
 	local i = 1;
@@ -120,12 +124,17 @@ function MaxDps:CollectAura(unit, timeShift, output)
 			remains = 99999;
 		end
 
+		if count == 0 then
+			count = 1;
+		end
+
 		output[id] = {
 			name           = name,
-			up             = true,
+			up             = remains > 0,
 			count          = count,
 			expirationTime = expirationTime,
 			remains        = remains,
+			duration       = duration,
 			refreshable    = remains < 0.3 * duration,
 		};
 
@@ -139,6 +148,7 @@ local auraMetaTable = {
 			up          = false,
 			count       = 0,
 			remains     = 0,
+			duration    = 0,
 			refreshable = true,
 		};
 	end
