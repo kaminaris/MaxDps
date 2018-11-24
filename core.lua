@@ -1,6 +1,9 @@
+local addonName, MaxDps = ...;
+
+LibStub('AceAddon-3.0'):NewAddon(MaxDps, 'MaxDps', 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0');
 
 --- @class MaxDps
-MaxDps = LibStub('AceAddon-3.0'):NewAddon('MaxDps', 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0');
+_G[addonName] = MaxDps;
 
 function MaxDps:OnInitialize()
 	self.db = LibStub('AceDB-3.0'):New('MaxDpsOptions', self.defaultOptions);
@@ -199,6 +202,7 @@ function MaxDps:PrepareFrameData()
 	if not self.FrameData then
 		self.FrameData = {
 			cooldown = self.PlayerCooldowns,
+			activeDot = self.ActiveDots
 		};
 	end
 
@@ -208,6 +212,7 @@ function MaxDps:PrepareFrameData()
 	self.FrameData.talents = self.PlayerTalents;
 	self.FrameData.azerite = self.AzeriteTraits;
 	self.FrameData.spellHistory = self.spellHistory;
+	self.FrameData.timeToDie = self:GetTimeToDie();
 end
 
 function MaxDps:InvokeNextSpell()
@@ -280,6 +285,7 @@ function MaxDps:LoadModule()
 
 	LoadAddOn(module);
 
+	self:InitTTD();
 	self:EnableRotationModule(className);
 end
 

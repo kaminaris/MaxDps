@@ -1,3 +1,5 @@
+local _, MaxDps = ...;
+
 ---@type StdUi
 local StdUi = LibStub('StdUi');
 local media = LibStub('LibSharedMedia-3.0');

@@ -1,4 +1,5 @@
 --- @type MaxDps MaxDps
+local _, MaxDps = ...;
 
 -- Global cooldown spell id
 local _GlobalCooldown	= 61304;
@@ -159,6 +160,11 @@ MaxDps.TargetAuras = setmetatable({}, auraMetaTable);
 MaxDps.PlayerCooldowns = setmetatable({}, {
 	__index = function(table, key)
 		return MaxDps:CooldownConsolidated(key, MaxDps.FrameData.timeShift);
+	end
+});
+MaxDps.ActiveDots = setmetatable({}, {
+	__index = function(table, key)
+		return MaxDps:DebuffCounter(key, MaxDps.FrameData.timeShift);
 	end
 });
 
@@ -573,38 +579,53 @@ function MaxDps:ThreatCounter()
 	return count, units;
 end
 
+function MaxDps:DebuffCounter(spellId, timeShift)
+	local count, totalRemains, totalCount, totalCountRemains = 0, 0, 0, 0;
+
+	for i, frame in pairs(C_NamePlate.GetNamePlates()) do
+		local unit = frame.UnitFrame.unit;
+
+		if frame:IsVisible() then
+			local aura = MaxDps:IntUnitAura(unit, spellId, 'PLAYER|HARMFUL', timeShift);
+			if aura.up then
+				count = count + 1;
+				totalCount = totalCount + aura.count;
+				totalRemains = totalRemains + aura.remains;
+				totalCountRemains = totalRemains + (aura.remains * aura.count);
+			end
+		end
+	end
+
+	return count, totalRemains, totalCount, totalCountRemains;
+end
+
 function MaxDps:SmartAoe(itemId)
 	local inInstance, instanceType = IsInInstance();
 	local count, units = self:ThreatCounter();
 
-	if not inInstance then
-		-- if in open world check how many mobs you are in combat with
-		return count;
-	else
-		local itemToCheck = itemId or 18904;
+	local itemToCheck = itemId or 18904;
 
-		-- 5 man content, we count battleground also as small party
-		if self.isMelee then
-			-- 8 yards range
-			itemToCheck = itemId or 61323;
-		elseif instanceType == 'pvp' or instanceType == 'party' then
-			-- 30 yards range
-			itemToCheck = itemId or 7734;
-		elseif instanceType == 'arena' and instanceType == 'raid' then
-			-- 35 yards range
-			itemToCheck = itemId or 18904;
-		end
-
-		count = 0;
-		for i = 1, #units do
-			-- 8 yards range check
-			if IsItemInRange(itemToCheck, units[i]) then
-				count = count + 1;
-			end
-		end
-
-		return count;
+	-- 5 man content, we count battleground also as small party
+	if self.isMelee then
+		-- 8 yards range
+		itemToCheck = itemId or 61323;
+	elseif instanceType == 'pvp' or instanceType == 'party' then
+		-- 30 yards range
+		itemToCheck = itemId or 7734;
+	elseif instanceType == 'arena' and instanceType == 'raid' then
+		-- 35 yards range
+		itemToCheck = itemId or 18904;
 	end
+
+	count = 0;
+	for i = 1, #units do
+		-- 8 yards range check
+		if IsItemInRange(itemToCheck, units[i]) then
+			count = count + 1;
+		end
+	end
+
+	return count;
 end
 
 function MaxDps:FormatTime(left)

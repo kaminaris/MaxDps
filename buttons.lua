@@ -1,3 +1,5 @@
+local _, MaxDps = ...;
+
 MaxDps.Spells = {};
 MaxDps.Flags = {};
 MaxDps.SpellsGlowing = {};
