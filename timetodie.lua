@@ -32,6 +32,7 @@ function MaxDps:DisableTTD()
 end
 
 local HPTable = {};
+local trackedGuid;
 function MaxDps:TimeToDie(trackedUnit)
 	trackedUnit = trackedUnit or 'target';
 
@@ -41,6 +42,11 @@ function MaxDps:TimeToDie(trackedUnit)
 	-- Current data
 	local ttd = self.ttd;
 	local guid = UnitGUID(trackedUnit);
+
+	if trackedGuid ~= guid then
+		wipe(HPTable);
+		trackedGuid = guid;
+	end
 
 	if guid and UnitExists(trackedUnit) then
 		local hpPct = self:TargetPercentHealth() * 100;

@@ -129,6 +129,9 @@ function MaxDps:OnEnable()
 
 	self:RegisterEvent('UNIT_ENTERED_VEHICLE');
 	self:RegisterEvent('UNIT_EXITED_VEHICLE');
+
+	self:RegisterEvent('NAME_PLATE_UNIT_ADDED');
+	self:RegisterEvent('NAME_PLATE_UNIT_REMOVED');
 	--	self:RegisterEvent('PLAYER_REGEN_ENABLED');
 
 	if not self.playerUnitFrame then
@@ -148,6 +151,20 @@ function MaxDps:OnEnable()
 	end
 
 	self:Print(self.Colors.Info .. 'Initialized');
+end
+
+MaxDps.visibleNameplates = {};
+function MaxDps:NAME_PLATE_UNIT_ADDED(_, nameplateUnit)
+	if not tContains(self.visibleNameplates, nameplateUnit) then
+		tinsert(self.visibleNameplates, nameplateUnit);
+	end
+end
+
+function MaxDps:NAME_PLATE_UNIT_REMOVED(_, nameplateUnit)
+	local index = tIndexOf(self.visibleNameplates, nameplateUnit);
+	if index ~= nil then
+		tremove(self.visibleNameplates, index)
+	end
 end
 
 function MaxDps:PLAYER_TALENT_UPDATE()

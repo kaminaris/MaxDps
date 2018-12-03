@@ -554,8 +554,9 @@ end
 
 function MaxDps:TargetsInRange(spell)
 	local count = 0;
-	for i, frame in pairs(C_NamePlate.GetNamePlates()) do
-		if frame:IsVisible() and MaxDps:IsSpellInRange(spell, frame.UnitFrame.unit) == 1 then
+
+	for i, unit in ipairs(self.visibleNameplates) do
+		if MaxDps:IsSpellInRange(spell, unit) == 1 then
 			count = count + 1;
 		end
 	end
@@ -567,10 +568,8 @@ function MaxDps:ThreatCounter()
 	local count = 0;
 	local units = {};
 
-	for i, frame in pairs(C_NamePlate.GetNamePlates()) do
-		local unit = frame.UnitFrame.unit;
-
-		if frame:IsVisible() and UnitThreatSituation('player', unit) ~= nil then
+	for i, unit in ipairs(self.visibleNameplates) do
+		if UnitThreatSituation('player', unit) ~= nil then
 			count = count + 1;
 			tinsert(units, unit);
 		end
@@ -582,17 +581,13 @@ end
 function MaxDps:DebuffCounter(spellId, timeShift)
 	local count, totalRemains, totalCount, totalCountRemains = 0, 0, 0, 0;
 
-	for i, frame in pairs(C_NamePlate.GetNamePlates()) do
-		local unit = frame.UnitFrame.unit;
-
-		if frame:IsVisible() then
-			local aura = MaxDps:IntUnitAura(unit, spellId, 'PLAYER|HARMFUL', timeShift);
-			if aura.up then
-				count = count + 1;
-				totalCount = totalCount + aura.count;
-				totalRemains = totalRemains + aura.remains;
-				totalCountRemains = totalRemains + (aura.remains * aura.count);
-			end
+	for i, unit in ipairs(self.visibleNameplates) do
+		local aura = MaxDps:IntUnitAura(unit, spellId, 'PLAYER|HARMFUL', timeShift);
+		if aura.up then
+			count = count + 1;
+			totalCount = totalCount + aura.count;
+			totalRemains = totalRemains + aura.remains;
+			totalCountRemains = totalRemains + (aura.remains * aura.count);
 		end
 	end
 
