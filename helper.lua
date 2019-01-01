@@ -392,6 +392,7 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
 	end
 
 	return {
+		duration        = GetSpellBaseCooldown(spellId) / 1000,
 		ready           = remains <= 0,
 		remains         = remains,
 		fullRecharge    = fullRecharge,
