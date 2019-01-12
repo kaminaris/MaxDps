@@ -1,8 +1,8 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 8.0.12
+## Version: 8.1.0
 ## Author: Kaminaris
-## Interface: 80000
+## Interface: 80100
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI
 ## X-Curse-Project-ID: 91970
