@@ -38,7 +38,23 @@ MaxDps.defaultOptions = {
 		enabled = true,
 		disabledInfo = false,
 		debugMode = false,
+		forceSingle = false,
 		disableButtonGlow = false,
+
+		customGlow = false,
+		customGlowType = 'pixel',
+
+		-- Settings for pixel glow
+		customGlowLines = 8,
+		customGlowFrequency = 0.25,
+		customGlowLength = 3,
+		customGlowThickness = 3,
+
+		-- Settings for particle glow
+		customGlowParticles = 4,
+		customGlowScale = 1,
+		customGlowParticleFrequency = 0.125,
+
 		onCombatEnter = true,
 		texture = 'Interface\\Cooldown\\ping4',
 		customTexture = '',
@@ -62,80 +78,6 @@ MaxDps.defaultOptions = {
 function MaxDps:ResetSettings()
 	self.db:ResetDB();
 end
-
-StdUi:RegisterWidget('SliderWithBox', function(stdUi, parent, width, height, value, min, max)
-	local widget = CreateFrame('Frame', nil, parent);
-	StdUi:SetObjSize(widget, width, height);
-
-	widget.label = stdUi:Label(widget, '');
-	widget.slider = stdUi:Slider(widget, 100, 12, value, false);
-	widget.editBox = stdUi:NumericBox(widget, 80, 16, value);
-	widget.editBox:SetNumeric(false);
-	widget.leftLabel = stdUi:Label(widget, '');
-	widget.rightLabel = stdUi:Label(widget, '');
-
-	widget.slider.widget = widget;
-	widget.editBox.widget = widget;
-
-	function widget:SetLabelText(text)
-		self.label:SetText(text);
-	end
-
-	function widget:SetMinMaxValues(min, max)
-		widget.min = min;
-		widget.max = max;
-
-		widget.editBox:SetMinMaxValue(min, max);
-		widget.slider:SetMinMaxValues(min, max);
-		widget.leftLabel:SetText(min);
-		widget.rightLabel:SetText(max);
-	end
-
-	if min and max then
-		widget:SetMinMaxValues(min, max);
-	end
-
-	widget.slider.OnValueChanged = function(s, val)
-		if s.widget.lock then return end;
-
-		val = math.floor(val * 100) / 100;
-		if val < s.widget.min then val = s.widget.min end
-		if val > s.widget.max then val = s.widget.max end
-
-		if widget.OnValueChanged then
-			widget.OnValueChanged(widget, val);
-		end
-
-		s.widget.lock = true;
-		s.widget.editBox:SetValue(val);
-		s.widget.lock = false;
-	end;
-
-	widget.editBox.OnValueChanged = function(e, val)
-		if e.widget.lock then return end;
-
-		val = math.floor(val * 100) / 100;
-		if val < e.widget.min then val = e.widget.min end
-		if val > e.widget.max then val = e.widget.max end
-
-		if widget.OnValueChanged then
-			widget.OnValueChanged(widget, val);
-		end
-
-		e.widget.lock = true;
-		e.widget.slider:SetValue(val);
-		e.widget.lock = false;
-	end;
-
-	stdUi:GlueTop(widget.label, widget, 0, 0, 'CENTER');
-	widget.slider:SetPoint('LEFT', widget, 'LEFT', 0, 0);
-	widget.slider:SetPoint('RIGHT', widget, 'RIGHT', 0, 0);
-	stdUi:GlueBottom(widget.editBox, widget, 0, 0, 'CENTER');
-	widget.leftLabel:SetPoint('TOPLEFT', widget.slider, 'BOTTOMLEFT', 0, 0);
-	widget.rightLabel:SetPoint('TOPRIGHT', widget.slider, 'BOTTOMRIGHT', 0, 0);
-
-	return widget;
-end);
 
 local function intervalValidator(self)
 	local text = self:GetText();
@@ -188,12 +130,20 @@ function MaxDps:AddToBlizzardOptions()
 	onCombatEnter:SetChecked(MaxDps.db.global.onCombatEnter);
 	onCombatEnter.OnValueChanged = function(_, flag) MaxDps.db.global.onCombatEnter = flag; end;
 
+	local forceSingle = StdUi:Checkbox(optionsFrame, 'Force single target mode', 200, 24);
+	forceSingle:SetChecked(MaxDps.db.global.forceSingle);
+	forceSingle.OnValueChanged = function(_, flag) MaxDps.db.global.forceSingle = flag; end;
+
+	local loadModuleBtn = StdUi:Button(optionsFrame, nil, 24, 'Load current class module');
+	loadModuleBtn:SetScript('OnClick', function() MaxDps:InitRotations(); end);
+
 	local disableButtonGlow = StdUi:Checkbox(optionsFrame, 'Dissable blizzard button glow (experimental)', 200, 24);
 	disableButtonGlow:SetChecked(MaxDps.db.global.disableButtonGlow);
 	disableButtonGlow.OnValueChanged = function(_, flag) MaxDps.db.global.disableButtonGlow = flag; end;
 
 	local interval = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.interval, 0.01, 2);
-	interval:SetLabelText('Update Interval');
+	interval:SetPrecision(2);
+	StdUi:AddLabel(optionsFrame, interval, 'Update Interval');
 	interval.OnValueChanged = function(_, val) MaxDps.db.global.interval = val; end;
 
 	--- Debug options
@@ -245,15 +195,37 @@ function MaxDps:AddToBlizzardOptions()
 		MaxDps:ApplyOverlayChanges();
 	end;
 
-
 	local sizeMultiplier = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.sizeMult or 1.4, 0.5, 2);
-	sizeMultiplier:SetLabelText('Size Multiplier');
+	StdUi:AddLabel(optionsFrame, sizeMultiplier, 'Size Multiplier');
 	sizeMultiplier.OnValueChanged = function(_, val) MaxDps.db.global.sizeMult = val; end;
 
+	--- Pixel Glow options
+
+	local customGlowHeader = StdUi:Label(optionsFrame, 'Custom Glow', 14);
+	StdUi:SetTextColor(customGlowHeader, 'header');
+
+	local customGlow = StdUi:Checkbox(optionsFrame, 'Use Custom Glow', 200, 24);
+	customGlow:SetChecked(MaxDps.db.global.customGlow);
+	customGlow.OnValueChanged = function(_, flag)
+		MaxDps.db.global.customGlow = flag;
+		MaxDps:ApplyOverlayChanges();
+	end;
+
+	local customGlowTypes = {
+		{text = 'Pixel', value = 'pixel'},
+		{text = 'Particle', value = 'particle'},
+	}
+	local customGlowType = StdUi:Dropdown(optionsFrame, 200, 24, customGlowTypes, MaxDps.db.global.customGlowType);
+	StdUi:AddLabel(optionsFrame, customGlowType, 'Custom Glow Type', 'TOP');
+	customGlowType.OnValueChanged = function(_, val)
+		MaxDps.db.global.customGlowType = val;
+		MaxDps:ApplyOverlayChanges();
+	end;
 
 	optionsFrame:AddRow():AddElement(general);
 	optionsFrame:AddRow():AddElements(enabled, onCombatEnter, { column = 'even' });
-	optionsFrame:AddRow():AddElements(disableButtonGlow, interval, { column = 'even' });
+	optionsFrame:AddRow():AddElements(disableButtonGlow, forceSingle, { column = 'even' });
+	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, {column = 'even'});
 	optionsFrame:AddRow():AddElement(debug);
 	optionsFrame:AddRow():AddElements(debugMode, disabledInfo, { column = 'even' });
 	optionsFrame:AddRow():AddElement(overlay);
@@ -262,11 +234,110 @@ function MaxDps:AddToBlizzardOptions()
 	rowOverlay:AddElement(textureIcon, { column = 1 });
 	rowOverlay:AddElement(customTexture, { column = 6 });
 	optionsFrame:AddRow():AddElements(highlightColor, cooldownColor, { column = 'even' });
-	optionsFrame:AddRow():AddElement(sizeMultiplier, { column = 6 });
+	optionsFrame:AddRow():AddElement(sizeMultiplier, { column = 6, margin = { top = 15 } });
+	optionsFrame:AddRow():AddElement(customGlowHeader);
+	optionsFrame:AddRow():AddElements(customGlow, customGlowType, { column = 'even' });
 
 	optionsFrame:SetScript('OnShow', function(of)
 		of:DoLayout();
 	end);
 
 	InterfaceOptions_AddCategory(optionsFrame);
+
+	self:AddCustomGlowOptions();
+end
+
+function MaxDps:AddCustomGlowOptions()
+	local config = {
+		layoutConfig = { padding = { top = 30 } },
+		database     = self.db.global,
+		rows         = {
+			[1] = {
+				pixelGlow = {
+					type = 'header',
+					label = 'Pixel Glow'
+				}
+			},
+			[2] = {
+				customGlowLines     = {
+					type   = 'sliderWithBox',
+					label  = 'Number of lines',
+					min    = 2,
+					max    = 10,
+					column = 6
+				},
+				customGlowFrequency = {
+					type   = 'sliderWithBox',
+					label  = 'Frequency',
+					min    = 0.01,
+					max    = 2,
+					column = 6
+				},
+			},
+			[3] = {
+				customGlowLength     = {
+					type   = 'sliderWithBox',
+					label  = 'Line Length',
+					min    = 2,
+					max    = 20,
+					column = 6
+				},
+				customGlowThickness = {
+					type   = 'sliderWithBox',
+					label  = 'Thickness',
+					min    = 1,
+					max    = 5,
+					column = 6
+				},
+			},
+
+			[4] = {
+				particleGlow = {
+					type = 'header',
+					label = 'Particle Glow'
+				}
+			},
+
+			[5] = {
+				customGlowParticles = {
+					type      = 'sliderWithBox',
+					label     = 'Number of Particles',
+					min       = 4,
+					max       = 16,
+					precision = 0,
+					column    = 6
+				},
+				customGlowScale = {
+					type   = 'sliderWithBox',
+					label  = 'Particle Scale',
+					min    = 0.2,
+					max    = 3,
+					column = 6
+				},
+			},
+
+			[6] = {
+				customGlowParticleFrequency     = {
+					type   = 'sliderWithBox',
+					label  = 'Frequency',
+					min    = 0.01,
+					max    = 2,
+					column = 6
+				},
+			},
+		},
+	};
+
+	local customGlowOptionsFrame = StdUi:PanelWithTitle(nil, 100, 100, 'Custom Glow Options');
+	customGlowOptionsFrame:Hide();
+	customGlowOptionsFrame.name = 'CustomGlow';
+	customGlowOptionsFrame.parent = 'MaxDps';
+
+	StdUi:BuildWindow(customGlowOptionsFrame, config);
+
+	customGlowOptionsFrame:SetScript('OnShow', function(of)
+		of:DoLayout();
+	end);
+
+	InterfaceOptions_AddCategory(customGlowOptionsFrame);
 end

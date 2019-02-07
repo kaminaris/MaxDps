@@ -596,6 +596,10 @@ function MaxDps:DebuffCounter(spellId, timeShift)
 end
 
 function MaxDps:SmartAoe(itemId)
+	if self.db.global.forceSingle then
+		return 1;
+	end
+
 	local inInstance, instanceType = IsInInstance();
 	local count, units = self:ThreatCounter();
 

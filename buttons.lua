@@ -1,5 +1,7 @@
 local _, MaxDps = ...;
 
+local CustomGlow = LibStub('LibCustomGlow-1.0');
+
 MaxDps.Spells = {};
 MaxDps.Flags = {};
 MaxDps.SpellsGlowing = {};
@@ -124,6 +126,51 @@ function MaxDps:UpdateButtonGlow()
 end
 
 function MaxDps:Glow(button, id, texture, type, color)
+	local opts = self.db.global;
+	if opts.customGlow then
+		local col;
+		if type then
+			if type == 'normal' then
+				local c = self.db.global.highlightColor;
+				col = {c.r, c.g, c.b, c.a};
+			elseif type == 'cooldown' then
+				local c = self.db.global.cooldownColor;
+				col = {c.r, c.g, c.b, c.a};
+			else
+				col = {color.r, color.g, color.b, color.a};
+			end
+		else
+			col = {color.r, color.g, color.b, color.a};
+		end
+
+		if opts.customGlowType == 'pixel' then
+			CustomGlow.PixelGlow_Start(
+				button,
+				col,
+				opts.customGlowLines,
+				opts.customGlowFrequency,
+				opts.customGlowLength,
+				opts.customGlowThickness,
+				0,
+				0,
+				false,
+				id
+			);
+		else
+			CustomGlow.AutoCastGlow_Start(
+				button,
+				col,
+				math.ceil(opts.customGlowParticles),
+				opts.customGlowParticleFrequency,
+				opts.customGlowScale,
+				0,
+				0,
+				id
+			);
+		end
+		return;
+	end
+
 	if button.MaxDpsOverlays and button.MaxDpsOverlays[id] then
 		button.MaxDpsOverlays[id]:Show();
 	else
@@ -137,6 +184,16 @@ function MaxDps:Glow(button, id, texture, type, color)
 end
 
 function MaxDps:HideGlow(button, id)
+	local opts = self.db.global;
+	if opts.customGlow then
+		if opts.customGlowType == 'pixel' then
+			CustomGlow.PixelGlow_Stop(button, id);
+		else
+			CustomGlow.AutoCastGlow_Stop(button, id);
+		end
+		return;
+	end
+
 	if button.MaxDpsOverlays and button.MaxDpsOverlays[id] then
 		button.MaxDpsOverlays[id]:Hide();
 	end

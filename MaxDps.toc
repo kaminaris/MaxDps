@@ -1,6 +1,6 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 8.1.0
+## Version: 8.1.1
 ## Author: Kaminaris
 ## Interface: 80100
 ## SavedVariables: MaxDpsOptions
@@ -16,6 +16,7 @@ Libs\AceEvent-3.0\AceEvent-3.0.xml
 Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
 Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
 
