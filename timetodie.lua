@@ -5,6 +5,7 @@ local UnitGUID = UnitGUID;
 local UnitExists = UnitExists;
 local tinsert = tinsert;
 local tremove = tremove;
+local MathMin = math.min;
 local wipe = wipe;
 
 function MaxDps:InitTTD(maxSamples, interval)
@@ -89,7 +90,7 @@ function MaxDps:GetTimeToDie()
 		if b ~= 0 then
 			-- Use best fit line to calculate estimated time to reach target health
 			seconds = (0 - a) / b;
-			seconds = math.min(5*60, seconds - (GetTime() - 0));
+			seconds = MathMin(5*60, seconds - (GetTime() - 0));
 
 			if seconds < 0 then
 				seconds = 5*60
@@ -97,5 +98,6 @@ function MaxDps:GetTimeToDie()
 		end
 	end
 
+	if WeakAuras then WeakAuras.ScanEvents('MAXDPS_TIME_TO_DIE', seconds); end
 	return seconds;
 end

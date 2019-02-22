@@ -454,6 +454,8 @@ function MaxDps:GlowCooldown(spellId, condition)
 		self.Flags[spellId] = false;
 		self:ClearGlowIndependent(spellId, spellId);
 	end
+
+	if WeakAuras then WeakAuras.ScanEvents('MAXDPS_COOLDOWN_UPDATE', self.Flags); end
 end
 
 function MaxDps:GlowSpell(spellId)

@@ -625,6 +625,7 @@ function MaxDps:SmartAoe(itemId)
 		end
 	end
 
+	if WeakAuras then WeakAuras.ScanEvents('MAXDPS_TARGET_COUNT', count); end
 	return count;
 end
 
