@@ -37,7 +37,7 @@ function MaxDps:CreateOverlay(parent, id, texture, type, color)
 
 	t:SetAllPoints(frame);
 
-	if type then
+	if not color and type then
 		frame.ovType = type;
 		if type == 'normal' then
 			local c = self.db.global.highlightColor;
@@ -128,19 +128,15 @@ end
 function MaxDps:Glow(button, id, texture, type, color)
 	local opts = self.db.global;
 	if opts.customGlow then
-		local col;
-		if type then
+		local col = color and {color.r, color.g, color.b, color.a} or nil;
+		if not color and type then
 			if type == 'normal' then
 				local c = self.db.global.highlightColor;
 				col = {c.r, c.g, c.b, c.a};
 			elseif type == 'cooldown' then
 				local c = self.db.global.cooldownColor;
 				col = {c.r, c.g, c.b, c.a};
-			else
-				col = {color.r, color.g, color.b, color.a};
 			end
-		else
-			col = {color.r, color.g, color.b, color.a};
 		end
 
 		if opts.customGlowType == 'pixel' then
@@ -442,13 +438,13 @@ function MaxDps:ClearGlowIndependent(spellId, id)
 	end
 end
 
-function MaxDps:GlowCooldown(spellId, condition)
+function MaxDps:GlowCooldown(spellId, condition, color)
 	if self.Flags[spellId] == nil then
 		self.Flags[spellId] = false;
 	end
 	if condition and not self.Flags[spellId] then
 		self.Flags[spellId] = true;
-		self:GlowIndependent(spellId, spellId);
+		self:GlowIndependent(spellId, spellId, nil, color);
 	end
 	if not condition and self.Flags[spellId] then
 		self.Flags[spellId] = false;

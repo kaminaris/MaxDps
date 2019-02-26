@@ -304,6 +304,9 @@ function MaxDps:EndCast(target)
 	local c = t * 1000;
 	local gcd = 0;
 	local _, _, _, _, endTime, _, _, _, spellId = UnitCastingInfo(target or 'player');
+	if not spellId then
+		_, _, _, _, endTime, _, _, spellId = UnitChannelInfo(target or 'player');
+	end
 
 	-- we can only check player global cooldown
 	if target == 'player' then
@@ -573,6 +576,13 @@ function MaxDps:ThreatCounter()
 		if UnitThreatSituation('player', unit) ~= nil then
 			count = count + 1;
 			tinsert(units, unit);
+		else
+			local npcId = tonumber((UnitGUID(unit)):sub(-12, -9), 16);
+			-- Risen Soul, Tormented Soul, Lost Soul
+			if npcId == 148716 or npcId == 148893 or npcId == 148894 then
+				count = count + 1;
+				tinsert(units, unit);
+			end
 		end
 	end
 
