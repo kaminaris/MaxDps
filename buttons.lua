@@ -36,8 +36,9 @@ function MaxDps:CreateOverlay(parent, id, texture, type, color)
 	end
 
 	t:SetAllPoints(frame);
-
-	if not color and type then
+	if color then
+		t:SetVertexColor(color.r, color.g, color.b, color.a);
+	elseif type then
 		frame.ovType = type;
 		if type == 'normal' then
 			local c = self.db.global.highlightColor;
@@ -45,11 +46,7 @@ function MaxDps:CreateOverlay(parent, id, texture, type, color)
 		elseif type == 'cooldown' then
 			local c = self.db.global.cooldownColor;
 			t:SetVertexColor(c.r, c.g, c.b, c.a);
-		else
-			t:SetVertexColor(color.r, color.r, color.r, color.r);
 		end
-	else
-		t:SetVertexColor(color.r, color.g, color.b, color.a);
 	end
 
 	tinsert(self.Frames, frame);
@@ -73,7 +70,7 @@ function MaxDps:DestroyAllOverlays()
 end
 
 function MaxDps:ApplyOverlayChanges()
-	for key, frame in pairs(self.Frames) do
+	for _, frame in pairs(self.Frames) do
 		local sizeMult = self.db.global.sizeMult or 1.4;
 		frame:SetWidth(frame:GetParent():GetWidth() * sizeMult);
 		frame:SetHeight(frame:GetParent():GetHeight() * sizeMult);

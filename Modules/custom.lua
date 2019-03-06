@@ -4,6 +4,12 @@ local StdUi = LibStub('StdUi');
 
 local Custom = MaxDps:NewModule('Custom');
 
+local TableInsert = tinsert;
+local GetNumClasses = GetNumClasses;
+local GetClassInfo = GetClassInfo;
+local GetNumSpecializationsForClassID = GetNumSpecializationsForClassID;
+local GetSpecializationInfoForClassID = GetSpecializationInfoForClassID;
+
 function Custom:GetClassIcon(classTag)
 	local x1, x2, y1, y2 = unpack(CLASS_ICON_TCOORDS[classTag]);
 
@@ -21,21 +27,20 @@ function Custom:Enable()
 	self.classList = {};
 	self.specList = {};
 
-	local x = GetNumClasses();
-	for i = 1, x do
+	for i = 1, GetNumClasses() do
 		local classDisplayName, classTag, classId = GetClassInfo(i);
-		tinsert(self.classList, {text = self:GetClassIcon(classTag) .. ' ' .. classDisplayName, value = classId});
+		TableInsert(self.classList, {text = self:GetClassIcon(classTag) .. ' ' .. classDisplayName, value = classId});
 
 		local specNum = GetNumSpecializationsForClassID(classId);
 		for sI = 1, specNum do
-			local specId, specName, _ , specIcon = GetSpecializationInfoForClassID(classId, sI);
+			local _, specName, _ , specIcon = GetSpecializationInfoForClassID(classId, sI);
 
 			specName = '|T' .. specIcon .. ':0|t ' .. specName;
 			if not self.Specs[classId] then self.Specs[classId] = {}; end;
 			self.Specs[classId][sI] = specName;
 
 			if not self.specList[classId] then self.specList[classId] = {}; end
-			tinsert(self.specList[classId], {text = specName, value = sI});
+			TableInsert(self.specList[classId], {text = specName, value = sI});
 		end
 	end
 
@@ -61,7 +66,8 @@ function Custom:ShowCustomWindow()
 		return;
 	end
 
-	self.CustomWindow = StdUi:Window(nil, 'MaxDps Custom Rotations', 700, 550);
+	self.CustomWindow = StdUi:Window(nil, 'MaxDps', 700, 550);
+
 	self.CustomWindow:SetPoint('CENTER');
 	self.CustomWindow:SetScript('OnHide', function()
 		Custom:LoadCustomRotations();

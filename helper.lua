@@ -19,6 +19,10 @@ local _Bloodlusts = {_Bloodlust, _TimeWrap, _Heroism, _AncientHysteria, _Netherw
 -- Global functions
 local UnitAura = UnitAura;
 local pairs = pairs;
+local ipairs = ipairs;
+local StringSplit = strsplit;
+local Select = select;
+local TableInsert = tinsert;
 local GetTalentInfo = GetTalentInfo;
 local C_AzeriteEmpoweredItem = C_AzeriteEmpoweredItem;
 local GetSpecialization = GetSpecialization;
@@ -28,6 +32,7 @@ local UnitCastingInfo = UnitCastingInfo;
 local GetTime = GetTime;
 local GetSpellCooldown = GetSpellCooldown;
 local GetSpellInfo = GetSpellInfo;
+local UnitGUID = UnitGUID;
 local GetSpellBaseCooldown = GetSpellBaseCooldown;
 local IsSpellInRange = IsSpellInRange;
 local UnitSpellHaste = UnitSpellHaste;
@@ -575,13 +580,14 @@ function MaxDps:ThreatCounter()
 	for i, unit in ipairs(self.visibleNameplates) do
 		if UnitThreatSituation('player', unit) ~= nil then
 			count = count + 1;
-			tinsert(units, unit);
+			TableInsert(units, unit);
 		else
-			local npcId = tonumber((UnitGUID(unit)):sub(-12, -9), 16);
+			local npcId = Select(6, StringSplit('-', UnitGUID(unit)));
+			npcId = tonumber(npcId);
 			-- Risen Soul, Tormented Soul, Lost Soul
 			if npcId == 148716 or npcId == 148893 or npcId == 148894 then
 				count = count + 1;
-				tinsert(units, unit);
+				TableInsert(units, unit);
 			end
 		end
 	end
