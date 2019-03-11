@@ -37,6 +37,9 @@ function MaxDps:CreateOverlay(parent, id, texture, type, color)
 
 	t:SetAllPoints(frame);
 	if color then
+		if not color.r then
+			color = self.db.global.highlightColor;
+		end
 		t:SetVertexColor(color.r, color.g, color.b, color.a);
 	elseif type then
 		frame.ovType = type;
