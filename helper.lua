@@ -61,6 +61,7 @@ function MaxDps:IntUnitAura(unit, nameOrId, filter, timeShift)
 	local aura = {
 		name           = nil,
 		up             = false,
+		upMath		   = 0,
 		count          = 0,
 		expirationTime = 0,
 		remains        = 0,
@@ -94,6 +95,7 @@ function MaxDps:IntUnitAura(unit, nameOrId, filter, timeShift)
 			return {
 				name           = name,
 				up             = remains > 0,
+				upMath		   = remains > 0 and 1 or 0,
 				count          = count,
 				expirationTime = expirationTime,
 				remains        = remains,
@@ -137,6 +139,7 @@ function MaxDps:CollectAura(unit, timeShift, output, filter)
 		output[id] = {
 			name           = name,
 			up             = remains > 0,
+			upMath		   = remains > 0 and 1 or 0,
 			count          = count,
 			expirationTime = expirationTime,
 			remains        = remains,
@@ -152,6 +155,7 @@ local auraMetaTable = {
 	__index = function()
 		return {
 			up          = false,
+			upMath		= 0,
 			count       = 0,
 			remains     = 0,
 			duration    = 0,
