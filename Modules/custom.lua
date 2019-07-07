@@ -2,8 +2,9 @@ local SharedMedia = LibStub('LibSharedMedia-3.0');
 ---@type StdUi
 local StdUi = LibStub('StdUi');
 
-local Custom = MaxDps:NewModule('Custom');
+local Custom = MaxDps:NewModule('Custom', 'AceTimer-3.0');
 
+local IndentationLib = IndentationLib;
 local TableInsert = tinsert;
 local GetNumClasses = GetNumClasses;
 local GetClassInfo = GetClassInfo;
@@ -60,6 +61,14 @@ StaticPopupDialogs['REMOVE_MAXDPS_ROTATION'] = {
 	hideOnEscape = true,
 }
 
+local saveDebounceTimer;
+function Custom:SaveEditorValue(value)
+	value = IndentationLib.decode(value);
+	if Custom.CurrentEditRotation then
+		Custom.CurrentEditRotation.fn = value;
+	end
+end
+
 function Custom:ShowCustomWindow()
 	if self.CustomWindow then
 		self.CustomWindow:Show();
@@ -109,8 +118,6 @@ function Custom:ShowCustomWindow()
 	StdUi:AddLabel(self.CustomWindow, rotationSpec, 'Specialization', 'TOP');
 	rotationSpec.OnValueChanged = function(self, value)
 		if not Custom.CurrentEditRotation or Custom.EditingRotation then return end;
-		print(Custom.CurrentEditRotation.spec);
-		print(value);
 		Custom.CurrentEditRotation.spec = value;
 	end;
 
@@ -137,11 +144,12 @@ function Custom:ShowCustomWindow()
 	end
 	editor.OnValueChanged = function(self, value)
 		if not Custom.CurrentEditRotation then return end;
-
-		value = IndentationLib.decode(value);
-		if Custom.CurrentEditRotation then
-			Custom.CurrentEditRotation.fn = value;
+		if saveDebounceTimer then
+			Custom:CancelTimer(saveDebounceTimer);
+			saveDebounceTimer = nil;
 		end
+
+		saveDebounceTimer = Custom:ScheduleTimer('SaveEditorValue', 0.4, value);
 	end;
 
 	StdUi:GlueTop(btn, self.CustomWindow, 10, -30, 'LEFT');

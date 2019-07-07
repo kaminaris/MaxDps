@@ -28,6 +28,8 @@ local C_AzeriteEmpoweredItem = C_AzeriteEmpoweredItem;
 local GetSpecialization = GetSpecialization;
 local GetSpecializationInfo = GetSpecializationInfo;
 local AzeriteUtil = AzeriteUtil;
+local C_AzeriteEssence = C_AzeriteEssence;
+local FindSpellOverrideByID = FindSpellOverrideByID;
 local UnitCastingInfo = UnitCastingInfo;
 local GetTime = GetTime;
 local GetSpellCooldown = GetSpellCooldown;
@@ -270,6 +272,44 @@ function MaxDps:GetAzeriteTraits()
 
 	self.AzeriteTraits = t;
 	return t;
+end
+
+function MaxDps:GetAzeriteEssences()
+	if not self.AzeriteEssences then
+		self.AzeriteEssences = {
+			major = {},
+			minor = {}
+		};
+	else
+		self.AzeriteEssences.major = {};
+		self.AzeriteEssences.minor = {};
+	end
+
+	local result = self.AzeriteEssences;
+
+	local milestones = C_AzeriteEssence.GetMilestones();
+	for i, milestoneInfo in ipairs(milestones) do
+		local spellId = C_AzeriteEssence.GetMilestoneSpell(milestoneInfo.ID);
+		local essenceId = C_AzeriteEssence.GetMilestoneEssence(milestoneInfo.ID);
+		if milestoneInfo.unlocked then
+			if milestoneInfo.slot == Enum.AzeriteEssence.MainSlot then
+				-- Major
+				if essenceId then
+					local realSpellId = FindSpellOverrideByID(spellId);
+					result.major[realSpellId] = true;
+				end
+			elseif milestoneInfo.slot == Enum.AzeriteEssence.PassiveOneSlot or
+				milestoneInfo.slot == Enum.AzeriteEssence.PassiveTwoSlot
+			then
+				if essenceId then
+					local realSpellId = FindSpellOverrideByID(spellId);
+					result.minor[realSpellId] = true;
+				end
+			end
+		end
+	end
+
+	return result;
 end
 
 function MaxDps:DumpAzeriteTraits()

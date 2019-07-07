@@ -76,6 +76,7 @@ function MaxDps:EnableRotation()
 
 	self:CheckTalents();
 	self:GetAzeriteTraits();
+	self:GetAzeriteEssences();
 	self:CheckIsPlayerMelee();
 	if self.ModuleOnEnable then
 		self.ModuleOnEnable();
