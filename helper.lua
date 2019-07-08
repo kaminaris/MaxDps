@@ -288,6 +288,10 @@ function MaxDps:GetAzeriteEssences()
 	local result = self.AzeriteEssences;
 
 	local milestones = C_AzeriteEssence.GetMilestones();
+	if not milestones then
+		return result;
+	end
+
 	for i, milestoneInfo in ipairs(milestones) do
 		local spellId = C_AzeriteEssence.GetMilestoneSpell(milestoneInfo.ID);
 		local essenceId = C_AzeriteEssence.GetMilestoneEssence(milestoneInfo.ID);
@@ -301,7 +305,7 @@ function MaxDps:GetAzeriteEssences()
 			elseif milestoneInfo.slot == Enum.AzeriteEssence.PassiveOneSlot or
 				milestoneInfo.slot == Enum.AzeriteEssence.PassiveTwoSlot
 			then
-				if essenceId then
+				if essenceId and spellId then
 					local realSpellId = FindSpellOverrideByID(spellId);
 					result.minor[realSpellId] = true;
 				end
