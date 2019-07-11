@@ -298,7 +298,7 @@ function MaxDps:GetAzeriteEssences()
 		if milestoneInfo.unlocked then
 			if milestoneInfo.slot == Enum.AzeriteEssence.MainSlot then
 				-- Major
-				if essenceId then
+				if essenceId and spellId then
 					local realSpellId = FindSpellOverrideByID(spellId);
 					result.major[realSpellId] = true;
 				end
