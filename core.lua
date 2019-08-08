@@ -229,6 +229,7 @@ function MaxDps:PrepareFrameData()
 	self.FrameData.buff, self.FrameData.debuff = MaxDps:CollectAuras();
 	self.FrameData.talents = self.PlayerTalents;
 	self.FrameData.azerite = self.AzeriteTraits;
+	self.FrameData.essences = self.AzeriteEssences;
 	self.FrameData.spellHistory = self.spellHistory;
 	self.FrameData.timeToDie = self:GetTimeToDie();
 end
