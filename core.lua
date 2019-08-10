@@ -116,6 +116,7 @@ function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_TALENT_UPDATE');
 	self:RegisterEvent('PLAYER_REGEN_DISABLED');
 	self:RegisterEvent('PLAYER_ENTERING_WORLD');
+	self:RegisterEvent('AZERITE_ESSENCE_ACTIVATED');
 
 	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch');
 	self:RegisterEvent('ACTIONBAR_HIDEGRID', 'ButtonFetch');
@@ -169,6 +170,10 @@ function MaxDps:NAME_PLATE_UNIT_REMOVED(_, nameplateUnit)
 end
 
 function MaxDps:PLAYER_TALENT_UPDATE()
+	self:DisableRotation();
+end
+
+function MaxDps:AZERITE_ESSENCE_ACTIVATED()
 	self:DisableRotation();
 end
 

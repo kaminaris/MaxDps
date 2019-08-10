@@ -277,11 +277,11 @@ end
 function MaxDps:GetAzeriteEssences()
 	if not self.AzeriteEssences then
 		self.AzeriteEssences = {
-			major = {},
+			major = false,
 			minor = {}
 		};
 	else
-		self.AzeriteEssences.major = {};
+		self.AzeriteEssences.major = false;
 		self.AzeriteEssences.minor = {};
 	end
 
@@ -300,7 +300,7 @@ function MaxDps:GetAzeriteEssences()
 				-- Major
 				if essenceId and spellId then
 					local realSpellId = FindSpellOverrideByID(spellId);
-					result.major[realSpellId] = true;
+					result.major = realSpellId;
 				end
 			elseif milestoneInfo.slot == Enum.AzeriteEssence.PassiveOneSlot or
 				milestoneInfo.slot == Enum.AzeriteEssence.PassiveTwoSlot
@@ -314,6 +314,15 @@ function MaxDps:GetAzeriteEssences()
 	end
 
 	return result;
+end
+
+function MaxDps:GlowEssences()
+	local fd = MaxDps.FrameData;
+	if not fd.essences.major then
+		return;
+	end
+
+	MaxDps:GlowCooldown(fd.essences.major, fd.cooldown[fd.essences.major].ready);
 end
 
 function MaxDps:DumpAzeriteTraits()
