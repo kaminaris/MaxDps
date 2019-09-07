@@ -75,8 +75,6 @@ function MaxDps:EnableRotation()
 	self:Fetch();
 
 	self:CheckTalents();
-	self:GetAzeriteTraits();
-	self:GetAzeriteEssences();
 	self:CheckIsPlayerMelee();
 	if self.ModuleOnEnable then
 		self.ModuleOnEnable();
@@ -113,24 +111,21 @@ end
 
 function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_TARGET_CHANGED');
-	self:RegisterEvent('PLAYER_TALENT_UPDATE');
+	--self:RegisterEvent('PLAYER_TALENT_UPDATE');
 	self:RegisterEvent('PLAYER_REGEN_DISABLED');
 	self:RegisterEvent('PLAYER_ENTERING_WORLD');
-	self:RegisterEvent('AZERITE_ESSENCE_ACTIVATED');
+	--self:RegisterEvent('AZERITE_ESSENCE_ACTIVATED');
 
 	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch');
 	self:RegisterEvent('ACTIONBAR_HIDEGRID', 'ButtonFetch');
 	self:RegisterEvent('ACTIONBAR_PAGE_CHANGED', 'ButtonFetch');
 	self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch');
 	self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch');
-	self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch');
-	self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'ButtonFetch');
+	--self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch');
+	--self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'ButtonFetch');
 	self:RegisterEvent('UPDATE_MACROS', 'ButtonFetch');
-	self:RegisterEvent('VEHICLE_UPDATE', 'ButtonFetch');
+	--self:RegisterEvent('VEHICLE_UPDATE', 'ButtonFetch');
 	self:RegisterEvent('UPDATE_STEALTH', 'ButtonFetch');
-
-	self:RegisterEvent('UNIT_ENTERED_VEHICLE');
-	self:RegisterEvent('UNIT_EXITED_VEHICLE');
 
 	self:RegisterEvent('NAME_PLATE_UNIT_ADDED');
 	self:RegisterEvent('NAME_PLATE_UNIT_REMOVED');
@@ -173,25 +168,7 @@ function MaxDps:PLAYER_TALENT_UPDATE()
 	self:DisableRotation();
 end
 
-function MaxDps:AZERITE_ESSENCE_ACTIVATED()
-	self:DisableRotation();
-end
-
-function MaxDps:UNIT_ENTERED_VEHICLE(event, unit)
-	if unit == 'player' and self.rotationEnabled then
-		self:DisableRotation();
-	end
-end
-
-function MaxDps:UNIT_EXITED_VEHICLE(event, unit)
-	if unit == 'player' then
-		self:InitRotations();
-		self:EnableRotation();
-	end
-end
-
 function MaxDps:PLAYER_ENTERING_WORLD()
-	self:UpdateButtonGlow();
 end
 
 function MaxDps:PLAYER_TARGET_CHANGED()
@@ -233,8 +210,6 @@ function MaxDps:PrepareFrameData()
 	self.FrameData.gcd = self:GlobalCooldown();
 	self.FrameData.buff, self.FrameData.debuff = MaxDps:CollectAuras();
 	self.FrameData.talents = self.PlayerTalents;
-	self.FrameData.azerite = self.AzeriteTraits;
-	self.FrameData.essences = self.AzeriteEssences;
 	self.FrameData.spellHistory = self.spellHistory;
 	self.FrameData.timeToDie = self:GetTimeToDie();
 end
@@ -246,7 +221,7 @@ function MaxDps:InvokeNextSpell()
 	self:PrepareFrameData();
 
 	--For backward compatibility only
-	self.Spell = self:NextSpell(self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcd, self.PlayerTalents, self.AzeriteTraits);
+	self.Spell = self:NextSpell(self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcd, self.PlayerTalents);
 
 	if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil then
 		self:GlowNextSpell(self.Spell);
@@ -267,16 +242,14 @@ function MaxDps:InitRotations()
 	self:Print(self.Colors.Info .. 'Initializing rotations');
 
 	local _, _, classId = UnitClass('player');
-	local spec = GetSpecialization();
 	self.ClassId = classId;
-	self.Spec = spec;
 
 	if not self.Custom then
 		self.Custom = self:EnableModule('Custom');
 	end
 
 	self.Custom:LoadCustomRotations();
-	local customRotation = self.Custom:GetCustomRotation(classId, spec);
+	local customRotation = self.Custom:GetCustomRotation(classId);
 
 	if customRotation then
 		self.NextSpell = customRotation.fn;

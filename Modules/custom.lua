@@ -7,9 +7,7 @@ local Custom = MaxDps:NewModule('Custom', 'AceTimer-3.0');
 local IndentationLib = IndentationLib;
 local TableInsert = tinsert;
 local GetNumClasses = GetNumClasses;
-local GetClassInfo = GetClassInfo;
-local GetNumSpecializationsForClassID = GetNumSpecializationsForClassID;
-local GetSpecializationInfoForClassID = GetSpecializationInfoForClassID;
+local GetClassInfo = C_CreatureInfo.GetClassInfo;
 
 function Custom:GetClassIcon(classTag)
 	local x1, x2, y1, y2 = unpack(CLASS_ICON_TCOORDS[classTag]);
@@ -23,25 +21,16 @@ function Custom:Enable()
 	SharedMedia:Register('font', 'Inconsolata', [[Interface\Addons\MaxDps\media\Inconsolata.otf]]);
 
 	self.CustomRotations = {};
-	self.Specs = {};
 	-- private for dropdowns
 	self.classList = {};
-	self.specList = {};
 
-	for i = 1, GetNumClasses() do
-		local classDisplayName, classTag, classId = GetClassInfo(i);
-		TableInsert(self.classList, {text = self:GetClassIcon(classTag) .. ' ' .. classDisplayName, value = classId});
-
-		local specNum = GetNumSpecializationsForClassID(classId);
-		for sI = 1, specNum do
-			local _, specName, _ , specIcon = GetSpecializationInfoForClassID(classId, sI);
-
-			specName = '|T' .. specIcon .. ':0|t ' .. specName;
-			if not self.Specs[classId] then self.Specs[classId] = {}; end;
-			self.Specs[classId][sI] = specName;
-
-			if not self.specList[classId] then self.specList[classId] = {}; end
-			TableInsert(self.specList[classId], {text = specName, value = sI});
+	for i = 1, 12 do
+		local info = GetClassInfo(i);
+		if info then
+			TableInsert(self.classList, {
+				text = self:GetClassIcon(info.classFile) .. ' ' .. info.className,
+				value = info.classID
+			});
 		end
 	end
 
@@ -105,20 +94,6 @@ function Custom:ShowCustomWindow()
 		if not Custom.CurrentEditRotation or Custom.EditingRotation then return end;
 
 		Custom.CurrentEditRotation.class = value;
-
-		local specs = Custom.specList[value];
-		if specs then
-			--Custom.CustomWindow.rotationSpec:SetValue(Custom.CurrentEditRotation.spec);
-			Custom.CustomWindow.rotationSpec:SetOptions(Custom.specList[value]);
-		end
-	end;
-
-	--		Rotation Spec
-	local rotationSpec = StdUi:Dropdown(self.CustomWindow, 140, 24, self.classList);
-	StdUi:AddLabel(self.CustomWindow, rotationSpec, 'Specialization', 'TOP');
-	rotationSpec.OnValueChanged = function(self, value)
-		if not Custom.CurrentEditRotation or Custom.EditingRotation then return end;
-		Custom.CurrentEditRotation.spec = value;
 	end;
 
 	--		Rotation Enabled
@@ -156,15 +131,13 @@ function Custom:ShowCustomWindow()
 	StdUi:GlueAcross(rotations, self.CustomWindow, 10, -80, -500, 20);
 	StdUi:GlueAfter(rotationName, rotations, 20, -20);
 	StdUi:GlueRight(rotationClass, rotationName, 10, 0);
-	StdUi:GlueRight(rotationSpec, rotationClass, 10, 0);
 	StdUi:GlueBelow(rotationEnabled, rotationName, 0, -10, 'LEFT');
-	StdUi:GlueBelow(rotationDelete, rotationSpec, 0, -10, 'RIGHT');
+	StdUi:GlueBelow(rotationDelete, rotationEnabled, 0, -10, 'RIGHT');
 	StdUi:GlueAcross(editor.panel, self.CustomWindow, 220, -200, -10, 20);
 
 	self.CustomWindow.rotations = rotations;
 	self.CustomWindow.rotationName = rotationName;
 	self.CustomWindow.rotationClass = rotationClass;
-	self.CustomWindow.rotationSpec = rotationSpec;
 	self.CustomWindow.rotationEnabled = rotationEnabled;
 	self.CustomWindow.editor = editor;
 
@@ -209,7 +182,6 @@ function Custom:AddCustomRotation()
 		name    = 'New Rotation',
 		enabled = false,
 		class   = nil,
-		spec    = nil,
 		fn      = "function(_, timeShift, currentSpell, gcd, talents)\n    \nend",
 	};
 
@@ -238,15 +210,6 @@ function Custom:EditRotation(rotation)
 	self.CustomWindow.rotationEnabled:SetChecked(rotation.enabled);
 	self.CustomWindow.rotationClass:SetValue(rotation.class);
 
-	local specs = Custom.specList[rotation.class];
-
-	if specs then
-		self.CustomWindow.rotationSpec:SetOptions(specs);
-	else
-		self.CustomWindow.rotationSpec:SetOptions({});
-	end
-
-	self.CustomWindow.rotationSpec:SetValue(rotation.spec);
 	self.CustomWindow.editor:SetText(IndentationLib.encode(rotation.fn));
 	self:EnableDisableCustomFields(false);
 	Custom.EditingRotation = false;
@@ -258,13 +221,11 @@ function Custom:EnableDisableCustomFields(flag, clear)
 		self.CustomWindow.rotationName:Disable();
 		self.CustomWindow.rotationEnabled:Disable();
 		self.CustomWindow.rotationClass:Disable();
-		self.CustomWindow.rotationSpec:Disable();
 		self.CustomWindow.editor:Disable();
 	else
 		self.CustomWindow.rotationName:Enable();
 		self.CustomWindow.rotationEnabled:Enable();
 		self.CustomWindow.rotationClass:Enable();
-		self.CustomWindow.rotationSpec:Enable();
 		self.CustomWindow.editor:Enable();
 	end
 
@@ -272,7 +233,6 @@ function Custom:EnableDisableCustomFields(flag, clear)
 		self.CustomWindow.rotationName:SetText('');
 		self.CustomWindow.rotationEnabled:SetChecked(false);
 		self.CustomWindow.rotationClass:SetValue(nil);
-		self.CustomWindow.rotationSpec:SetValue(nil);
 		self.CustomWindow.editor:SetText('');
 	end
 end
@@ -283,13 +243,13 @@ function Custom:LoadCustomRotations()
 	end
 
 	for k, rotation in pairs(MaxDps.db.global.customRotations) do
-		if rotation.enabled and rotation.class ~= nil and rotation.spec ~= nil then
+		if rotation.enabled and rotation.class ~= nil then
 			local fn = Custom.LoadFunction(rotation.fn);
 			if not self.CustomRotations[rotation.class] then
 				self.CustomRotations[rotation.class] = {}
 			end
 
-			self.CustomRotations[rotation.class][rotation.spec] = {
+			self.CustomRotations[rotation.class] = {
 				name = rotation.name,
 				fn   = fn
 			}
@@ -299,9 +259,9 @@ function Custom:LoadCustomRotations()
 	MaxDps:Print(MaxDps.Colors.Info .. 'Custom Rotations Loaded!');
 end
 
-function Custom:GetCustomRotation(classId, spec)
-	if self.CustomRotations[classId] and self.CustomRotations[classId][spec] then
-		return self.CustomRotations[classId][spec];
+function Custom:GetCustomRotation(classId)
+	if self.CustomRotations[classId] and self.CustomRotations[classId] then
+		return self.CustomRotations[classId];
 	else
 		return nil;
 	end

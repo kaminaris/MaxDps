@@ -12,34 +12,15 @@ MaxDps.Class.CheckTalents = function()
 	-- other checking functions
 end
 
-function MaxDps:EnableRotationModule(mode)
-	mode = mode or 1;
+function MaxDps:EnableRotationModule()
+
 	MaxDps.Description = "Class Module [Spec1, Spec2, Spec3]";
 	MaxDps.ModuleOnEnable = MaxDps.Class.CheckTalents;
-	if mode == 1 then
-		MaxDps.NextSpell = MaxDps.Class.Spec1;
-	end;
-	if mode == 2 then
-		MaxDps.NextSpell = MaxDps.Class.Spec2;
-	end;
-	if mode == 3 then
-		MaxDps.NextSpell = MaxDps.Class.Spec3;
-	end;
+
+	MaxDps.NextSpell = MaxDps.Class.Rotation;
 end
 
-function MaxDps.Class.Spec1()
-	local timeShift, currentSpell, gcd = MaxDps:EndCast();
-
-	return _Spell;
-end
-
-function MaxDps.Class.Spec2()
-	local timeShift, currentSpell, gcd = MaxDps:EndCast();
-
-	return _Spell;
-end
-
-function MaxDps.Class.Spec3()
+function MaxDps.Class.Rotation()
 	local timeShift, currentSpell, gcd = MaxDps:EndCast();
 
 	return _Spell;

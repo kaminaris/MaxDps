@@ -24,20 +24,15 @@ local StringSplit = strsplit;
 local Select = select;
 local TableInsert = tinsert;
 local GetTalentInfo = GetTalentInfo;
-local C_AzeriteEmpoweredItem = C_AzeriteEmpoweredItem;
-local GetSpecialization = GetSpecialization;
-local GetSpecializationInfo = GetSpecializationInfo;
-local AzeriteUtil = AzeriteUtil;
-local C_AzeriteEssence = C_AzeriteEssence;
 local FindSpellOverrideByID = FindSpellOverrideByID;
-local UnitCastingInfo = UnitCastingInfo;
+local CastingInfo = CastingInfo;
+local ChannelInfo = ChannelInfo;
 local GetTime = GetTime;
 local GetSpellCooldown = GetSpellCooldown;
 local GetSpellInfo = GetSpellInfo;
 local UnitGUID = UnitGUID;
 local GetSpellBaseCooldown = GetSpellBaseCooldown;
 local IsSpellInRange = IsSpellInRange;
-local UnitSpellHaste = UnitSpellHaste;
 local GetSpellCharges = GetSpellCharges;
 local C_NamePlate = C_NamePlate;
 local UnitPower = UnitPower;
@@ -201,21 +196,13 @@ end
 --- Talents and specializations functions
 -----------------------------------------------------------------
 
-function MaxDps:SpecName()
-	local currentSpec = GetSpecialization();
-	local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or 'None';
-	return currentSpecName;
-end
-
 function MaxDps:CheckTalents()
 	self.PlayerTalents = {};
 
-	for talentRow = 1, 7 do
-		for talentCol = 1, 3 do
-			local _, name, _, sel, _, id = GetTalentInfo(talentRow, talentCol, 1);
-			if sel then
-				self.PlayerTalents[id] = 1;
-			end
+	-- TODO: actually write it
+	for i = 1, GetNumTalentTabs() do
+		for j = 1, GetNumTalents(i) do
+			local name, id, unknown, known = GetTalentInfo(i, j);
 		end
 	end
 end
@@ -224,16 +211,15 @@ MaxDps.isMelee = false;
 function MaxDps:CheckIsPlayerMelee()
 	self.isMelee = false;
 	local class = select(3, UnitClass('player'));
-	local spec = GetSpecialization();
 
 	-- Warrior, Paladin, Rogue, DeathKnight, Monk, Demon Hunter
 	if class == 1 or class == 2 or class == 4 or class == 6 or class == 10 or class == 12 then
 		self.isMelee = true;
-	elseif class == 3 and spec == 3 then -- Survival Hunter
+	elseif class == 3 then -- Survival Hunter
 		self.isMelee = true;
-	elseif class == 7 and spec == 2 then -- Enh Shaman
+	elseif class == 7 then -- Enh Shaman
 		self.isMelee = true;
-	elseif class == 11 and (spec == 2 or spec == 3) then -- Guardian or Feral Druid
+	elseif class == 11 then -- Guardian or Feral Druid
 		self.isMelee = true;
 	end
 
@@ -248,74 +234,6 @@ function MaxDps:TalentEnabled(talent)
 	self:Print(self.Colors.Error .. 'MaxDps:TalentEnabled is deprecated, please use table `talents` to check talents');
 end
 
-function MaxDps:GetAzeriteTraits()
-	local t = setmetatable({}, {__index = function() return 0; end});
-
-	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
-		local tierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo(itemLocation);
-		for i = 1, #tierInfo do
-			for x = 1, #tierInfo[i].azeritePowerIDs do
-				local powerId = tierInfo[i].azeritePowerIDs[x];
-				if C_AzeriteEmpoweredItem.IsPowerSelected(itemLocation, powerId) then
-					local spellId = C_AzeriteEmpoweredItem.GetPowerInfo(powerId).spellID;
-					if t[spellId] then
-						t[spellId] = t[spellId] + 1;
-					else
-						t[spellId] = 1;
-					end
-
-				end
-
-			end
-		end
-	end
-
-	self.AzeriteTraits = t;
-	return t;
-end
-
-function MaxDps:GetAzeriteEssences()
-	if not self.AzeriteEssences then
-		self.AzeriteEssences = {
-			major = false,
-			minor = {}
-		};
-	else
-		self.AzeriteEssences.major = false;
-		self.AzeriteEssences.minor = {};
-	end
-
-	local result = self.AzeriteEssences;
-
-	local milestones = C_AzeriteEssence.GetMilestones();
-	if not milestones then
-		return result;
-	end
-
-	for i, milestoneInfo in ipairs(milestones) do
-		local spellId = C_AzeriteEssence.GetMilestoneSpell(milestoneInfo.ID);
-		local essenceId = C_AzeriteEssence.GetMilestoneEssence(milestoneInfo.ID);
-		if milestoneInfo.unlocked then
-			if milestoneInfo.slot == Enum.AzeriteEssence.MainSlot then
-				-- Major
-				if essenceId and spellId then
-					local realSpellId = FindSpellOverrideByID(spellId);
-					result.major = realSpellId;
-				end
-			elseif milestoneInfo.slot == Enum.AzeriteEssence.PassiveOneSlot or
-				milestoneInfo.slot == Enum.AzeriteEssence.PassiveTwoSlot
-			then
-				if essenceId and spellId then
-					local realSpellId = FindSpellOverrideByID(spellId);
-					result.minor[realSpellId] = true;
-				end
-			end
-		end
-	end
-
-	return result;
-end
-
 function MaxDps:GlowEssences()
 	local fd = MaxDps.FrameData;
 	if not fd.essences.major then
@@ -323,13 +241,6 @@ function MaxDps:GlowEssences()
 	end
 
 	MaxDps:GlowCooldown(fd.essences.major, fd.cooldown[fd.essences.major].ready);
-end
-
-function MaxDps:DumpAzeriteTraits()
-	for id, rank in pairs(self.AzeriteTraits) do
-		local n = GetSpellInfo(id);
-		print(n .. ' (' .. id .. '): ' .. rank);
-	end
 end
 
 -----------------------------------------------------------------
@@ -360,25 +271,23 @@ end
 --- Casting info helpers
 -----------------------------------------------------------------
 
-function MaxDps:EndCast(target)
-	target = target or 'player';
+function MaxDps:EndCast()
 	local t = GetTime();
 	local c = t * 1000;
 	local gcd = 0;
-	local _, _, _, _, endTime, _, _, _, spellId = UnitCastingInfo(target or 'player');
+	local _, _, _, _, endTime, _, _, _, spellId = CastingInfo();
 	if not spellId then
-		_, _, _, _, endTime, _, _, spellId = UnitChannelInfo(target or 'player');
+		_, _, _, _, endTime, _, _, spellId = ChannelInfo();
 	end
 
 	-- we can only check player global cooldown
-	if target == 'player' then
-		local gstart, gduration = GetSpellCooldown(_GlobalCooldown);
-		gcd = gduration - (t - gstart);
 
-		if gcd < 0 then
-			gcd = 0;
-		end;
-	end
+	local gstart, gduration = GetSpellCooldown(_GlobalCooldown);
+	gcd = gduration - (t - gstart);
+
+	if gcd < 0 then
+		gcd = 0;
+	end;
 
 	if not endTime then
 		return gcd, nil, gcd;
@@ -392,24 +301,12 @@ function MaxDps:EndCast(target)
 	return timeShift, spellId, gcd;
 end
 
-function MaxDps:GlobalCooldown(spellId)
-	local baseGCD = 1.5;
-	if spellId then
-		baseGCD = select(2, GetSpellBaseCooldown(spellId)) / 1000;
-	end
-	local haste = UnitSpellHaste('player');
-	local gcd = baseGCD / ((haste / 100) + 1);
-
-	if gcd < 0.75 then
-		gcd = 0.75;
-	end
-
-	return gcd;
+function MaxDps:GlobalCooldown()
+	return 1.5;
 end
 
 function MaxDps:AttackHaste()
-	local haste = UnitSpellHaste('player');
-	return 1/((haste / 100) + 1);
+	return UnitAttackSpeed('player');
 end
 
 -----------------------------------------------------------------

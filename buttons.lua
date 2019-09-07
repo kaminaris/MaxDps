@@ -90,41 +90,6 @@ function MaxDps:ApplyOverlayChanges()
 	end
 end
 
-function MaxDps:UpdateButtonGlow()
-	local LAB;
-	local LBG;
-	local origShow;
-	local noFunction = function() end;
-
-	if IsAddOnLoaded('ElvUI') then
-		LAB = LibStub:GetLibrary('LibActionButton-1.0-ElvUI');
-		LBG = LibStub:GetLibrary('LibButtonGlow-1.0');
-		origShow = LBG.ShowOverlayGlow;
-	elseif IsAddOnLoaded('Bartender4') then
-		LAB = LibStub:GetLibrary('LibActionButton-1.0');
-	end
-
-	if self.db.global.disableButtonGlow then
-		ActionBarActionEventsFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-		if LAB then
-			LAB.eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-		end
-
-		if LBG then
-			LBG.ShowOverlayGlow = noFunction;
-		end
-	else
-		ActionBarActionEventsFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-		if LAB then
-			LAB.eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-		end
-
-		if LBG then
-			LBG.ShowOverlayGlow = origShow;
-		end
-	end
-end
-
 function MaxDps:Glow(button, id, texture, type, color)
 	local opts = self.db.global;
 	if opts.customGlow then
