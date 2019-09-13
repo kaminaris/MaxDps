@@ -95,40 +95,44 @@ function MaxDps:ApplyOverlayChanges()
 	end
 end
 
-function MaxDps:UpdateButtonGlow()
+do
 	local origShow;
-	local noFunction = function() end;
 
-	local LBG = LibStub('LibButtonGlow-1.0', true);
-	if LBG then
-		origShow = LBG.ShowOverlayGlow;
-	end
+	function MaxDps:UpdateButtonGlow()
+		if self.db.global.disableButtonGlow then
+			ActionBarActionEventsFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
 
-	if self.db.global.disableButtonGlow then
-		ActionBarActionEventsFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-
-		for LAB in pairs(LABs) do
-			local lib = LibStub(LAB, true);
-			if lib then
-				lib.eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+			for LAB in pairs(LABs) do
+				local lib = LibStub(LAB, true);
+				if lib then
+					lib.eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+				end
 			end
-		end
 
-		if LBG then
-			LBG.ShowOverlayGlow = noFunction;
-		end
-	else
-		ActionBarActionEventsFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-
-		for LAB in pairs(LABs) do
-			local lib = LibStub(LAB, true);
-			if lib then
-				lib.eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+			if not origShow then
+				local LBG = LibStub('LibButtonGlow-1.0', true);
+				if LBG then
+					origShow = LBG.ShowOverlayGlow;
+					LBG.ShowOverlayGlow = nop;
+				end
 			end
-		end
+		else
+			ActionBarActionEventsFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
 
-		if LBG then
-			LBG.ShowOverlayGlow = origShow;
+			for LAB in pairs(LABs) do
+				local lib = LibStub(LAB, true);
+				if lib then
+					lib.eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+				end
+			end
+
+			if origShow then
+				local LBG = LibStub('LibButtonGlow-1.0', true);
+				if LBG then
+					LBG.ShowOverlayGlow = origShow;
+					origShow = nil;
+				end
+			end
 		end
 	end
 end
