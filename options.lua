@@ -139,7 +139,10 @@ function MaxDps:AddToBlizzardOptions()
 
 	local disableButtonGlow = StdUi:Checkbox(optionsFrame, 'Dissable blizzard button glow (experimental)', 200, 24);
 	disableButtonGlow:SetChecked(MaxDps.db.global.disableButtonGlow);
-	disableButtonGlow.OnValueChanged = function(_, flag) MaxDps.db.global.disableButtonGlow = flag; end;
+	disableButtonGlow.OnValueChanged = function(_, flag)
+		MaxDps.db.global.disableButtonGlow = flag;
+		MaxDps:UpdateButtonGlow();
+	end;
 
 	local interval = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.interval, 0.01, 2);
 	interval:SetPrecision(2);

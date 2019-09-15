@@ -8,6 +8,11 @@ MaxDps.SpellsGlowing = {};
 MaxDps.FramePool = {};
 MaxDps.Frames = {};
 
+local LABs = {
+	['LibActionButton-1.0'] = true,
+	['LibActionButton-1.0-ElvUI'] = true,
+};
+
 --- Creates frame overlay over a specific frame, it doesn't need to be a button.
 -- @param parent - frame that is suppose to be attached to
 -- @param id - string id of overlay because frame can have multiple overlays
@@ -90,37 +95,44 @@ function MaxDps:ApplyOverlayChanges()
 	end
 end
 
-function MaxDps:UpdateButtonGlow()
-	local LAB;
-	local LBG;
+do
 	local origShow;
-	local noFunction = function() end;
 
-	if IsAddOnLoaded('ElvUI') then
-		LAB = LibStub:GetLibrary('LibActionButton-1.0-ElvUI');
-		LBG = LibStub:GetLibrary('LibButtonGlow-1.0');
-		origShow = LBG.ShowOverlayGlow;
-	elseif IsAddOnLoaded('Bartender4') then
-		LAB = LibStub:GetLibrary('LibActionButton-1.0');
-	end
+	function MaxDps:UpdateButtonGlow()
+		if self.db.global.disableButtonGlow then
+			ActionBarActionEventsFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
 
-	if self.db.global.disableButtonGlow then
-		ActionBarActionEventsFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-		if LAB then
-			LAB.eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-		end
+			for LAB in pairs(LABs) do
+				local lib = LibStub(LAB, true);
+				if lib then
+					lib.eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+				end
+			end
 
-		if LBG then
-			LBG.ShowOverlayGlow = noFunction;
-		end
-	else
-		ActionBarActionEventsFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-		if LAB then
-			LAB.eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-		end
+			if not origShow then
+				local LBG = LibStub('LibButtonGlow-1.0', true);
+				if LBG then
+					origShow = LBG.ShowOverlayGlow;
+					LBG.ShowOverlayGlow = nop;
+				end
+			end
+		else
+			ActionBarActionEventsFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
 
-		if LBG then
-			LBG.ShowOverlayGlow = origShow;
+			for LAB in pairs(LABs) do
+				local lib = LibStub(LAB, true);
+				if lib then
+					lib.eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+				end
+			end
+
+			if origShow then
+				local LBG = LibStub('LibButtonGlow-1.0', true);
+				if LBG then
+					LBG.ShowOverlayGlow = origShow;
+					origShow = nil;
+				end
+			end
 		end
 	end
 end
@@ -360,17 +372,22 @@ function MaxDps:FetchSyncUI()
 	end
 end
 
-function MaxDps:FetchLibActionButton()
-	local LAB = {
-		original = LibStub:GetLibrary('LibActionButton-1.0', true),
-		elvui = LibStub:GetLibrary('LibActionButton-1.0-ElvUI', true),
-	}
+function MaxDps:RegisterLibActionButton(name)
+	assert(type(name) == 'string', format('Bad argument to "RegisterLibActionButton", expected string, got "%s"', type(name)));
 
-	for _, lib in pairs(LAB) do
-		if lib and lib.GetAllButtons then
+	if not name:match('LibActionButton%-1%.0') then
+		error(format('Bad argument to "RegisterLibActionButton", expected "LibActionButton-1.0*", got "%s"', name), 2);
+	end
+
+	LABs[name] = true;
+end
+
+function MaxDps:FetchLibActionButton()
+	for LAB in pairs(LABs) do
+		local lib = LibStub(LAB, true);
+		if lib then
 			for button in pairs(lib:GetAllButtons()) do
-				local spellId = button:GetSpellId();
-				self:AddButton(spellId, button);
+				self:AddButton(button:GetSpellId(), button);
 			end
 		end
 	end

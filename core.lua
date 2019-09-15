@@ -73,6 +73,7 @@ function MaxDps:EnableRotation()
 	end
 
 	self:Fetch();
+	self:UpdateButtonGlow();
 
 	self:CheckTalents();
 	self:GetAzeriteTraits();
@@ -115,7 +116,7 @@ function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_TARGET_CHANGED');
 	self:RegisterEvent('PLAYER_TALENT_UPDATE');
 	self:RegisterEvent('PLAYER_REGEN_DISABLED');
-	self:RegisterEvent('PLAYER_ENTERING_WORLD');
+	-- self:RegisterEvent('PLAYER_ENTERING_WORLD');
 	self:RegisterEvent('AZERITE_ESSENCE_ACTIVATED');
 
 	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch');
@@ -188,10 +189,6 @@ function MaxDps:UNIT_EXITED_VEHICLE(event, unit)
 		self:InitRotations();
 		self:EnableRotation();
 	end
-end
-
-function MaxDps:PLAYER_ENTERING_WORLD()
-	self:UpdateButtonGlow();
 end
 
 function MaxDps:PLAYER_TARGET_CHANGED()
