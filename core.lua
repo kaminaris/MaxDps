@@ -242,6 +242,8 @@ function MaxDps:InvokeNextSpell()
 
 	self:PrepareFrameData();
 
+	self:GlowConsumables();
+
 	--For backward compatibility only
 	self.Spell = self:NextSpell(self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcd, self.PlayerTalents, self.AzeriteTraits);
 

@@ -134,6 +134,10 @@ function MaxDps:AddToBlizzardOptions()
 	forceSingle:SetChecked(MaxDps.db.global.forceSingle);
 	forceSingle.OnValueChanged = function(_, flag) MaxDps.db.global.forceSingle = flag; end;
 
+	local disableConsumables = StdUi:Checkbox(optionsFrame, 'Disable consumable support', 200, 24);
+	disableConsumables:SetChecked(MaxDps.db.global.disableConsumables);
+	disableConsumables.OnValueChanged = function(_, flag) MaxDps.db.global.disableConsumables = flag; end;
+
 	local loadModuleBtn = StdUi:Button(optionsFrame, nil, 24, 'Load current class module');
 	loadModuleBtn:SetScript('OnClick', function() MaxDps:InitRotations(); end);
 
@@ -229,7 +233,7 @@ function MaxDps:AddToBlizzardOptions()
 	optionsFrame:AddRow():AddElements(enabled, onCombatEnter, { column = 'even' });
 	optionsFrame:AddRow():AddElements(disableButtonGlow, forceSingle, { column = 'even' });
 	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, {column = 'even'});
-	optionsFrame:AddRow():AddElement(debug);
+	optionsFrame:AddRow():AddElements(disableConsumables, debug, {column = 'even'});
 	optionsFrame:AddRow():AddElements(debugMode, disabledInfo, { column = 'even' });
 	optionsFrame:AddRow():AddElement(overlay);
 	local rowOverlay = optionsFrame:AddRow({ margin = { top = 20} });

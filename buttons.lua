@@ -2,7 +2,10 @@ local _, MaxDps = ...;
 
 local CustomGlow = LibStub('LibCustomGlow-1.0');
 
+local TableInsert = tinsert;
+
 MaxDps.Spells = {};
+MaxDps.ItemSpells = {}; -- hash map of itemId -> itemSpellId
 MaxDps.Flags = {};
 MaxDps.SpellsGlowing = {};
 MaxDps.FramePool = {};
@@ -57,7 +60,7 @@ function MaxDps:CreateOverlay(parent, id, texture, type, color)
 		end
 	end
 
-	tinsert(self.Frames, frame);
+	TableInsert(self.Frames, frame);
 	return frame;
 end
 
@@ -72,7 +75,7 @@ function MaxDps:DestroyAllOverlays()
 	end
 
 	for key, frame in pairs(self.Frames) do
-		tinsert(self.FramePool, frame);
+		TableInsert(self.FramePool, frame);
 		self.Frames[key] = nil;
 	end
 end
@@ -95,43 +98,40 @@ function MaxDps:ApplyOverlayChanges()
 	end
 end
 
-do
-	local origShow;
+local origShow;
+function MaxDps:UpdateButtonGlow()
+	if self.db.global.disableButtonGlow then
+		ActionBarActionEventsFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
 
-	function MaxDps:UpdateButtonGlow()
-		if self.db.global.disableButtonGlow then
-			ActionBarActionEventsFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-
-			for LAB in pairs(LABs) do
-				local lib = LibStub(LAB, true);
-				if lib then
-					lib.eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-				end
+		for LAB in pairs(LABs) do
+			local lib = LibStub(LAB, true);
+			if lib then
+				lib.eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
 			end
+		end
 
-			if not origShow then
-				local LBG = LibStub('LibButtonGlow-1.0', true);
-				if LBG then
-					origShow = LBG.ShowOverlayGlow;
-					LBG.ShowOverlayGlow = nop;
-				end
+		if not origShow then
+			local LBG = LibStub('LibButtonGlow-1.0', true);
+			if LBG then
+				origShow = LBG.ShowOverlayGlow;
+				LBG.ShowOverlayGlow = nop;
 			end
-		else
-			ActionBarActionEventsFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
+		end
+	else
+		ActionBarActionEventsFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
 
-			for LAB in pairs(LABs) do
-				local lib = LibStub(LAB, true);
-				if lib then
-					lib.eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
-				end
+		for LAB in pairs(LABs) do
+			local lib = LibStub(LAB, true);
+			if lib then
+				lib.eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW');
 			end
+		end
 
-			if origShow then
-				local LBG = LibStub('LibButtonGlow-1.0', true);
-				if LBG then
-					LBG.ShowOverlayGlow = origShow;
-					origShow = nil;
-				end
+		if origShow then
+			local LBG = LibStub('LibButtonGlow-1.0', true);
+			if LBG then
+				LBG.ShowOverlayGlow = origShow;
+				origShow = nil;
 			end
 		end
 	end
@@ -212,7 +212,24 @@ function MaxDps:AddButton(spellId, button)
 		if self.Spells[spellId] == nil then
 			self.Spells[spellId] = {};
 		end
-		tinsert(self.Spells[spellId], button);
+
+		TableInsert(self.Spells[spellId], button);
+	end
+end
+
+-- this should be pretty universal
+function MaxDps:AddItemButton(button)
+	-- support for trinkets and potions
+	local actionSlot = button:GetAttribute('action');
+
+	if actionSlot and (IsEquippedAction(actionSlot) or IsConsumableAction(actionSlot)) then
+		local type, itemId = GetActionInfo(actionSlot);
+		if type == 'item' then
+			local _, itemSpellId = GetItemSpell(itemId);
+			self.ItemSpells[itemId] = itemSpellId;
+
+			self:AddButton(itemSpellId, button);
+		end
 	end
 end
 
@@ -241,11 +258,9 @@ function MaxDps:AddStandardButton(button)
 
 		if type == 'macro' then
 			spellId = GetMacroSpell(actionType);
-			if not spellId then
-				return;
-			end
 		elseif type == 'item' then
-			actionName = GetItemInfo(actionType);
+			self:AddItemButton(button);
+			return;
 		elseif type == 'spell' then
 			spellId = select(7, GetSpellInfo(actionType));
 		end
@@ -263,6 +278,7 @@ function MaxDps:Fetch()
 
 	self:GlowClear();
 	self.Spells = {};
+	self.ItemSpells = {};
 	self.Flags = {};
 	self.SpellsGlowing = {};
 
@@ -387,7 +403,12 @@ function MaxDps:FetchLibActionButton()
 		local lib = LibStub(LAB, true);
 		if lib then
 			for button in pairs(lib:GetAllButtons()) do
-				self:AddButton(button:GetSpellId(), button);
+				local spellId = button:GetSpellId();
+				if spellId then
+					self:AddButton(spellId, button);
+				end
+
+				self:AddItemButton(button);
 			end
 		end
 	end
@@ -431,7 +452,7 @@ end
 
 function MaxDps:Dump()
 	for k, v in pairs(self.Spells) do
-		print(k);
+		print(k, GetSpellInfo(k));
 	end
 end
 
