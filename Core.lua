@@ -5,23 +5,39 @@ LibStub('AceAddon-3.0'):NewAddon(MaxDps, 'MaxDps', 'AceConsole-3.0', 'AceEvent-3
 --- @class MaxDps
 _G[addonName] = MaxDps;
 
+local TableInsert = tinsert;
+local TableRemove = tremove;
+local TableContains = tContains;
+local TableIndexOf = tIndexOf;
+
+local UnitIsFriend = UnitIsFriend;
+local IsPlayerSpell = IsPlayerSpell;
+local UnitClass = UnitClass;
+local GetSpecialization = GetSpecialization;
+local CreateFrame = CreateFrame;
+local GetAddOnInfo = GetAddOnInfo;
+local IsAddOnLoaded = IsAddOnLoaded;
+local LoadAddOn = LoadAddOn;
+
 function MaxDps:OnInitialize()
 	self.db = LibStub('AceDB-3.0'):New('MaxDpsOptions', self.defaultOptions);
 
-	self:RegisterChatCommand('maxdps', 'ShowCustomWindow');
+	self:RegisterChatCommand('maxdps', 'ShowMainWindow');
 
 	if not self.db.global.customRotations then
 		self.db.global.customRotations = {};
 	end
 
+	self:EnableModule('Custom');
 	self:AddToBlizzardOptions();
 end
 
-function MaxDps:ShowCustomWindow()
-	if not self.Custom then
-		self.Custom = self:EnableModule('Custom');
+function MaxDps:ShowMainWindow()
+	if not self.Window then
+		self.Window = self:EnableModule('Window');
 	end
-	self.Custom:ShowCustomWindow();
+
+	self.Window:ShowWindow();
 end
 
 function MaxDps:GetTexture()
@@ -38,12 +54,12 @@ function MaxDps:GetTexture()
 	return self.FinalTexture;
 end
 
-
 MaxDps.DefaultPrint = MaxDps.Print;
 function MaxDps:Print(...)
 	if self.db.global.disabledInfo then
-		return;
+		return
 	end
+
 	MaxDps:DefaultPrint(...);
 end
 
@@ -69,7 +85,7 @@ end
 function MaxDps:EnableRotation()
 	if self.NextSpell == nil or self.rotationEnabled then
 		self:Print(self.Colors.Error .. 'Failed to enable addon!');
-		return;
+		return
 	end
 
 	self:Fetch();
@@ -94,7 +110,7 @@ end
 
 function MaxDps:DisableRotation()
 	if not self.rotationEnabled then
-		return;
+		return
 	end
 
 	self:DisableRotationTimer();
@@ -142,12 +158,13 @@ function MaxDps:OnEnable()
 
 		self.playerUnitFrame = CreateFrame('Frame');
 		self.playerUnitFrame:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', 'player');
-		self.playerUnitFrame:SetScript('OnEvent', function(_, event, unit, lineId, spellId)
+		self.playerUnitFrame:SetScript('OnEvent', function(_, _, _, _, spellId)
+			-- event, unit, lineId
 			if IsPlayerSpell(spellId) then
-				tinsert(self.spellHistory, 1, spellId);
+				TableInsert(self.spellHistory, 1, spellId);
 
 				if #self.spellHistory > 5 then
-					tremove(self.spellHistory);
+					TableRemove(self.spellHistory);
 				end
 			end
 		end);
@@ -158,15 +175,15 @@ end
 
 MaxDps.visibleNameplates = {};
 function MaxDps:NAME_PLATE_UNIT_ADDED(_, nameplateUnit)
-	if not tContains(self.visibleNameplates, nameplateUnit) then
-		tinsert(self.visibleNameplates, nameplateUnit);
+	if not TableContains(self.visibleNameplates, nameplateUnit) then
+		TableInsert(self.visibleNameplates, nameplateUnit);
 	end
 end
 
 function MaxDps:NAME_PLATE_UNIT_REMOVED(_, nameplateUnit)
-	local index = tIndexOf(self.visibleNameplates, nameplateUnit);
+	local index = TableIndexOf(self.visibleNameplates, nameplateUnit);
 	if index ~= nil then
-		tremove(self.visibleNameplates, index)
+		TableRemove(self.visibleNameplates, index)
 	end
 end
 
@@ -178,13 +195,13 @@ function MaxDps:AZERITE_ESSENCE_ACTIVATED()
 	self:DisableRotation();
 end
 
-function MaxDps:UNIT_ENTERED_VEHICLE(event, unit)
+function MaxDps:UNIT_ENTERED_VEHICLE(_, unit)
 	if unit == 'player' and self.rotationEnabled then
 		self:DisableRotation();
 	end
 end
 
-function MaxDps:UNIT_EXITED_VEHICLE(event, unit)
+function MaxDps:UNIT_EXITED_VEHICLE(_, unit)
 	if unit == 'player' then
 		self:InitRotations();
 		self:EnableRotation();
@@ -193,8 +210,8 @@ end
 
 function MaxDps:PLAYER_TARGET_CHANGED()
 	if self.rotationEnabled then
-		if (UnitIsFriend('player', 'target')) then
-			return;
+		if UnitIsFriend('player', 'target') then
+			return
 		else
 			self:InvokeNextSpell();
 		end
@@ -221,7 +238,7 @@ end
 function MaxDps:PrepareFrameData()
 	if not self.FrameData then
 		self.FrameData = {
-			cooldown = self.PlayerCooldowns,
+			cooldown  = self.PlayerCooldowns,
 			activeDot = self.ActiveDots
 		};
 	end
@@ -244,8 +261,8 @@ function MaxDps:InvokeNextSpell()
 
 	self:GlowConsumables();
 
-	--For backward compatibility only
-	self.Spell = self:NextSpell(self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcd, self.PlayerTalents, self.AzeriteTraits);
+	-- Removed backward compatibility
+	self.Spell = self:NextSpell();
 
 	if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil then
 		self:GlowNextSpell(self.Spell);
@@ -289,21 +306,23 @@ end
 function MaxDps:LoadModule()
 	if self.Classes[self.ClassId] == nil then
 		self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.');
-		return;
+		return
 	end
 
 	local className = self.Classes[self.ClassId];
 	local module = 'MaxDps_' .. className;
-	local _, _, _, loadable, reason = GetAddOnInfo(module);
+	local _, _, _, _, reason = GetAddOnInfo(module);
 
 	if IsAddOnLoaded(module) then
 		self:EnableRotationModule(className);
-		return;
+		return
 	end
 
 	if reason == 'MISSING' or reason == 'DISABLED' then
 		self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason);
-		return;
+		self:Print(self.Colors.Error .. 'Make sure to install class module or create custom rotation');
+		self:Print(self.Colors.Error .. 'Missing addon: ' .. module);
+		return
 	end
 
 	LoadAddOn(module);

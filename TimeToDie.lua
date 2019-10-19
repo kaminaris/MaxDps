@@ -1,10 +1,11 @@
+--- @type MaxDps MaxDps
 local _, MaxDps = ...;
 
 local GetTime = GetTime;
 local UnitGUID = UnitGUID;
 local UnitExists = UnitExists;
-local tinsert = tinsert;
-local tremove = tremove;
+local TableInsert = tinsert;
+local TableRemove = tremove;
 local MathMin = math.min;
 local wipe = wipe;
 
@@ -51,10 +52,10 @@ function MaxDps:TimeToDie(trackedUnit)
 
 	if guid and UnitExists(trackedUnit) then
 		local hpPct = self:TargetPercentHealth() * 100;
-		tinsert(HPTable, 1, { time = now, hp = hpPct});
+		TableInsert(HPTable, 1, { time = now, hp = hpPct});
 
 		if #HPTable > ttd.maxSamples then
-			tremove(HPTable);
+			TableRemove(HPTable);
 		end
 	else
 		wipe(HPTable);

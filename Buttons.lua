@@ -1,3 +1,4 @@
+--- @type MaxDps MaxDps
 local _, MaxDps = ...;
 
 local CustomGlow = LibStub('LibCustomGlow-1.0');
@@ -176,7 +177,7 @@ function MaxDps:Glow(button, id, texture, type, color)
 				id
 			);
 		end
-		return;
+		return
 	end
 
 	if button.MaxDpsOverlays and button.MaxDpsOverlays[id] then
@@ -199,7 +200,7 @@ function MaxDps:HideGlow(button, id)
 		else
 			CustomGlow.AutoCastGlow_Stop(button, id);
 		end
-		return;
+		return
 	end
 
 	if button.MaxDpsOverlays and button.MaxDpsOverlays[id] then
@@ -252,7 +253,7 @@ function MaxDps:AddStandardButton(button)
 			if HasAction(slot) then
 				type, actionType = GetActionInfo(slot);
 			else
-				return;
+				return
 			end
 		end
 
@@ -260,7 +261,7 @@ function MaxDps:AddStandardButton(button)
 			spellId = GetMacroSpell(actionType);
 		elseif type == 'item' then
 			self:AddItemButton(button);
-			return;
+			return
 		elseif type == 'spell' then
 			spellId = select(7, GetSpellInfo(actionType));
 		end

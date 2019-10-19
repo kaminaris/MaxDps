@@ -332,7 +332,7 @@ local bfaConsumables = {
 
 function MaxDps:GlowConsumables()
 	if self.db.global.disableConsumables then
-		return;
+		return
 	end
 
 	for itemId, _ in pairs(bfaConsumables) do
@@ -347,7 +347,7 @@ end
 function MaxDps:GlowEssences()
 	local fd = MaxDps.FrameData;
 	if not fd.essences.major then
-		return;
+		return
 	end
 
 	MaxDps:GlowCooldown(fd.essences.major, fd.cooldown[fd.essences.major].ready);
@@ -653,10 +653,10 @@ function MaxDps:IsSpellInRange(spell, unit)
 	local inRange = IsSpellInRange(spell, unit);
 
 	if inRange == nil then
-		local booktype = 'spell';
+		local bookType = 'spell';
 		local myIndex = MaxDps:FindSpellInSpellbook(spell)
 		if myIndex then
-			return IsSpellInRange(myIndex, booktype, unit);
+			return IsSpellInRange(myIndex, bookType, unit);
 		end
 		return inRange;
 	end
@@ -667,7 +667,7 @@ end
 function MaxDps:TargetsInRange(spell)
 	local count = 0;
 
-	for i, unit in ipairs(self.visibleNameplates) do
+	for _, unit in ipairs(self.visibleNameplates) do
 		if MaxDps:IsSpellInRange(spell, unit) == 1 then
 			count = count + 1;
 		end
@@ -680,7 +680,7 @@ function MaxDps:ThreatCounter()
 	local count = 0;
 	local units = {};
 
-	for i, unit in ipairs(self.visibleNameplates) do
+	for _, unit in ipairs(self.visibleNameplates) do
 		if UnitThreatSituation('player', unit) ~= nil then
 			count = count + 1;
 			TableInsert(units, unit);
@@ -701,7 +701,7 @@ end
 function MaxDps:DebuffCounter(spellId, timeShift)
 	local count, totalRemains, totalCount, totalCountRemains = 0, 0, 0, 0;
 
-	for i, unit in ipairs(self.visibleNameplates) do
+	for _, unit in ipairs(self.visibleNameplates) do
 		local aura = MaxDps:IntUnitAura(unit, spellId, 'PLAYER|HARMFUL', timeShift);
 		if aura.up then
 			count = count + 1;
@@ -719,7 +719,7 @@ function MaxDps:SmartAoe(itemId)
 		return 1;
 	end
 
-	local inInstance, instanceType = IsInInstance();
+	local _, instanceType = IsInInstance();
 	local count, units = self:ThreatCounter();
 
 	local itemToCheck = itemId or 18904;

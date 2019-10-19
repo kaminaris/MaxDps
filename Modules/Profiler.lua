@@ -1,3 +1,6 @@
+--- @type MaxDps MaxDps
+local _, MaxDps = ...;
+
 local StdUi = LibStub('StdUi');
 
 local Profiler = MaxDps:NewModule('Profiler', 'AceEvent-3.0');
@@ -49,11 +52,11 @@ end
 
 function Profiler:SpellEvent(e, unit, _, spellId)
 	if not UnitIsUnit(unit, 'player') then
-		return;
+		return
 	end
 
 	if self.Spells[spellId] then
-		return;
+		return
 	end
 
 	local spellName = GetSpellInfo(spellId);
@@ -90,10 +93,10 @@ function Profiler:ShowWindow()
 	if self.frame then
 		self.editBox:SetText(self:GenerateLua());
 		self.frame:Show();
-		return;
+		return
 	end
 
-	local f = StdUi:Window(UIParent, 'MaxDps Profiler', 500, 600);
+	local f = StdUi:Window(UIParent, 500, 600, 'MaxDps Profiler');
 	f:SetPoint('CENTER');
 
 	local editBox = StdUi:MultiLineBox(f, 480, 550);

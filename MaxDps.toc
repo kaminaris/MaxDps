@@ -1,6 +1,6 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 8.2.6
+## Version: 8.2.7
 ## Author: Kaminaris
 ## Interface: 80205
 ## SavedVariables: MaxDpsOptions
@@ -20,10 +20,11 @@ Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
 
-core.lua
-options.lua
-buttons.lua
-helper.lua
-timetodie.lua
-Modules/custom.lua
-Modules/profiler.lua
+Core.lua
+Options.lua
+Buttons.lua
+Helper.lua
+TimeToDie.lua
+Modules/Custom.lua
+Modules/Window.lua
+Modules/Profiler.lua

@@ -1,3 +1,4 @@
+--- @type MaxDps MaxDps
 local _, MaxDps = ...;
 
 ---@type StdUi
@@ -104,7 +105,7 @@ end
 
 function MaxDps:AddToBlizzardOptions()
 	if self.optionsFrame then
-		return;
+		return
 	end
 
 	local optionsFrame = StdUi:PanelWithTitle(UIParent, 100, 100, 'MaxDps Options');
@@ -188,17 +189,15 @@ function MaxDps:AddToBlizzardOptions()
 		MaxDps:ApplyOverlayChanges();
 	end;
 
-	local c = MaxDps.db.global.highlightColor;
-	local highlightColor = StdUi:ColorInput(optionsFrame, 'Highlight color', 200, 24, c.r, c.g, c.b, c.a);
-	highlightColor.OnValueChanged = function(_, r, g, b, a)
-		c.r, c.g, c.b, c.a = r, g, b, a;
+	local highlightColor = StdUi:ColorInput(optionsFrame, 'Highlight color', 200, 24, MaxDps.db.global.highlightColor);
+	highlightColor.OnValueChanged = function(_, newColor)
+		MaxDps.db.global.highlightColor = newColor;
 		MaxDps:ApplyOverlayChanges();
 	end;
 
-	local cc = MaxDps.db.global.cooldownColor;
-	local cooldownColor = StdUi:ColorInput(optionsFrame, 'Cooldown color', 200, 24, cc.r, cc.g, cc.b, cc.a);
-	cooldownColor.OnValueChanged = function(_, r, g, b, a)
-		cc.r, cc.g, cc.b, cc.a = r, g, b, a;
+	local cooldownColor = StdUi:ColorInput(optionsFrame, 'Cooldown color', 200, 24, MaxDps.db.global.cooldownColor);
+	cooldownColor.OnValueChanged = function(_, newColor)
+		MaxDps.db.global.cooldownColor = newColor;
 		MaxDps:ApplyOverlayChanges();
 	end;
 
