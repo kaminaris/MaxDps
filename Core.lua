@@ -28,13 +28,12 @@ function MaxDps:OnInitialize()
 		self.db.global.customRotations = {};
 	end
 
-	self:EnableModule('Custom');
 	self:AddToBlizzardOptions();
 end
 
 function MaxDps:ShowMainWindow()
 	if not self.Window then
-		self.Window = self:EnableModule('Window');
+		self.Window = self:GetModule('Window');
 	end
 
 	self.Window:ShowWindow();
@@ -65,12 +64,14 @@ end
 
 MaxDps.profilerStatus = 0;
 function MaxDps:ProfilerStart()
-	self:EnableModule('Profiler');
+	local profiler = self:GetModule('Profiler');
+	profiler:StartProfiler();
 	self.profilerStatus = 1;
 end
 
 function MaxDps:ProfilerStop()
-	self:DisableModule('Profiler');
+	local profiler = self:GetModule('Profiler');
+	profiler:StopProfiler();
 	self.profilerStatus = 0;
 end
 
@@ -288,7 +289,7 @@ function MaxDps:InitRotations()
 	self.Spec = spec;
 
 	if not self.Custom then
-		self.Custom = self:EnableModule('Custom');
+		self.Custom = self:GetModule('Custom');
 	end
 
 	self.Custom:LoadCustomRotations();

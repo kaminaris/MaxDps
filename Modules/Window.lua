@@ -11,7 +11,7 @@ local Window = MaxDps:NewModule('Window', 'AceEvent-3.0', 'AceTimer-3.0');
 ---@type MaxDpsCustom Custom
 local Custom = MaxDps:GetModule('Custom');
 
-function Window:Enable()
+function Window:OnEnable()
 	SharedMedia:Register('font', 'Inconsolata', [[Interface\Addons\MaxDps\media\Inconsolata.otf]]);
 
 	return self;

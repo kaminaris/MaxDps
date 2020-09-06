@@ -5,7 +5,7 @@ local StdUi = LibStub('StdUi');
 
 local Profiler = MaxDps:NewModule('Profiler', 'AceEvent-3.0');
 
-function Profiler:Enable()
+function Profiler:StartProfiler()
 	self.Spells = {};
 	self.PlayerAuras = {};
 	self.TargetAuras = {};
@@ -18,7 +18,7 @@ function Profiler:Enable()
 	MaxDps:Print(MaxDps.Colors.Info .. 'Profiler started');
 end
 
-function Profiler:Disable()
+function Profiler:StopProfiler()
 	self:UnregisterEvent('UNIT_AURA');
 	self:UnregisterEvent('UNIT_SPELLCAST_SUCCEEDED');
 	self:UnregisterEvent('UNIT_SPELLCAST_INTERRUPTED');

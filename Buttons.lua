@@ -315,9 +315,24 @@ function MaxDps:Fetch()
 		self:FetchAzeriteUI();
 	end
 
+	if IsAddOnLoaded('Neuron') then
+		self:FetchNeuron();
+	end
+
 	if self.rotationEnabled then
 		self:EnableRotationTimer();
 		self:InvokeNextSpell();
+	end
+end
+
+function MaxDps:FetchNeuron()
+	for x = 1, 12 do
+		for i = 1, 12 do
+			local button = _G['NeuronActionBar' .. x .. '_' .. 'ActionButton' .. i];
+			if button then
+				self:AddStandardButton(button);
+			end
+		end
 	end
 end
 
