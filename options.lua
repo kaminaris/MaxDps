@@ -182,14 +182,14 @@ function MaxDps:AddToBlizzardOptions()
 	end;
 
 	local c = MaxDps.db.global.highlightColor;
-	local highlightColor = StdUi:ColorInput(optionsFrame, 'Highlight color', 200, 24, c.r, c.g, c.b, c.a);
+	local highlightColor = StdUi:ColorInput(optionsFrame, 'Highlight color', 200, 24, c);
 	highlightColor.OnValueChanged = function(_, r, g, b, a)
 		c.r, c.g, c.b, c.a = r, g, b, a;
 		MaxDps:ApplyOverlayChanges();
 	end;
 
 	local cc = MaxDps.db.global.cooldownColor;
-	local cooldownColor = StdUi:ColorInput(optionsFrame, 'Cooldown color', 200, 24, cc.r, cc.g, cc.b, cc.a);
+	local cooldownColor = StdUi:ColorInput(optionsFrame, 'Cooldown color', 200, 24, cc);
 	cooldownColor.OnValueChanged = function(_, r, g, b, a)
 		cc.r, cc.g, cc.b, cc.a = r, g, b, a;
 		MaxDps:ApplyOverlayChanges();

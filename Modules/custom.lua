@@ -64,7 +64,7 @@ function Custom:ShowCustomWindow()
 		return;
 	end
 
-	self.CustomWindow = StdUi:Window(nil, 'MaxDps', 700, 550);
+	self.CustomWindow = StdUi:Window(nil, 700, 550,'MaxDps');
 
 	self.CustomWindow:SetPoint('CENTER');
 	self.CustomWindow:SetScript('OnHide', function()
@@ -133,7 +133,7 @@ function Custom:ShowCustomWindow()
 	StdUi:GlueRight(rotationClass, rotationName, 10, 0);
 	StdUi:GlueBelow(rotationEnabled, rotationName, 0, -10, 'LEFT');
 	StdUi:GlueBelow(rotationDelete, rotationEnabled, 0, -10, 'RIGHT');
-	StdUi:GlueAcross(editor.panel, self.CustomWindow, 220, -200, -10, 20);
+	StdUi:GlueAcross(editor, self.CustomWindow, 220, -200, -10, 20);
 
 	self.CustomWindow.rotations = rotations;
 	self.CustomWindow.rotationName = rotationName;
@@ -141,7 +141,7 @@ function Custom:ShowCustomWindow()
 	self.CustomWindow.rotationEnabled = rotationEnabled;
 	self.CustomWindow.editor = editor;
 
-	IndentationLib.enable(editor, nil, 4);
+	IndentationLib.enable(editor.editBox, nil, 4);
 
 	self:UpdateCustomRotationButtons();
 	self:EnableDisableCustomFields(true, true);

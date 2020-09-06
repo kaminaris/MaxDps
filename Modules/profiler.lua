@@ -93,7 +93,7 @@ function Profiler:ShowWindow()
 		return;
 	end
 
-	local f = StdUi:Window(UIParent, 'MaxDps Profiler', 500, 600);
+	local f = StdUi:Window(UIParent, 500, 600, 'MaxDps Profiler');
 	f:SetPoint('CENTER');
 
 	local editBox = StdUi:MultiLineBox(f, 480, 550);
