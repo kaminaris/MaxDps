@@ -52,6 +52,9 @@ local GetSpellBookItemName = GetSpellBookItemName;
 local IsInInstance = IsInInstance;
 local IsItemInRange = IsItemInRange;
 local UnitThreatSituation = UnitThreatSituation;
+local GetActiveCovenantID = C_Covenants.GetActiveCovenantID;
+local GetActiveSoulbindID = C_Soulbinds.GetActiveSoulbindID;
+local GetSoulbindData = C_Soulbinds.GetSoulbindData;
 
 
 -----------------------------------------------------------------
@@ -314,6 +317,60 @@ function MaxDps:GetAzeriteEssences()
 	end
 
 	return result;
+end
+
+--- Get active covenant and soulbind Ids, use Enum.CovenantType for covenantId
+---
+function MaxDps:GetCovenantInfo()
+	local covenantId = GetActiveCovenantID();
+	local soulbindId = GetActiveSoulbindID();
+
+	--if soulbindId == 0 then
+	--	soulbindId = Soulbinds.GetDefaultSoulbindID(covenantId);
+	--end
+
+	local soulbindData = {};
+	local soulbindAbilities = {};
+	local soulbindConduits = {};
+
+	if soulbindId ~= 0 then
+		soulbindData = GetSoulbindData(soulbindId);
+
+		if soulbindData.tree then
+			for _, node in ipairs(soulbindData.tree.nodes) do
+				if node.state == Enum.SoulbindNodeState.Selected then
+					if node.spellID ~= 0 then
+						soulbindAbilities[node.spellID] = true;
+					end
+
+					if node.conduitID ~= 0 then
+						soulbindConduits[node.conduitID] = node.conduitRank;
+					end
+				end
+			end
+		end
+	end
+
+	self.CovenantInfo = {
+		covenantId = covenantId,
+		soulbindId = soulbindId,
+		soulbindData = soulbindData,
+		soulbindAbilities = soulbindAbilities,
+		soulbindConduits = soulbindConduits,
+	};
+
+	return self.CovenantInfo;
+end
+
+-- TODO: finish this
+function MaxDps:GetLegendaryEffects()
+	--for i = 1, 19 do
+	--	local isLegendary = C_LegendaryCrafting.IsRuneforgeLegendary(ItemLocation:CreateFromEquipmentSlot(i));
+	--	if isLegendary then
+	--
+	--	end
+	--end
+
 end
 
 local bfaConsumables = {
