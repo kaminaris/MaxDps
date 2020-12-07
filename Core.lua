@@ -100,6 +100,7 @@ function MaxDps:EnableRotation()
 	self:GetAzeriteTraits();
 	self:GetAzeriteEssences();
 	self:GetCovenantInfo();
+	self:GetLegendaryEffects();
 	self:CheckIsPlayerMelee();
 	if self.ModuleOnEnable then
 		self.ModuleOnEnable();
@@ -256,6 +257,7 @@ function MaxDps:PrepareFrameData()
 	self.FrameData.azerite = self.AzeriteTraits;
 	self.FrameData.essences = self.AzeriteEssences;
 	self.FrameData.covenant = self.CovenantInfo;
+	self.FrameData.runeforge = self.LegendaryBonusIds;
 	self.FrameData.spellHistory = self.spellHistory;
 	self.FrameData.timeToDie = self:GetTimeToDie();
 end

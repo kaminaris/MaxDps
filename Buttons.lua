@@ -536,3 +536,16 @@ function MaxDps:GlowClear()
 		end
 	end
 end
+
+function MaxDps:GetButtonKeybind(button)
+	-- Lib action button only so far
+	local hotkey = button.HotKey;
+	if not hotkey then
+		local hotkeyName = button:GetName() .. 'HotKey';
+		hotkey = _G[hotkeyName];
+	end
+
+	if not hotkey then return nil; end
+
+	return hotkey:GetText();
+end
