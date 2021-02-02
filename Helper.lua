@@ -38,7 +38,6 @@ local GetSpellBaseCooldown = GetSpellBaseCooldown;
 local IsSpellInRange = IsSpellInRange;
 local UnitSpellHaste = UnitSpellHaste;
 local GetSpellCharges = GetSpellCharges;
-local C_NamePlate = C_NamePlate;
 local UnitPower = UnitPower;
 local UnitPowerMax = UnitPowerMax;
 local UnitHealth = UnitHealth;
@@ -118,7 +117,7 @@ function MaxDps:CollectAura(unit, timeShift, output, filter)
 
 	local t = GetTime();
 	local i = 1;
-	for k, v in pairs(output) do
+	for k, _ in pairs(output) do
 		output[k] = nil;
 	end
 
@@ -216,7 +215,7 @@ function MaxDps:CheckTalents()
 
 	for talentRow = 1, 7 do
 		for talentCol = 1, 3 do
-			local _, name, _, sel, _, id = GetTalentInfo(talentRow, talentCol, 1);
+			local _, _, _, sel, _, id = GetTalentInfo(talentRow, talentCol, 1);
 			if sel then
 				self.PlayerTalents[id] = 1;
 			end
@@ -251,16 +250,12 @@ function MaxDps:HasTalent(talent)
 	return self.PlayerTalents[talent];
 end
 
-function MaxDps:TalentEnabled(talent)
-	self:Print(self.Colors.Error .. 'MaxDps:TalentEnabled is deprecated, please use table `talents` to check talents');
-end
-
 function MaxDps:GetAzeriteTraits()
 	local t = setmetatable({}, { __index = function()
 		return 0;
 	end });
 
-	for equipSlotIndex, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
+	for _, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do -- equipSlotIndex
 		local tierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo(itemLocation);
 		for i = 1, #tierInfo do
 			for x = 1, #tierInfo[i].azeritePowerIDs do
@@ -381,160 +376,378 @@ end
 --- Legendaries
 --------------------------------------------
 local generalLegendaries = {
-	{ spell = 347458, type = "buff", unit = "player", bonusItemId = 7100 }, -- Echo of Eonar
-	{ spell = 339445, type = "buff", unit = "player", bonusItemId = 7102 }, -- Norgannon's Sagacity
-	{ spell = 339463, type = "buff", unit = "player", bonusItemId = 7103 }, -- Sephuz's Proclamation
-	{ spell = 339507, type = "buff", unit = "player", bonusItemId = 7104 }, -- Stable Phantasma Lure
-	{ spell = 339970, type = "buff", unit = "player", bonusItemId = 7105 }, -- Third Eye of the Jailer
-	{ spell = 338746, type = "buff", unit = "player", bonusItemId = 7106 }, -- Vitality Sacrifice
+	[7100] = true, -- Echo of Eonar
+	[7102] = true, -- Norgannon's Sagacity
+	[7103] = true, -- Sephuz's Proclamation
+	[7104] = true, -- Stable Phantasma Lure
+	[7105] = true, -- Third Eye of the Jailer
+	[7106] = true, -- Vitality Sacrifice
 }
 
-local classLegendaries = {
-	WARRIOR     = {
-		{ spell = 346369, type = "buff", unit = "player", bonusItemId = 6960 }, -- Battlelord
-		{ spell = 346369, type = "debuff", unit = "target", bonusItemId = 6961 }, -- Exploiter
-		{ spell = 335558, type = "buff", unit = "player", bonusItemId = 6963 }, -- Cadence of Fujieda
-		{ spell = 335597, type = "buff", unit = "player", bonusItemId = 6966 }, -- Will of the Berserker
-		{ spell = 335734, type = "buff", unit = "player", bonusItemId = 6969 }, -- Reprisal
+local allLegendaryBonusIds = {
+	SHAMAN = { -- 7
+		[6993] = true, -- Doom Winds
+		[6997] = true, -- Jonat's Natural Focus
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[6986] = true, -- Deeptremor Stone
+		[6990] = true, -- Elemental Equilibrium
+		[6994] = true, -- Legacy of the Frost Witch
+		[6998] = true, -- Spiritwalker's Tidal Totem
+		[7103] = true, -- Sephuz's Proclamation
+		[6987] = true, -- Deeply Rooted Elements
+		[6991] = true, -- Echoes of Great Sundering
+		[6995] = true, -- Witch Doctor's Wolf Bones
+		[6999] = true, -- Primal Tide Core
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[6988] = true, -- Chains of Devastation
+		[6992] = true, -- Windspeaker's Lava Resurgence
+		[6996] = true, -- Primal Lava Actuators
+		[7000] = true, -- Earthen Harmony
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[6985] = true, -- Ancestral Reminder
+		[6989] = true, -- Skybreaker's Fiery Demise
 	},
-	PALADIN     = {
-		{ spell = 337682, type = "buff", unit = "player", bonusItemId = 7056 }, -- The Magistrate's Judgment
-		{ spell = 337747, type = "buff", unit = "player", bonusItemId = 7055 }, -- Blessing of Dawn
-		{ spell = 337757, type = "buff", unit = "player", bonusItemId = 7055 }, -- Blessing of Dusk
-		{ spell = 340459, type = "buff", unit = "player", bonusItemId = 7128 }, -- Maraad's Dying Breath
-		{ spell = 337824, type = "buff", unit = "target", bonusItemId = 7059 }, -- Shock Barrier
-		{ spell = 337848, type = "buff", unit = "player", bonusItemId = 7062 }, -- Bulwark of Righteous Fury
-		{ spell = 337315, type = "buff", unit = "player", bonusItemId = 7066 }, -- Relentless Inquisitor
-		{ spell = 345046, type = "buff", unit = "player", bonusItemId = 7065 }, -- Vanguard's Momentum
+	WARRIOR = { -- 1
+		[6962] = true, -- Enduring Blow
+		[6966] = true, -- Will of the Berserker
+		[6970] = true, -- Unhinged
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[6955] = true, -- Leaper
+		[6959] = true, -- Signet of Tormented Kings
+		[6963] = true, -- Cadence of Fujieda
+		[6967] = true, -- Unbreakable Will
+		[6971] = true, -- Seismic Reverberation
+		[7103] = true, -- Sephuz's Proclamation
+		[6956] = true, -- Thunderlord
+		[6960] = true, -- Battlelord
+		[6964] = true, -- Deathmaker
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[6957] = true, -- The Wall
+		[6961] = true, -- Exploiter
+		[6965] = true, -- Reckless Defense
+		[6969] = true, -- Reprisal
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[6958] = true, -- Misshapen Mirror
 	},
-	HUNTER      = {
-		{ spell = 336744, type = "buff", unit = "player", bonusItemId = 7004 }, -- Nesingwary's Trapping Apparatus
-		{ spell = 336746, type = "debuff", unit = "target", bonusItemId = 7005 }, -- Soulforge Embers
-		{ spell = 336826, type = "buff", unit = "player", bonusItemId = 7008 }, -- Flamewaker's Cobra Sting
-		{ spell = 336892, type = "buff", unit = "player", bonusItemId = 7013 }, -- Secrets of the Unblinking Vigil
-		{ spell = 336908, type = "buff", unit = "player", bonusItemId = 7018 }, -- Butcher's Bone Fragments
-		{ spell = 273286, type = "debuff", unit = "target", bonusItemId = 7017 }, -- Latent Poison
+	PALADIN = { -- 2
+		[7055] = true, -- Of Dusk and Dawn
+		[7059] = true, -- Shock Barrier
+		[7063] = true, -- Reign of Endless Kings
+		[7067] = true, -- Tempest of the Lightbringer
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[7056] = true, -- The Magistrate's Judgment
+		[7060] = true, -- Holy Avenger's Engraved Sigil
+		[7064] = true, -- Final Verdict
+		[7103] = true, -- Sephuz's Proclamation
+		[7053] = true, -- Uther's Devotion
+		[7057] = true, -- Shadowbreaker, Dawn of the Sun
+		[7061] = true, -- The Ardent Protector's Sanctum
+		[7065] = true, -- Vanguard's Momentum
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[7054] = true, -- The Mad Paragon
+		[7058] = true, -- Inflorescence of the Sunwell
+		[7062] = true, -- Bulwark of Righteous Fury
+		[7128] = true, -- Maraad's Dying Breath
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[7159] = true, -- Maw Rattle
+		[7066] = true, -- Relentless Inquisitor
 	},
-	ROGUE       = {
-		{ spell = 23580, type = "debuff", unit = "target", bonusItemId = 7113 }, -- Bloodfang
-		{ spell = 340094, type = "buff", unit = "player", bonusItemId = 7111 }, -- Master Assassin's Mark
-		{ spell = 340587, type = "buff", unit = "player", bonusItemId = 7122 }, -- Concealed Blunderbuss
-		{ spell = 340573, type = "buff", unit = "player", bonusItemId = 7119 }, -- Greenskin's Wickers
-		{ spell = 340580, type = "buff", unit = "player", bonusItemId = 7120 }, -- Guile Charm
-		{ spell = 341202, type = "buff", unit = "player", bonusItemId = 7126 }, -- Deathly Shadows
-		{ spell = 340600, type = "buff", unit = "player", bonusItemId = 7123 }, -- Finality: Eviscerate
-		{ spell = 340601, type = "buff", unit = "player", bonusItemId = 7123 }, -- Finality: Rupture
-		{ spell = 340603, type = "buff", unit = "player", bonusItemId = 7123 }, -- Finality: Black Powder
-		{ spell = 341134, type = "buff", unit = "player", bonusItemId = 7125 }, -- The Rotten
+	ROGUE = { -- 4
+		[7117] = true, -- Zoldyck Insignia
+		[7121] = true, -- Celerity
+		[7125] = true, -- The Rotten
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[7114] = true, -- Invigorating Shadowdust
+		[7118] = true, -- Duskwalker's Patch
+		[7122] = true, -- Concealed Blunderbuss
+		[7126] = true, -- Deathly Shadows
+		[7103] = true, -- Sephuz's Proclamation
+		[7111] = true, -- Mark of the Master Assassin
+		[7115] = true, -- Dashing Scoundrel
+		[7119] = true, -- Greenskin's Wickers
+		[7123] = true, -- Finality
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[7112] = true, -- Tiny Toxic Blade
+		[7116] = true, -- Doomblade
+		[7120] = true, -- Guile Charm
+		[7124] = true, -- Akaari's Soul Fragment
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[7113] = true, -- Essence of Bloodfang
 	},
-	PRIEST      = {
-		{ spell = 341824, type = "buff", unit = "player", bonusItemId = 7161 }, -- Measured Contemplation
-		{ spell = 336267, type = "buff", unit = "player", bonusItemId = 6974 }, -- Flash Concentration
+	MAGE = { -- 8
+		[6931] = true, -- Fevered Incantation
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[6831] = true, -- Expanded Potential
+		[6928] = true, -- Siphon Storm
+		[6932] = true, -- Firestorm
+		[6936] = true, -- Triune Ward
+		[7103] = true, -- Sephuz's Proclamation
+		[6828] = true, -- Cold Front
+		[6832] = true, -- Disciplinary Command
+		[6933] = true, -- Molten Skyfall
+		[6937] = true, -- Grisly Icicle
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[6829] = true, -- Freezing Winds
+		[6926] = true, -- Arcane Infinity
+		[6934] = true, -- Sun King's Blessing
+		[6823] = true, -- Slick Ice
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[6830] = true, -- Glacial Fragments
+		[6834] = true, -- Temporal Warp
+		[6927] = true, -- Arcane Bombardment
 	},
-	SHAMAN      = {
-		{ spell = 329771, type = "buff", unit = "player", bonusItemId = 6988 }, -- Chains of Devastation
-		{ spell = 336217, type = "buff", unit = "player", bonusItemId = 6991 }, -- Echoes of Great Sundering
-		{ spell = 347349, spellId = 347349, type = "debuff", unit = "player", bonusItemId = 6990 }, -- Elemental Equilibrium
-		{ spell = 336731, spellId = 336731, type = "buff", unit = "player", bonusItemId = 6990 }, -- Elemental Equilibrium
-		{ spell = 336732, spellId = 336732, type = "buff", unit = "player", bonusItemId = 6990 }, -- Elemental Equilibrium
-		{ spell = 336733, spellId = 336733, type = "buff", unit = "player", bonusItemId = 6990 }, -- Elemental Equilibrium
-		{ spell = 336065, type = "buff", unit = "player", bonusItemId = 6992 }, -- Windspeaker's Lava Resurgence
-		{ spell = 335903, type = "buff", unit = "player", bonusItemId = 6993 }, -- Doom Winds
-		{ spell = 335901, type = "buff", unit = "player", bonusItemId = 6994 }, -- Legacy of the Frost Witch
-		{ spell = 335896, type = "buff", unit = "player", bonusItemId = 6996 }, -- Primal Lava Actuators
-		{ spell = 335894, type = "buff", unit = "player", bonusItemId = 6997 }, -- Jonat's Natural Focus
-		{ spell = 335892, type = "buff", unit = "player", bonusItemId = 6998 }, -- Spiritwalker's Tidal Totem
+	WARLOCK = { -- 9
+		[7028] = true, -- Pillars of the Dark Portal
+		[7032] = true, -- Wrath of Consumption
+		[7036] = true, -- Balespider's Burning Core
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[7025] = true, -- Wilfred's Sigil of Superior Summoning
+		[7029] = true, -- Perpetual Agony of Azj'Aqir
+		[7033] = true, -- Implosive Potential
+		[7037] = true, -- Odr, Shawl of the Ymirjar
+		[7103] = true, -- Sephuz's Proclamation
+		[7026] = true, -- Claw of Endereth
+		[7030] = true, -- Sacrolash's Dark Strike
+		[7034] = true, -- Grim Inquisitor's Dread Calling
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[7040] = true, -- Embers of the Diabolic Raiment
+		[7027] = true, -- Relic of Demonic Synergy
+		[7031] = true, -- Malefic Wrath
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[7039] = true, -- Madness of the Azj'Aqir
+		[7038] = true, -- Cinders of the Azj'Aqir
+		[7035] = true, -- Forces of the Horned Nightmare
 	},
-	MAGE        = {
-		{ spell = 327371, type = "buff", unit = "player", bonusItemId = 6832 }, -- Disciplinary Command
-		{ spell = 327495, type = "buff", unit = "player", bonusItemId = 6831 }, -- Expanded Potential
-		{ spell = 332777, type = "buff", unit = "player", bonusItemId = 6926 }, -- Arcane Harmony/Infinity
-		{ spell = 332934, type = "buff", unit = "player", bonusItemId = 6928 }, -- Siphon Storm
-		{ spell = 333049, type = "buff", unit = "player", bonusItemId = 6931 }, -- Fevered Incantation
-		{ spell = 333100, type = "buff", unit = "player", bonusItemId = 6932 }, -- Firestorm
-		{ spell = 333170, spellId = 333170, type = "buff", unit = "player", bonusItemId = 6933 }, -- Molten Skyfall
-		{ spell = 333182, spellId = 333182, type = "buff", unit = "player", bonusItemId = 6933 }, -- Molten Skyfall
-		{ spell = 333314, spellId = 333314, type = "buff", unit = "player", bonusItemId = 6934 }, -- Sun King's Blessing
-		{ spell = 333315, spellId = 333315, type = "buff", unit = "player", bonusItemId = 6934 }, -- Sun King's Blessing
-		{ spell = 327327, spellId = 327327, type = "buff", unit = "player", bonusItemId = 6828 }, -- Cold Front
-		{ spell = 327330, spellId = 327330, type = "buff", unit = "player", bonusItemId = 6828 }, -- Cold Front
-		{ spell = 327478, type = "buff", unit = "player", bonusItemId = 6829 }, -- Freezing Winds
-		{ spell = 327509, type = "buff", unit = "player", bonusItemId = 6823 }, -- Slick Ice
+	PRIEST = { -- 5
+		[6974] = true, -- Flash Concentration
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[7002] = true, -- Twins of the Sun Priestess
+		[6975] = true, -- Cauterizing Shadows
+		[7103] = true, -- Sephuz's Proclamation
+		[6983] = true, -- Eternal Call to the Void
+		[7162] = true, -- Talbadar's Stratagem
+		[6982] = true, -- Shadowflame Prism
+		[6981] = true, -- Painbreaker Psalm
+		[6972] = true, -- Vault of Heavens
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[6984] = true, -- X'anshi, Return of Archbishop Benedictus
+		[6973] = true, -- Divine Image
+		[6977] = true, -- Harmonious Apparatus
+		[6976] = true, -- The Penitent One
+		[6978] = true, -- Crystalline Reflection
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[6979] = true, -- Kiss of Death
+		[6980] = true, -- Clarity of Mind
+		[7161] = true, -- Measured Contemplation
 	},
-	WARLOCK     = {
-		{ spell = 337096, type = "buff", unit = "player", bonusItemId = 7028 }, -- Pillars of the Dark Portal
-		{ spell = 337060, type = "buff", unit = "player", bonusItemId = 7027 }, -- Relic of Demonic Synergy
-		{ spell = 337125, type = "buff", unit = "player", bonusItemId = 7031 }, -- Malefic Wrath
-		{ spell = 337096, type = "debuff", unit = "target", bonusItemId = 7030 }, -- Sacrolash's Dark Strike
-		{ spell = 337130, type = "buff", unit = "player", bonusItemId = 7032 }, -- Wrath of Consumption
-		{ spell = 337161, type = "buff", unit = "player", bonusItemId = 7036 }, -- Balespider's Burning Core
-		{ spell = 342997, type = "buff", unit = "player", bonusItemId = 7034 }, -- Grim Inquisitor's Dread Calling
-		{ spell = 337139, type = "buff", unit = "player", bonusItemId = 7033 }, -- Implosive Potential
-		{ spell = 337170, type = "buff", unit = "player", bonusItemId = 7029 }, -- Madness of the Azj'Aqir
-		{ spell = 337164, type = "debuff", unit = "target", bonusItemId = 7034 }, -- Grim Inquisitor's Dread Calling
+	MONK = { -- 10
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[7079] = true, -- Shaohao's Might
+		[7184] = true, -- Escape from Reality
+		[7068] = true, -- Keefer's Skyreach
+		[7103] = true, -- Sephuz's Proclamation
+		[7076] = true, -- Charred Passions
+		[7080] = true, -- Swiftsure Wraps
+		[7069] = true, -- Last Emperor's Capacitor
+		[7071] = true, -- Jade Ignition
+		[7070] = true, -- Xuen's Treasure
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[7077] = true, -- Stormstout's Last Keg
+		[7081] = true, -- Fatal Touch
+		[7072] = true, -- Tear of Morning
+		[7074] = true, -- Clouded Focus
+		[7073] = true, -- Yu'lon's Whisper
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[7078] = true, -- Celestial Infusion
+		[7082] = true, -- Invoker's Delight
+		[7075] = true, -- Ancient Teachings of the Monastery
 	},
-	MONK        = {
-		{ spell = 343249, type = "buff", unit = "player", bonusItemId = 7184 }, -- Escape from Reality
-		{ spell = 338140, type = "buff", unit = "player", bonusItemId = 7076 }, -- Charred Passions
-		{ spell = 337288, type = "buff", unit = "player", bonusItemId = 7077 }, -- Stormstout's Last Keg
-		{ spell = 337994, type = "buff", unit = "player", bonusItemId = 7078 }, -- Mighty Pour/Celestial Infusion
-		{ spell = 347553, type = "buff", unit = "player", bonusItemId = 7075 }, -- Ancient Teachings of the Monastery
-		{ spell = 337476, type = "buff", unit = "player", bonusItemId = 7074 }, -- Clouded Focus
-		{ spell = 337476, type = "buff", unit = "player", bonusItemId = 7072 }, -- Tear of Morning
-		{ spell = 337571, type = "buff", unit = "player", bonusItemId = 7068 }, -- Jade Ignition/Chi Energy
-		{ spell = 337291, type = "buff", unit = "player", bonusItemId = 7069 }, -- The Emperor's Capacitor
-		{ spell = 337296, type = "buff", unit = "player", bonusItemId = 7081 }, -- Fatal Touch
+	HUNTER = { -- 3
+		[7005] = true, -- Soulforge Embers
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[7017] = true, -- Latent Poison Injectors
+		[7006] = true, -- Craven Strategem
+		[7103] = true, -- Sephuz's Proclamation
+		[7014] = true, -- Secrets of the Unblinking Vigil
+		[7018] = true, -- Butcher's Bone Fragments
+		[7009] = true, -- Qa'pla, Eredun War Order
+		[7013] = true, -- Serpentstalker's Trickery
+		[7003] = true, -- Call of the Wild
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[7015] = true, -- Wildfire Cluster
+		[7012] = true, -- Surging Shots
+		[7011] = true, -- Eagletalon's True Focus
+		[7007] = true, -- Dire Command
+		[7008] = true, -- Flamewaker's Cobra Sting
+		[7004] = true, -- Nessingwary's Trapping Apparatus
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[7016] = true, -- Rylakstalker's Confounding Strikes
+		[7010] = true, -- Rylakstalker's Piercing Fangs
+		[7159] = true, -- Maw Rattle
 	},
-	DRUID       = {
-		{ spell = 340060, type = "buff", unit = "player", bonusItemId = 7110 }, -- Lycara's Fleeting Glimpse
-		{ spell = 340060, type = "buff", unit = "player", bonusItemId = 7107 }, -- Balance of All Things
-		{ spell = 339797, type = "buff", unit = "player", bonusItemId = 7087 }, -- Oneth's Clear Vision
-		{ spell = 338825, type = "buff", unit = "player", bonusItemId = 7088 }, -- Primordial Arcanic Pulsar
-		{ spell = 340049, type = "buff", unit = "player", bonusItemId = 7108 }, -- Timeworn Dreambinder
-		{ spell = 339140, type = "buff", unit = "player", bonusItemId = 7091 }, -- Apex Predator's Craving
-		{ spell = 339142, type = "buff", unit = "player", bonusItemId = 7090 }, -- Eye of Fearful Symmetry
-		{ spell = 189877, type = "buff", unit = "player", bonusItemId = 7096 }, -- Memory of the Mother Tree
+	DEATHKNIGHT = { -- 6
+		[6943] = true, -- Gorefiend's Domination
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[6940] = true, -- Bryndaor's Might
+		[6944] = true, -- Koltira's Favor
+		[7103] = true, -- Sephuz's Proclamation
+		[6952] = true, -- Deadliest Coil
+		[6951] = true, -- Death's Certainty
+		[6950] = true, -- Frenzied Monstrosity
+		[6949] = true, -- Reanimated Shambler
+		[6941] = true, -- Crimson Rune Weapon
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[6953] = true, -- Superstrain
+		[7160] = true, -- Rage of the Frozen Champion
+		[6946] = true, -- Absolute Zero
+		[6945] = true, -- Biting Cold
+		[6947] = true, -- Death's Embrace
+		[6942] = true, -- Vampiric Aura
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[6954] = true, -- Phearomones
+		[6948] = true, -- Grip of the Everlasting
+		[7159] = true, -- Maw Rattle
 	},
-	DEMONHUNTER = {
-		{ spell = 337567, type = "buff", unit = "player", bonusItemId = 7050 }, -- Chaos Theory/Chaotic Blades
-		{ spell = 346264, type = "buff", unit = "player", bonusItemId = 7218 }, -- Darker Nature
-		{ spell = 337542, type = "buff", unit = "player", bonusItemId = 7045 }, -- Spirit of the Darkness Flame
-		{ spell = 334722, type = "buff", unit = "player", bonusItemId = 6948 }, -- Grip of the Everlasting
+	DEMONHUNTER = { -- 12
+		[7102] = true, -- Norgannon's Sagacity
+		[7044] = true, -- Darkest Hour
+		[7048] = true, -- Fiery Soul
+		[7052] = true, -- Burning Wound
+		[7041] = true, -- Collective Anguish
+		[7045] = true, -- Spirit of the Darkness Flame
+		[7049] = true, -- Darker Nature
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[7046] = true, -- Razelikh's Defilement
+		[7050] = true, -- Chaos Theory
+		[7042] = true, -- Fel Bombardment
+		[7043] = true, -- Darkglare Medallion
+		[7103] = true, -- Sephuz's Proclamation
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[7047] = true, -- Fel Flame Fortification
+		[7051] = true, -- Erratic Fel Core
+		[7106] = true, -- Vitality Sacrifice
 	},
-	DEATHKNIGHT = {
-		{ spell = 332199, type = "buff", unit = "player", bonusItemId = 6954 }, -- Phearomones
-		{ spell = 334526, type = "buff", unit = "player", bonusItemId = 6941 }, -- Crimson Rune Weapon
-		{ spell = 334693, type = "debuff", unit = "target", bonusItemId = 6946 }, -- Absolute Zero
-	}
+	DRUID = { -- 11
+		[7086] = true, -- Draught of Deep Focus
+		[7090] = true, -- Eye of Fearful Symmetry
+		[7094] = true, -- Ursoc's Fury Remembered
+		[7098] = true, -- Verdant Infusion
+		[7102] = true, -- Norgannon's Sagacity
+		[7106] = true, -- Vitality Sacrifice
+		[7110] = true, -- Lycara's Fleeting Glimpse
+		[7087] = true, -- Oneth's Clear Vision
+		[7091] = true, -- Apex Predator's Craving
+		[7095] = true, -- Legacy of the Sleeper
+		[7099] = true, -- Vision of Unending Growth
+		[7103] = true, -- Sephuz's Proclamation
+		[7107] = true, -- Balance of All Things
+		[7084] = true, -- Oath of the Elder Druid
+		[7088] = true, -- Primordial Arcanic Pulsar
+		[7092] = true, -- Luffa-Infused Embrace
+		[7096] = true, -- Memory of the Mother Tree
+		[7100] = true, -- Echo of Eonar
+		[7104] = true, -- Stable Phantasma Lure
+		[7108] = true, -- Timeworn Dreambinder
+		[7085] = true, -- Circle of Life and Death
+		[7089] = true, -- Cat-eye Curio
+		[7093] = true, -- The Natural Order's Will
+		[7159] = true, -- Maw Rattle
+		[7101] = true, -- Judgment of the Arbiter
+		[7105] = true, -- Third Eye of the Jailer
+		[7109] = true, -- Frenzyband
+		[7097] = true, -- The Dark Titan's Lesson
+	},
 }
 
--- TODO: finish this
+local function GetItemSplit(itemLink)
+	local itemString = string.match(itemLink, 'item:([%-?%d:]+)');
+	local itemSplit = {};
+
+	-- Split data into a table
+	for _, v in ipairs({strsplit(':', itemString)}) do
+		if v == '' then
+			itemSplit[#itemSplit + 1] = 0;
+		else
+			itemSplit[#itemSplit + 1] = tonumber(v);
+		end
+	end
+
+	return itemSplit;
+end
+
+local OFFSET_BONUS_ID = 13;
+function MaxDps:ExtractBonusIds(itemLink)
+	local itemSplit = GetItemSplit(itemLink);
+	local bonuses = {}
+
+	for i = 1, itemSplit[OFFSET_BONUS_ID] do
+		bonuses[itemSplit[OFFSET_BONUS_ID + i]] = true;
+	end
+
+	return bonuses;
+end
+
 function MaxDps:GetLegendaryEffects()
 	local legendaryBonusIds = {};
+	local playerClass = select(2, UnitClass('player'));
 
 	for i = 1, 19 do
 		local link = GetInventoryItemLink('player', i);
-		--local location = ItemLocation:CreateFromEquipmentSlot(i);
-		--local link = C_Item.GetItemLink(location);
 
 		if link then
-			--local isLegendary = C_LegendaryCrafting.IsRuneforgeLegendary(location);
+			local itemBonusIds = self:ExtractBonusIds(link);
 
-			--if isLegendary then
-				for _, info in pairs(generalLegendaries) do
-					if link:find(info.bonusItemId, 1, true) then
-						legendaryBonusIds[info.bonusItemId] = true;
-					end
+			for bonusId, _ in pairs(generalLegendaries) do
+				if itemBonusIds[bonusId] then
+					legendaryBonusIds[bonusId] = true;
 				end
+			end
 
-				local _, playerClass = UnitClass('player');
-
-				for _, info in pairs(classLegendaries[playerClass]) do
-					if link:find(info.bonusItemId, 1, true) then
-						legendaryBonusIds[info.bonusItemId] = true;
-					end
+			for bonusId, _ in pairs(allLegendaryBonusIds[playerClass]) do
+				if itemBonusIds[bonusId] then
+					legendaryBonusIds[bonusId] = true;
 				end
-			--end
+			end
 		end
 	end
 

@@ -3,8 +3,6 @@ local _, MaxDps = ...;
 
 ---@type StdUi
 local StdUi = LibStub('StdUi');
-local media = LibStub('LibSharedMedia-3.0');
-
 
 MaxDps.Textures = {
 	{text = 'Ping', value = 'Interface\\Cooldown\\ping4'},
@@ -163,7 +161,7 @@ function MaxDps:AddToBlizzardOptions()
 	debugMode:SetChecked(MaxDps.db.global.debugMode);
 	debugMode.OnValueChanged = function(_, flag) MaxDps.db.global.debugMode = flag; end;
 
-	local disabledInfo = StdUi:Checkbox(optionsFrame, 'Enable info messages', 200, 24);
+	local disabledInfo = StdUi:Checkbox(optionsFrame, 'Disable info messages', 200, 24);
 	disabledInfo:SetChecked(not MaxDps.db.global.disabledInfo);
 	disabledInfo.OnValueChanged = function(_, flag) MaxDps.db.global.disabledInfo = not flag; end;
 
