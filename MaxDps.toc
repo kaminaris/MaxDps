@@ -2,7 +2,7 @@
 ## Notes: Rotation helper framework.
 ## Version: 9.0.3.2
 ## Author: Kaminaris
-## Interface: 90002
+## Interface: 90005
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI, Neuron
 ## X-Curse-Project-ID: 91970
