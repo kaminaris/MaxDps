@@ -1,12 +1,13 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 9.0.5
+## Version: 9.0.5.1
 ## Author: Kaminaris
 ## Interface: 90005
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI, Neuron
 ## X-Curse-Project-ID: 91970
 ## X-WoWI-ID: 24637
+## X-Wago-ID: VBNBWM6x
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
