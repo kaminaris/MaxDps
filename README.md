@@ -4,7 +4,7 @@
 
 ### Discord for support: [https://discord.gg/wCSj5SD](https://discord.gg/wCSj5SD)
 [![](https://i.postimg.cc/g2R7fKHG/discord.png)](https://discord.gg/wCSj5SD)
-### Forum: http://maxdps.net
+### Forum: [http://maxdps.net](http://maxdps.net)
 
 
 This addon provides support for highlighting spells on action bars and have support for various DPS helper functions. Donations are welcome & appreciated!
@@ -13,10 +13,10 @@ This addon provides support for highlighting spells on action bars and have supp
 
 **Optional** WeakAuras
 
-* Main Rotation: https://wago.io/aP7Sr4WhN
-* Cooldown: https://wago.io/4p-Zo5TVC
-* Enemy Count: https://wago.io/Cwl5X4N2E
-* Time To Die: https://wago.io/aBrDFZxRz
+* [Main Rotation](https://wago.io/aP7Sr4WhN)
+* [Cooldown](https://wago.io/4p-Zo5TVC)
+* [Enemy Count](https://wago.io/Cwl5X4N2E)
+* [Time To Die](https://wago.io/aBrDFZxRz)
 
 ---
 
