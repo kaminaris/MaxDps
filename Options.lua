@@ -30,6 +30,7 @@ MaxDps.Classes = {
 	[10] = 'Monk',
 	[11] = 'Druid',
 	[12] = 'DemonHunter',
+	[13] = 'Evoker',
 }
 
 MaxDps.defaultOptions = {

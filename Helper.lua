@@ -212,12 +212,12 @@ end
 
 function MaxDps:CheckTalents()
 	self.PlayerTalents = {};
-	
+
 	-- last selected configID or fall back to default spec config
-    local configID = C_ClassTalents.GetActiveConfigID();
-    local configInfo = C_Traits.GetConfigInfo(configID);
-    local treeIDs = configInfo.treeIDs;
-	
+	local configID = C_ClassTalents.GetActiveConfigID();
+	local configInfo = C_Traits.GetConfigInfo(configID);
+	local treeIDs = configInfo.treeIDs;
+
 	for _, treeID in ipairs(treeIDs) do
 		local nodes = C_Traits.GetTreeNodes(treeID);
 		for _, nodeID in ipairs(nodes) do
@@ -267,7 +267,7 @@ function MaxDps:GetAzeriteTraits()
 		return 0;
 	end });
 
-	for _, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do -- equipSlotIndex
+	for _, itemLocation in AzeriteUtil.EnumerateEquipedAzeriteEmpoweredItems() do
 		local tierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo(itemLocation);
 		for i = 1, #tierInfo do
 			for x = 1, #tierInfo[i].azeritePowerIDs do
@@ -371,7 +371,7 @@ local generalLegendaries = {
 }
 
 local allLegendaryBonusIds = {
-	SHAMAN = { -- 7
+	SHAMAN      = { -- 7
 		[6993] = true, -- Doom Winds
 		[6997] = true, -- Jonat's Natural Focus
 		[7102] = true, -- Norgannon's Sagacity
@@ -397,7 +397,7 @@ local allLegendaryBonusIds = {
 		[6985] = true, -- Ancestral Reminder
 		[6989] = true, -- Skybreaker's Fiery Demise
 	},
-	WARRIOR = { -- 1
+	WARRIOR     = { -- 1
 		[6962] = true, -- Enduring Blow
 		[6966] = true, -- Will of the Berserker
 		[6970] = true, -- Unhinged
@@ -423,7 +423,7 @@ local allLegendaryBonusIds = {
 		[7105] = true, -- Third Eye of the Jailer
 		[6958] = true, -- Misshapen Mirror
 	},
-	PALADIN = { -- 2
+	PALADIN     = { -- 2
 		[7055] = true, -- Of Dusk and Dawn
 		[7059] = true, -- Shock Barrier
 		[7063] = true, -- Reign of Endless Kings
@@ -449,7 +449,7 @@ local allLegendaryBonusIds = {
 		[7159] = true, -- Maw Rattle
 		[7066] = true, -- Relentless Inquisitor
 	},
-	ROGUE = { -- 4
+	ROGUE       = { -- 4
 		[7117] = true, -- Zoldyck Insignia
 		[7121] = true, -- Celerity
 		[7125] = true, -- The Rotten
@@ -475,7 +475,7 @@ local allLegendaryBonusIds = {
 		[7105] = true, -- Third Eye of the Jailer
 		[7113] = true, -- Essence of Bloodfang
 	},
-	MAGE = { -- 8
+	MAGE        = { -- 8
 		[6931] = true, -- Fevered Incantation
 		[7102] = true, -- Norgannon's Sagacity
 		[7106] = true, -- Vitality Sacrifice
@@ -501,7 +501,7 @@ local allLegendaryBonusIds = {
 		[6834] = true, -- Temporal Warp
 		[6927] = true, -- Arcane Bombardment
 	},
-	WARLOCK = { -- 9
+	WARLOCK     = { -- 9
 		[7028] = true, -- Pillars of the Dark Portal
 		[7032] = true, -- Wrath of Consumption
 		[7036] = true, -- Balespider's Burning Core
@@ -527,7 +527,7 @@ local allLegendaryBonusIds = {
 		[7038] = true, -- Cinders of the Azj'Aqir
 		[7035] = true, -- Forces of the Horned Nightmare
 	},
-	PRIEST = { -- 5
+	PRIEST      = { -- 5
 		[6974] = true, -- Flash Concentration
 		[7102] = true, -- Norgannon's Sagacity
 		[7106] = true, -- Vitality Sacrifice
@@ -553,7 +553,7 @@ local allLegendaryBonusIds = {
 		[6980] = true, -- Clarity of Mind
 		[7161] = true, -- Measured Contemplation
 	},
-	MONK = { -- 10
+	MONK        = { -- 10
 		[7102] = true, -- Norgannon's Sagacity
 		[7106] = true, -- Vitality Sacrifice
 		[7079] = true, -- Shaohao's Might
@@ -579,7 +579,7 @@ local allLegendaryBonusIds = {
 		[7082] = true, -- Invoker's Delight
 		[7075] = true, -- Ancient Teachings of the Monastery
 	},
-	HUNTER = { -- 3
+	HUNTER      = { -- 3
 		[7005] = true, -- Soulforge Embers
 		[7102] = true, -- Norgannon's Sagacity
 		[7106] = true, -- Vitality Sacrifice
@@ -653,7 +653,7 @@ local allLegendaryBonusIds = {
 		[7051] = true, -- Erratic Fel Core
 		[7106] = true, -- Vitality Sacrifice
 	},
-	DRUID = { -- 11
+	DRUID       = { -- 11
 		[7086] = true, -- Draught of Deep Focus
 		[7090] = true, -- Eye of Fearful Symmetry
 		[7094] = true, -- Ursoc's Fury Remembered
@@ -690,7 +690,7 @@ local function GetItemSplit(itemLink)
 	local itemSplit = {};
 
 	-- Split data into a table
-	for _, v in ipairs({strsplit(':', itemString)}) do
+	for _, v in ipairs({ strsplit(':', itemString) }) do
 		if v == '' then
 			itemSplit[#itemSplit + 1] = 0;
 		else
