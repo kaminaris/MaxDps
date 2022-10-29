@@ -212,12 +212,24 @@ end
 
 function MaxDps:CheckTalents()
 	self.PlayerTalents = {};
+	
+	-- last selected configID or fall back to default spec config
+    local configID = C_ClassTalents.GetActiveConfigID();
+    local configInfo = C_Traits.GetConfigInfo(configID);
+    local treeIDs = configInfo.treeIDs;
+	
+	for _, treeID in ipairs(treeIDs) do
+		local nodes = C_Traits.GetTreeNodes(treeID);
+		for _, nodeID in ipairs(nodes) do
+			local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
+			if nodeInfo.currentRank and nodeInfo.currentRank > 0 then
+				local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID;
+				local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID);
+				local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID);
 
-	for talentRow = 1, 7 do
-		for talentCol = 1, 3 do
-			local _, _, _, sel, _, id = GetTalentInfo(talentRow, talentCol, 1);
-			if sel then
-				self.PlayerTalents[id] = 1;
+				if definitionInfo ~= nil then
+					self.PlayerTalents[definitionInfo.spellID] = 1;
+				end
 			end
 		end
 	end
