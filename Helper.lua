@@ -212,30 +212,27 @@ end
 
 function MaxDps:CheckTalents()
 	self.PlayerTalents = {};
-    
-    -- last selected configID or fall back to default spec config
+	
+	-- last selected configID or fall back to default spec config
     local configID = C_ClassTalents.GetActiveConfigID();
-    
     local configInfo = C_Traits.GetConfigInfo(configID);
-    local treeID = configInfo.treeIDs[1];
+    local treeIDs = configInfo.treeIDs;
+	
+	for _, treeID in ipairs(treeIDs) do
+		local nodes = C_Traits.GetTreeNodes(treeID);
+		for _, nodeID in ipairs(nodes) do
+			local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
+			if nodeInfo.currentRank and nodeInfo.currentRank > 0 then
+				local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID;
+				local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID);
+				local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID);
 
-    local nodes = C_Traits.GetTreeNodes(treeID);
-
-    for _, nodeID in ipairs(nodes) do
-        local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
-        if nodeInfo.currentRank and nodeInfo.currentRank > 0 then
-            local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID;
-            local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID);
-            local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID);
-
-            if definitionInfo ~= nil then
-				self.PlayerTalents[definitionInfo.spellID] = 1;
-				--local talentName = TalentUtil.GetTalentName(definitionInfo.overrideName, definitionInfo.spellID);
-                --print(string.format("%s %d", talentName, definitionInfo.spellID));
-            end
-        end
-    end
-
+				if definitionInfo ~= nil then
+					self.PlayerTalents[definitionInfo.spellID] = 1;
+				end
+			end
+		end
+	end
 end
 
 MaxDps.isMelee = false;
