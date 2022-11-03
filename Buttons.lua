@@ -28,7 +28,7 @@ local LABs = {
 -- @param texture - optional custom texture
 -- @param type - optional type of overlay, standard types are 'normal' and 'cooldown' - used to select overlay color
 -- @param color - optional custom color in standard structure {r = 1, g = 1, b = 1, a = 1}
-function MaxDps:CreateOverlay(parent, id, texture, type, color)
+function MaxDps:CreateOverlay(parent, id, texture, overlayType, color)
 	local frame = TableRemove(self.FramePool);
 	if not frame then
 		frame = CreateFrame('Frame', 'MaxDps_Overlay_' .. id, parent);
@@ -55,12 +55,12 @@ function MaxDps:CreateOverlay(parent, id, texture, type, color)
 			color = self.db.global.highlightColor;
 		end
 		t:SetVertexColor(color.r, color.g, color.b, color.a);
-	elseif type then
-		frame.ovType = type;
-		if type == 'normal' then
+	elseif overlayType then
+		frame.ovType = overlayType;
+		if overlayType == 'normal' then
 			local c = self.db.global.highlightColor;
 			t:SetVertexColor(c.r, c.g, c.b, c.a);
-		elseif type == 'cooldown' then
+		elseif overlayType == 'cooldown' then
 			local c = self.db.global.cooldownColor;
 			t:SetVertexColor(c.r, c.g, c.b, c.a);
 		end
