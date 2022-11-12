@@ -1053,21 +1053,19 @@ function MaxDps:Bloodlust(timeShift)
 end
 
 MaxDps.Spellbook = {};
-function MaxDps:FindSpellInSpellbook(spell)
-	local spellName = GetSpellInfo(spell);
+function MaxDps:FindSpellInSpellbook(spellId)
+	local spellName = GetSpellInfo(spellId);
 	if MaxDps.Spellbook[spellName] then
 		return MaxDps.Spellbook[spellName];
 	end
 
-	local _, _, offset, numSpells = GetSpellTabInfo(2);
+	local spellSlot = FindSpellBookSlotBySpellID(spellId)
+	if spellSlot then
+		local spellBookItemName, _, spellBookSpellId = GetSpellBookItemName(spellSlot, "spell")
 
-	local booktype = 'spell';
-
-	for index = offset + 1, numSpells + offset do
-		local spellID = select(2, GetSpellBookItemInfo(index, booktype));
-		if spellID and spellName == GetSpellBookItemName(index, booktype) then
-			MaxDps.Spellbook[spellName] = index;
-			return index;
+		if spellBookItemName and spellBookItemName == spellName and spellBookSpellId and spellBookSpellId == spellId then
+			MaxDps.Spellbook[spellName] = spellSlot;
+			return spellSlot;
 		end
 	end
 

@@ -135,12 +135,23 @@ function MaxDps:DisableRotationTimer()
 	end
 end
 
+local talentUpdateEvents = {
+	"TRAIT_CONFIG_CREATED",
+	"ACTIVE_COMBAT_CONFIG_CHANGED",
+	"STARTER_BUILD_ACTIVATION_FAILED",
+	"PLAYER_TALENT_UPDATE",
+	"AZERITE_ESSENCE_ACTIVATED",
+	"TRAIT_CONFIG_DELETED",
+	"TRAIT_CONFIG_UPDATED",
+}
+
 function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_TARGET_CHANGED');
-	self:RegisterEvent('PLAYER_TALENT_UPDATE');
 	self:RegisterEvent('PLAYER_REGEN_DISABLED');
-	-- self:RegisterEvent('PLAYER_ENTERING_WORLD');
-	self:RegisterEvent('AZERITE_ESSENCE_ACTIVATED');
+
+	for _, event in pairs(talentUpdateEvents) do
+		self:RegisterEvent(event, 'TalentsUpdated')
+	end
 
 	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch');
 	self:RegisterEvent('ACTIONBAR_HIDEGRID', 'ButtonFetch');
@@ -194,11 +205,7 @@ function MaxDps:NAME_PLATE_UNIT_REMOVED(_, nameplateUnit)
 	end
 end
 
-function MaxDps:PLAYER_TALENT_UPDATE()
-	self:DisableRotation();
-end
-
-function MaxDps:AZERITE_ESSENCE_ACTIVATED()
+function MaxDps:TalentsUpdated()
 	self:DisableRotation();
 end
 
