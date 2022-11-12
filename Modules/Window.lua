@@ -536,7 +536,7 @@ function Window:GetWindowConfig()
 						local fontPath = SharedMedia:Fetch('font', 'Inconsolata');
 
 						if fontPath then
-							editor:SetFont(fontPath, 14);
+							editor:SetFont(fontPath, 14, '');
 						end
 
 						IndentationLib.enable(editor.editBox, nil, 4);
