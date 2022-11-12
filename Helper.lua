@@ -1059,9 +1059,16 @@ function MaxDps:FindSpellInSpellbook(spellId)
 		return MaxDps.Spellbook[spellName];
 	end
 
+	local bookType = "spell"
 	local spellSlot = FindSpellBookSlotBySpellID(spellId)
+
+	if not spellSlot then
+		bookType = "pet"
+		spellSlot = FindSpellBookSlotBySpellID(spellId, true)
+	end
+
 	if spellSlot then
-		local spellBookItemName, _, spellBookSpellId = GetSpellBookItemName(spellSlot, "spell")
+		local spellBookItemName, _, spellBookSpellId = GetSpellBookItemName(spellSlot, bookType)
 
 		if spellBookItemName and spellBookItemName == spellName and spellBookSpellId and spellBookSpellId == spellId then
 			MaxDps.Spellbook[spellName] = spellSlot;
