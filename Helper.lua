@@ -683,6 +683,7 @@ local allLegendaryBonusIds = {
 		[7109] = true, -- Frenzyband
 		[7097] = true, -- The Dark Titan's Lesson
 	},
+	EVOKER = {}
 }
 
 local function GetItemSplit(itemLink)
