@@ -355,7 +355,7 @@ end
 function MaxDps:FetchDominos()
 	-- Dominos is using half of the blizzard frames so we just fetch the missing one
 
-	for i = 1, 60 do
+	for i = 1, 168 do
 		local button = _G['DominosActionButton' .. i];
 		if button then
 			self:AddStandardButton(button);
