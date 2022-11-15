@@ -35,6 +35,7 @@ Modules for Classes - **Installed separately**:
 * Shaman - Elemental, Enhancement
 * Warlock - Destruction, Demonology, Affliction
 * Warrior - Fury, Arms, Protection
+* Evoker - Devastation, Preservation
 
 If you wish to contribute please contact me via Discord. If you wish to become a tester provide logs of your fights.
 
