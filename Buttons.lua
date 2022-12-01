@@ -513,13 +513,14 @@ function MaxDps:GlowCooldown(spellId, condition, color)
 end
 
 function MaxDps:GlowSpell(spellId)
+	local inCombat = UnitAffectingCombat("player")
 	if self.Spells[spellId] ~= nil then
 		for _, button in pairs(self.Spells[spellId]) do
 			self:Glow(button, 'next', nil, 'normal');
 		end
 
 		self.SpellsGlowing[spellId] = 1;
-	else
+	elseif inCombat then
 		local spellName = GetSpellInfo(spellId);
 		self:Print(
 			self.Colors.Error ..
