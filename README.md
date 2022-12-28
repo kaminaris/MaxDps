@@ -47,18 +47,18 @@ If you wish to contribute please contact me via Discord. If you wish to become a
 Action Bars supported:
 
 
-* ElvUI
+* AzeriteUI
 * Bartender4
 * Blizzard UI
-* Dominos
 * Button Forge
+* DiabolicUI
+* Dominos
+* ElvUI
+* KkthnxUI
+* LUI
 * SuperVillain UI
 * SyncUI
-* LUI
-* DiabolicUI
-* AzeriteUI
 * Any LibActionButton addons
-* Any Non-Conflicting ActionBar addons like: KkthnxUI
 
 
 If you have other action bar addon, just install it and see if it works. There is a high chance it will work out of the box.
