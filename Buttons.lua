@@ -435,7 +435,7 @@ function MaxDps:FetchLibActionButton()
 end
 
 function MaxDps:FetchBlizzard()
-	local BlizzardBars = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft'};
+	local BlizzardBars = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft', 'MultiBar5', 'MultiBar6', 'MultiBar7'};
 	for _, barName in pairs(BlizzardBars) do
 		for i = 1, 12 do
 			local button = _G[barName .. 'Button' .. i];
