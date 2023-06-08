@@ -215,8 +215,12 @@ function MaxDps:CheckTalents()
 
 	-- last selected configID or fall back to default spec config
 	local configID = C_ClassTalents.GetActiveConfigID();
-	local configInfo = C_Traits.GetConfigInfo(configID);
-	local treeIDs = configInfo.treeIDs;
+	local configInfo = configID and C_Traits.GetConfigInfo(configID);
+	local treeIDs = configInfo and configInfo.treeIDs;
+
+	if not treeIDs then
+		return
+	end
 
 	for _, treeID in ipairs(treeIDs) do
 		local nodes = C_Traits.GetTreeNodes(treeID);
