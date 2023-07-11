@@ -303,6 +303,7 @@ end
 
 function MaxDps:InitRotations()
 	self:Print(self.Colors.Info .. 'Initializing rotations');
+	self:CountTier()
 
 	local _, _, classId = UnitClass('player');
 	local spec = GetSpecialization();

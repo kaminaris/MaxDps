@@ -22,6 +22,7 @@ Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
 
 Core.lua
+Tier.lua
 Options.lua
 Buttons.lua
 Helper.lua
