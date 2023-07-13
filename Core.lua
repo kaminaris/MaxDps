@@ -88,6 +88,8 @@ function MaxDps:ProfilerToggle()
 end
 
 function MaxDps:EnableRotation()
+	local inCombat = UnitAffectingCombat("player")
+	local inVehicle = UnitInVehicle("player")
 	if self.NextSpell == nil or self.rotationEnabled then
 		self:Print(self.Colors.Error .. 'Failed to enable addon!');
 		return
@@ -106,6 +108,10 @@ function MaxDps:EnableRotation()
 		self.ModuleOnEnable();
 	end
 
+    if IsMounted() or inVehicle() or not inCombat then
+		self:DisableRotation();
+		return
+    end
 	self:EnableRotationTimer();
 
 	self.rotationEnabled = true;

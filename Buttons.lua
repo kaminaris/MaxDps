@@ -275,6 +275,8 @@ function MaxDps:AddStandardButton(button)
 end
 
 function MaxDps:Fetch()
+	local inCombat = UnitAffectingCombat("player")
+	local inVehicle = UnitInVehicle("player")
 	self = MaxDps;
 	if self.rotationEnabled then
 		self:DisableRotationTimer();
@@ -322,6 +324,11 @@ function MaxDps:Fetch()
 	if IsAddOnLoaded('Neuron') then
 		self:FetchNeuron();
 	end
+
+    if IsMounted() or inVehicle() or not inCombat then
+		self:DisableRotation();
+		return
+    end
 
 	if self.rotationEnabled then
 		self:EnableRotationTimer();
