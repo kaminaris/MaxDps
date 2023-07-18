@@ -108,7 +108,7 @@ function MaxDps:EnableRotation()
 		self.ModuleOnEnable();
 	end
 
-    if IsMounted() or inVehicle() or not inCombat then
+    if IsMounted() or inVehicle or not inCombat then
 		self:DisableRotation();
 		return
     end
