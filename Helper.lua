@@ -933,8 +933,10 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
 		end
 	end
 
+	local cooldownMS, gcdMS = GetSpellBaseCooldown(spellId)
+
 	return {
-		duration        = GetSpellBaseCooldown(spellId) / 1000,
+		duration        = ((cooldownMS and cooldownMS) or (gcdMS and gcdMS) or 500) / 1000,
 		ready           = remains <= 0,
 		remains         = remains,
 		fullRecharge    = fullRecharge,
