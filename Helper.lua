@@ -1177,9 +1177,11 @@ function MaxDps:SmartAoe(itemId)
 
 	count = 0;
 	for i = 1, #units do
-		-- 8 yards range check
-		if IsItemInRange(itemToCheck, units[i]) then
-			count = count + 1;
+		-- 8 yards range check IsItemInRange blocked on retail in instance since 10.2
+		if not not IsInInstance() then
+		    if IsItemInRange(itemToCheck, units[i]) then
+		    	count = count + 1;
+		    end
 		end
 	end
 
