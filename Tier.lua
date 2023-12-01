@@ -32,6 +32,8 @@ function MaxDps:CountTier()
                 break
             end
 
+            if itemName == nil then return end
+
             if tier == 30 then
                 -- DK
                 if classIndex == 6 then
