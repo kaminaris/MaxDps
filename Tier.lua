@@ -5,7 +5,7 @@ local GetInventoryItemLink = GetInventoryItemLink
 local GetItemInfo = GetItemInfo
 
 local slots = {"HEADSLOT","SHOULDERSLOT", "CHESTSLOT", "LEGSSLOT", "HANDSSLOT"}
-local tiernumbers = {30}
+local tiernumbers = {30, 31}
 
 function MaxDps:CountTier()
     if not self.tier then
@@ -86,6 +86,60 @@ function MaxDps:CountTier()
                 -- Warrior
                 if classIndex == 1 then
                     match = string.match(itemName,"of the Onyx Crucible")
+                end
+            end
+            if tier == 31 then
+                -- DK
+                if classIndex == 6 then
+                    match = string.match(itemName,"of the Risen Nightmare")
+                end
+                -- DH
+                if classIndex == 12 then
+                    match = string.match(itemName,"Screaming Torchfiend's")
+                end
+                -- Druid
+                if classIndex == 11 then
+                    match = string.match(itemName,"Benevolent Embersage's")
+                end
+                -- Evoker
+                if classIndex == 13 then
+                    match = string.match(itemName,"Werynkeeper's Timeless")
+                end
+                -- Hunter
+                if classIndex == 3 then
+                    match = string.match(itemName,"Blazing Dreamstalker's")
+                end
+                -- Mage
+                if classIndex == 8 then
+                    match = string.match(itemName,"Wayward Chronomancer's")
+                end
+                -- Monk
+                if classIndex == 10 then
+                    match = string.match(itemName,"Mystic Heron's")
+                end
+                -- Paladin
+                if classIndex == 2 then
+                    match = string.match(itemName,"Zealous Pyreknight's")
+                end
+                -- Priest
+                if classIndex == 5 then
+                    match = string.match(itemName,"of Lunar Communion")
+                end
+                -- Rogue
+                if classIndex == 4 then
+                    match = string.match(itemName,"Lucid Shadewalker's")
+                end
+                -- Shaman
+                if classIndex == 7 then
+                    match = string.match(itemName,"Greatwolf Outcast's")
+                end
+                -- Warlock
+                if classIndex == 9 then
+                    match = string.match(itemName,"Devout Ashdevil's")
+                end
+                -- Warrior
+                if classIndex == 1 then
+                    match = string.match(itemName,"Molten Vanguard's")
                 end
             end
             if match then count = count + 1 end
