@@ -149,6 +149,7 @@ local talentUpdateEvents = {
 	"AZERITE_ESSENCE_ACTIVATED",
 	"TRAIT_CONFIG_DELETED",
 	"TRAIT_CONFIG_UPDATED",
+	"LOADING_SCREEN_DISABLED",
 }
 
 function MaxDps:OnEnable()
@@ -213,6 +214,114 @@ end
 
 function MaxDps:TalentsUpdated()
 	self:DisableRotation();
+	self:UpdateSpellsAndTalents()
+end
+
+
+local className, classFilename, classId = UnitClass("player")
+local currentSpec = GetSpecialization()
+local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or "None"
+MaxDps.SpellTable = {}
+MaxDps.SpellInfoTable = {}
+function MaxDps:UpdateSpellsAndTalents()
+	local specID = PlayerUtil.GetCurrentSpecID()
+	local configID = C_ClassTalents.GetActiveConfigID()
+	local configInfo = C_Traits.GetConfigInfo(configID)
+	local treeID = configInfo.treeIDs[1]
+	local nodes = C_Traits.GetTreeNodes(treeID)
+	local cooldown
+	for _, nodeID in ipairs(nodes) do
+	    local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
+	    for _,entryID in pairs(nodeInfo.entryIDs) do
+		    local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID)
+		    local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+		    if definitionInfo ~= nil then
+		 	    local talentName = TalentUtil.GetTalentName(definitionInfo.overrideName, definitionInfo.spellID)
+		 	    local spellID = definitionInfo.spellID
+		 	    --if not spellID then print(talentName) break end
+		 	    local name, rank, icon, castTime, minRange, maxRange, _, originalIcon = GetSpellInfo(spellID)
+		 	    local coststable = GetSpellPowerCost(spellID)
+		 	    local costs = ""
+		 	    cooldown = 0
+		 	    if coststable then
+		 	        for k,v in pairs(coststable) do
+		 	            costs = costs .. v.name .. ":" .. math.abs(v.cost) .. ";"
+		 	        end
+		 	    end
+		 	    local currentCharges, maxCharges, cooldownStart, cooldownDuration, chargeModRate = GetSpellCharges(spellID)
+		 	    if cooldownDuration then
+		 	        cooldown = cooldownDuration
+		 	    else
+		 	    	if spellID then
+		 	    	   local cooldownMS, gcdMS = GetSpellBaseCooldown(spellID)
+		 	    	    if cooldownMS then
+		 	    		    cooldown = cooldownMS / 1000
+		 	    	    end
+		 	    	end
+		 	    end
+		 	    local isPassive = IsPassiveSpell(spellID)
+		 	    if isPassive then
+		 	        isPassive = 1
+		 	    end
+		 	    if not isPassive then
+		 	        isPassive = 0
+		 	    end
+		 	    if name then
+		 	        --local info = tostring(spellID) .. "," .. name .. "," .. tostring(castTime) .. "," .. tostring(minRange) .. "," ..  tostring(maxRange) .. "," ..  tostring(isPassive) .. "," ..  tostring(1) .. "," ..  tostring(cooldown)  .. "," .. tostring(costs)
+					local info = {spellID = spellID, name = name, castTime = castTime, minRange = minRange, maxRange = maxRange, isPassive = isPassive, cooldown = cooldown, costs = costs}
+		 	        --table.insert(classtable, spellID, info)
+					--print(name)
+					MaxDps.SpellTable[name:gsub("%s+", ""):gsub("%'", "")] = spellID
+					MaxDps.SpellInfoTable[name:gsub("%s+", ""):gsub("%'", "")] = info
+		 	    end
+		    end
+	    end
+	end
+
+	for i = 2, 3 do
+	    local offset, numSlots = select(3, GetSpellTabInfo(i))
+	    for j = offset+1, offset+numSlots do
+		    local spellName, spellSubName, spellID = GetSpellBookItemName(j, BOOKTYPE_SPELL)
+		    local name, rank, icon, castTime, minRange, maxRange, spellID, originalIcon = GetSpellInfo(spellID)
+		    local coststable = GetSpellPowerCost(spellID)
+		    local costs = ""
+		    cooldown = 0
+		    if coststable then
+		 	    for k,v in pairs(coststable) do
+		 	        costs = costs .. v.name .. ":" .. math.abs(v.cost) .. ";"
+		 	    end
+		    end
+		    local currentCharges, maxCharges, cooldownStart, cooldownDuration, chargeModRate = GetSpellCharges(spellID)
+		    if cooldownDuration then
+		 	    cooldown = cooldownDuration
+		    else
+		 	    if spellID then
+		 	        local cooldownMS, gcdMS = GetSpellBaseCooldown(spellID)
+		 	        if cooldownMS then
+		 	            cooldown = cooldownMS / 1000
+		 	        end
+		 	    end
+		    end
+		    local isPassive = IsPassiveSpell(spellID)
+		    if isPassive then
+		 	    isPassive = 1
+		    end
+		    if not isPassive then
+		 	    isPassive = 0
+		    end
+		    if name then
+		 	    --local info = tostring(spellID) .. "," .. name .. "," .. tostring(castTime) .. "," .. tostring(minRange) .. "," ..  tostring(maxRange) .. "," ..  tostring(isPassive) .. "," ..  tostring(0) .. "," ..  tostring(cooldown)  .. "," .. tostring(costs)
+				local info = {spellID = spellID, name = name, castTime = castTime, minRange = minRange, maxRange = maxRange, isPassive = isPassive, cooldown = cooldown, costs = costs}
+				MaxDps.SpellTable[name:gsub("%s+", ""):gsub("%'", "")] = spellID
+				MaxDps.SpellInfoTable[name:gsub("%s+", ""):gsub("%'", "")] = info
+				--if classtable[spellID] then
+				--	table.insert(classtable, spellID, info)
+		 	    --else
+		 	    --    table.insert(classtable, spellID, info)
+		 	    --end
+		    end
+	    end
+	end
 end
 
 function MaxDps:UNIT_ENTERED_VEHICLE(_, unit)
