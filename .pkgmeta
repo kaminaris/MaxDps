@@ -15,6 +15,8 @@ externals:
         url: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
     Libs/CallbackHandler-1.0:
         url: https://repos.wowace.com/wow/ace3/trunk/CallbackHandler-1.0
+    Libs/LibRangeCheck-2.0:
+        url: https://repos.wowace.com/wow/librangecheck-2-0/trunk/LibRangeCheck-2.0
     Libs/LibSharedMedia-3.0:
         url: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
     Libs/LibStub:
