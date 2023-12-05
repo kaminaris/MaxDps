@@ -1153,6 +1153,7 @@ function MaxDps:DebuffCounter(spellId, timeShift)
 	return count, totalRemains, totalCount, totalCountRemains;
 end
 
+local LibRangeCheck = LibStub("LibRangeCheck-2.0")
 function MaxDps:SmartAoe(itemId)
 	if self.db.global.forceSingle then
 		return 1;
@@ -1176,13 +1177,28 @@ function MaxDps:SmartAoe(itemId)
 	end
 
 	count = 0;
-	for i = 1, #units do
-		-- 8 yards range check IsItemInRange blocked on retail in instance since 10.2
-		if not not IsInInstance() then
-		    if IsItemInRange(itemToCheck, units[i]) then
-		    	count = count + 1;
-		    end
-		end
+	if not IsInInstance() then
+	    for i = 1, #units do
+	    	-- 8 yards range check IsItemInRange blocked on retail in instance since 10.2
+	    	if IsItemInRange(itemToCheck, units[i]) then
+	    		count = count + 1;
+	    	end
+	    end
+	end
+	if IsInInstance() then
+	    for i = 1, #units do
+	    	if MaxDps.isMelee then
+	    		local range = LibRangeCheck:GetRange(units[i], true)
+	            if range and range <= 15 then
+	                count = count + 1
+	    		end
+	    	else
+	    		local range = LibRangeCheck:GetRange(units[i], true)
+	            if range and range  <= 30 then
+	                count = count + 1
+	    		end
+	    	end
+	    end
 	end
 
 	if WeakAuras then

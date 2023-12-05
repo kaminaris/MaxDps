@@ -4,7 +4,7 @@
 ## Author: Kaminaris
 ## Interface: 100200
 ## SavedVariables: MaxDpsOptions
-## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI, Neuron
+## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI, Neuron, LibRangeCheck-2.0
 ## X-Curse-Project-ID: 91970
 ## X-WoWI-ID: 24637
 ## X-Wago-ID: VBNBWM6x
@@ -20,6 +20,7 @@ Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
+Libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 
 Core.lua
 Tier.lua
