@@ -20,7 +20,7 @@ Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
-Libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
+Libs\LibRangeCheck-3.0\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 
 Core.lua
 Tier.lua

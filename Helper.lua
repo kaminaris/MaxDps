@@ -1153,7 +1153,7 @@ function MaxDps:DebuffCounter(spellId, timeShift)
 	return count, totalRemains, totalCount, totalCountRemains;
 end
 
-local LibRangeCheck = LibStub("LibRangeCheck-2.0")
+local LibRangeCheck = LibStub("LibRangeCheck-3.0")
 function MaxDps:SmartAoe(itemId)
 	if self.db.global.forceSingle then
 		return 1;
