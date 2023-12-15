@@ -378,10 +378,13 @@ function MaxDps:FetchAzeriteUI()
         for i = 1, 12 do
             local button = _G['AzeriteActionBar'.. b .. 'Button' .. i];
             if button then
+				button.GetPagedID = function ()
+					return button.id
+				end
                 self:AddStandardButton(button)
             end
         end
-     end
+    end
 end
 
 function MaxDps:FetchLUI()
