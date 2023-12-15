@@ -375,12 +375,20 @@ function MaxDps:FetchDominos()
 end
 
 function MaxDps:FetchAzeriteUI()
-	for i = 1, 24 do
-		local button = _G['AzeriteUIActionButton' .. i];
-		if button then
-			self:AddStandardButton(button);
-		end
-	end
+	--for i = 1, 24 do
+	--	local button = _G['AzeriteUIActionButton' .. i];
+	--	if button then
+	--		self:AddStandardButton(button);
+	--	end
+	--end
+    for b = 1, 8 do
+        for i = 1, 12 do
+            local button = _G['AzeriteActionBar'.. b .. 'Button' .. i];
+            if button then
+                self:AddStandardButton(button)
+            end
+        end
+     end
 end
 
 function MaxDps:FetchLUI()
