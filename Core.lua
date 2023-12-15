@@ -88,8 +88,6 @@ function MaxDps:ProfilerToggle()
 end
 
 function MaxDps:EnableRotation()
-	local inCombat = UnitAffectingCombat("player")
-	local inVehicle = UnitInVehicle("player")
 	if self.NextSpell == nil or self.rotationEnabled then
 		self:Print(self.Colors.Error .. 'Failed to enable addon!');
 		return
@@ -108,10 +106,6 @@ function MaxDps:EnableRotation()
 		self.ModuleOnEnable();
 	end
 
-    if IsMounted() or inVehicle or not inCombat then
-		self:DisableRotation();
-		return
-    end
 	self:EnableRotationTimer();
 
 	self.rotationEnabled = true;
@@ -155,6 +149,7 @@ local talentUpdateEvents = {
 function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_TARGET_CHANGED');
 	self:RegisterEvent('PLAYER_REGEN_DISABLED');
+	self:RegisterEvent('PLAYER_REGEN_ENABLED');
 
 	for _, event in pairs(talentUpdateEvents) do
 		self:RegisterEvent(event, 'TalentsUpdated')
@@ -4899,6 +4894,10 @@ function MaxDps:PLAYER_REGEN_DISABLED()
 		self:InitRotations();
 		self:EnableRotation();
 	end
+end
+
+function MaxDps:PLAYER_REGEN_ENABLED()
+	self:DisableRotation();
 end
 
 function MaxDps:ButtonFetch()
