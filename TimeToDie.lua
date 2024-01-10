@@ -102,3 +102,89 @@ function MaxDps:GetTimeToDie()
 	if WeakAuras then WeakAuras.ScanEvents('MAXDPS_TIME_TO_DIE', seconds); end
 	return seconds;
 end
+
+local unitidtable = {}
+do
+	TableInsert(unitidtable,"target")
+	for i=1,40 do
+		TableInsert(unitidtable,"nameplate" .. i)
+	end
+end
+
+local function NewTimeToDieTracker()
+	for i,plate in pairs(unitidtable) do
+		local unitguid = UnitGUID(plate)
+		if UnitExists(plate) then
+		    if not MaxDps.ttd.data then
+		    	MaxDps.ttd.data = {}
+		    end
+		    if not MaxDps.ttd.data[plate] then
+		    	MaxDps.ttd.data[plate] = {}
+		    end
+		    if not MaxDps.ttd.data[plate].unitguid then
+		    	MaxDps.ttd.data[plate].unitguid = unitguid
+		    end
+		    if (not MaxDps.ttd.data[plate].oldHP) or (MaxDps.ttd.data[plate].unitguid ~= unitguid)  then
+		        MaxDps.ttd.data[plate].oldHP = UnitHealth(plate)
+		    end
+			if (MaxDps.ttd.data[plate].unitguid ~= unitguid)  then
+				MaxDps.ttd.data[plate].unitguid = unitguid
+			end
+		    if MaxDps.ttd.data[plate] then
+		        MaxDps.ttd.data[plate].newHP = UnitHealth(plate)
+		    end
+		    if MaxDps.ttd.data[plate] and MaxDps.ttd.data[plate].oldHP and MaxDps.ttd.data[plate].newHP then
+				local dps = MaxDps.ttd.data[plate].oldHP - MaxDps.ttd.data[plate].newHP
+				if dps ~= 0 then
+		            MaxDps.ttd.data[plate].DPS = MaxDps.ttd.data[plate].oldHP - MaxDps.ttd.data[plate].newHP
+				end
+		    end
+		    -- Reset old hp for next calculation
+		    MaxDps.ttd.data[plate].oldHP = UnitHealth(plate)
+		else
+			if MaxDps.ttd.data and MaxDps.ttd.data[plate] then
+			    MaxDps.ttd.data[plate] = nil
+			end
+		end
+	end
+end
+
+local newTTDtimer
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+frame:SetScript("OnEvent", function(self, event, ...)
+    if event == "PLAYER_REGEN_DISABLED" then
+		--self:ScheduleRepeatingTimer('NewTimeToDie', 1)
+		newTTDtimer = C_Timer.NewTicker(1,NewTimeToDieTracker)
+	end
+    if event == "PLAYER_REGEN_ENABLED" then
+		--self:ScheduleRepeatingTimer('NewTimeToDie', 1)
+		if newTTDtimer and not newTTDtimer:IsCancelled() then
+			newTTDtimer:Cancel()
+		end
+		MaxDps.ttd.data = {}
+	end
+end)
+
+-- Function to calculate time till target health reaches a specific percentage
+function MaxDps:GetTimeToPct(Pct)
+	if not UnitExists("target") then
+		return 500
+	end
+	local howFar
+	local damagePerSecond = (MaxDps.ttd and MaxDps.ttd.data and MaxDps.ttd.data.target and MaxDps.ttd.data.target.DPS and MaxDps.ttd.data.target.DPS) or 0
+	local timeToReach
+	local currentHealth = UnitHealth("target")
+	local goalHP = Pct / 100 * UnitHealthMax("target")
+	if currentHealth > goalHP then
+	    howFar = UnitHealth("target") - goalHP
+	    timeToReach = howFar / damagePerSecond
+		if timeToReach == math.huge then
+			timeToReach = 500
+		end
+	else
+		timeToReach = 0
+	end
+	return timeToReach
+end
