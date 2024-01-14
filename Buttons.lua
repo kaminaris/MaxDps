@@ -540,7 +540,8 @@ function MaxDps:GlowSpell(spellId)
 			self.Colors.Error ..
 			'Spell not found on action bars: ' ..
 			(spellName and spellName or 'Unknown') ..
-			'(' .. spellId .. ')'
+			'(' .. spellId .. ')',
+			"error"
 		);
 	end
 end
