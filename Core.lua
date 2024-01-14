@@ -58,12 +58,12 @@ function MaxDps:GetTexture()
 end
 
 MaxDps.DefaultPrint = MaxDps.Print;
-function MaxDps:Print(...)
-	if self.db.global.disabledInfo then
+function MaxDps:Print(message,level)
+	if not self.db.global.disabledInfo and level == "info" then
 		return
+	else
+        MaxDps:DefaultPrint(message);
 	end
-
-	MaxDps:DefaultPrint(...);
 end
 
 MaxDps.profilerStatus = 0;
@@ -89,7 +89,7 @@ end
 
 function MaxDps:EnableRotation()
 	if self.NextSpell == nil or self.rotationEnabled then
-		self:Print(self.Colors.Error .. 'Failed to enable addon!');
+		self:Print(self.Colors.Error .. 'Failed to enable addon!', "error");
 		return
 	end
 
@@ -123,7 +123,7 @@ function MaxDps:DisableRotation()
 	self:DisableRotationTimer();
 
 	self:DestroyAllOverlays();
-	self:Print(self.Colors.Info .. 'Disabling');
+	self:Print(self.Colors.Info .. 'Disabling', "info");
 
 	self.Spell = nil;
 	self.rotationEnabled = false;
@@ -190,7 +190,7 @@ function MaxDps:OnEnable()
 		end);
 	end
 
-	self:Print(self.Colors.Info .. 'Initialized');
+	self:Print(self.Colors.Info .. 'Initialized', "info");
 end
 
 MaxDps.visibleNameplates = {};
@@ -4891,7 +4891,7 @@ end
 
 function MaxDps:PLAYER_REGEN_DISABLED()
 	if self.db.global.onCombatEnter and not self.rotationEnabled then
-		self:Print(self.Colors.Success .. 'Auto enable on combat!');
+		self:Print(self.Colors.Success .. 'Auto enable on combat!', "info");
 		self:InitRotations();
 		self:EnableRotation();
 	end
@@ -4957,7 +4957,7 @@ function MaxDps:InvokeNextSpell()
 end
 
 function MaxDps:InitRotations()
-	self:Print(self.Colors.Info .. 'Initializing rotations');
+	self:Print(self.Colors.Info .. 'Initializing rotations', "info");
 	self:CountTier()
 
 	local _, _, classId = UnitClass('player');
@@ -4975,7 +4975,7 @@ function MaxDps:InitRotations()
 	if customRotation then
 		self.NextSpell = customRotation.fn;
 
-		self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name);
+		self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name, "info");
 	else
 		self:LoadModule();
 	end
@@ -4983,7 +4983,7 @@ end
 
 function MaxDps:LoadModule()
 	if self.Classes[self.ClassId] == nil then
-		self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.');
+		self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.', "error");
 		return
 	end
 
@@ -4997,9 +4997,9 @@ function MaxDps:LoadModule()
 	end
 
 	if reason == 'MISSING' or reason == 'DISABLED' then
-		self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason);
-		self:Print(self.Colors.Error .. 'Make sure to install class module or create custom rotation');
-		self:Print(self.Colors.Error .. 'Missing addon: ' .. module);
+		self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason, "error");
+		self:Print(self.Colors.Error .. 'Make sure to install class module or create custom rotation', "error");
+		self:Print(self.Colors.Error .. 'Missing addon: ' .. module, "error");
 		return
 	end
 
@@ -5013,8 +5013,8 @@ function MaxDps:EnableRotationModule(className)
 	local loaded = self:EnableModule(className);
 
 	if not loaded then
-		self:Print(self.Colors.Error .. 'Could not find load module ' .. className .. ', reason: OUTDATED');
+		self:Print(self.Colors.Error .. 'Could not find load module ' .. className .. ', reason: OUTDATED', "error");
 	else
-		self:Print(self.Colors.Info .. 'Finished Loading class module');
+		self:Print(self.Colors.Info .. 'Finished Loading class module', "info");
 	end
 end
