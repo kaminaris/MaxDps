@@ -11,6 +11,14 @@ MaxDps.Textures = {
 };
 MaxDps.FinalTexture = nil;
 
+MaxDps.PrintLevel = {
+	{text = 'Error', value = 'error'},
+	{text = 'Info', value = 'info'},
+	{text = 'Error & Info', value = 'errorinfo'},
+	{text = 'All', value = 'all'},
+	{text = 'None', value = 'none'},
+};
+
 MaxDps.Colors = {
 	Info = '|cFF1394CC',
 	Error = '|cFFF0563D',
@@ -36,7 +44,7 @@ MaxDps.Classes = {
 MaxDps.defaultOptions = {
 	global = {
 		enabled = true,
-		disabledInfo = false,
+		disabledInfo = 'errorinfo',
 		debugMode = false,
 		forceSingle = false,
 		disableButtonGlow = false,
@@ -162,9 +170,11 @@ function MaxDps:AddToBlizzardOptions()
 	debugMode:SetChecked(MaxDps.db.global.debugMode);
 	debugMode.OnValueChanged = function(_, flag) MaxDps.db.global.debugMode = flag; end;
 
-	local disabledInfo = StdUi:Checkbox(optionsFrame, 'Disable info messages', 200, 24);
-	disabledInfo:SetChecked(not MaxDps.db.global.disabledInfo);
-	disabledInfo.OnValueChanged = function(_, flag) MaxDps.db.global.disabledInfo = not flag; end;
+	local disabledInfo = StdUi:Dropdown(optionsFrame, 200, 24, MaxDps.PrintLevel, MaxDps.db.global.disabledInfo);
+	StdUi:AddLabel(optionsFrame, disabledInfo, 'Chat Message Level', 'TOP');
+	disabledInfo.OnValueChanged = function(_, val)
+		MaxDps.db.global.disabledInfo = val;
+	end;
 
 
 	--- Overlay options

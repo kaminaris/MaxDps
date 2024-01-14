@@ -342,10 +342,14 @@ function Window:GetWindowConfig()
 					order  = 1
 				},
 				disabledInfo = {
-					type   = 'checkbox',
-					label  = 'Enable info messages',
+					type   = 'dropdown',
+					label  = 'Chat Message Level',
 					column = 6,
-					order  = 2
+					order  = 2,
+					options  = MaxDps.PrintLevel,
+					onChange = function(_, val)
+						MaxDps.db.global.disabledInfo = val;
+					end
 				}
 			},
 			{

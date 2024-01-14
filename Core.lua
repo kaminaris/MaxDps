@@ -59,10 +59,23 @@ end
 
 MaxDps.DefaultPrint = MaxDps.Print;
 function MaxDps:Print(message,level)
-	if not self.db.global.disabledInfo and level == "info" then
+	if not level then level = "info" end
+	if self.db.global.disabledInfo and self.db.global.disabledInfo == "none" then
 		return
-	else
-        MaxDps:DefaultPrint(message);
+	elseif self.db.global.disabledInfo and self.db.global.disabledInfo == "all" then
+		MaxDps:DefaultPrint(message);
+	elseif self.db.global.disabledInfo and self.db.global.disabledInfo == "errorinfo" then
+		if level == "error" or level == "info" then
+			MaxDps:DefaultPrint(message);
+		end
+	elseif self.db.global.disabledInfo and self.db.global.disabledInfo == "error" then
+		if level == "error" then
+			MaxDps:DefaultPrint(message);
+		end
+	elseif self.db.global.disabledInfo and self.db.global.disabledInfo == "info" then
+		if level == "info" then
+			MaxDps:DefaultPrint(message);
+		end
 	end
 end
 
