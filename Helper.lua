@@ -1153,6 +1153,34 @@ function MaxDps:DebuffCounter(spellId, timeShift)
 	return count, totalRemains, totalCount, totalCountRemains;
 end
 
+local combatTimer
+MaxDps.combatTime = 0
+local function TrackTimeInCombat(self, event)
+	if event == "PLAYER_REGEN_DISABLED" then
+		if combatTimer and not combatTimer:IsCancelled() then
+			combatTimer:Cancel()
+		end
+		if not combatTimer or combatTimer:IsCancelled() then
+		    combatTimer = C_Timer.NewTicker(1,
+		    function()
+		    	MaxDps.combatTime = MaxDps.combatTime + 1
+		    end
+	        )
+		end
+	end
+	if event == "PLAYER_REGEN_ENABLED" then
+		if combatTimer and not combatTimer:IsCancelled() then
+			combatTimer:Cancel()
+		end
+		MaxDps.combatTime = 0
+	end
+end
+
+local frame = CreateFrame("Frame")
+frame:SetScript("OnEvent", TrackTimeInCombat)
+frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+
 --For encounters with multiple targets
 --but only 1 takes 100% dmg
 --Eg. encounters where a target takes reduced dmg
