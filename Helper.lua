@@ -1153,57 +1153,100 @@ function MaxDps:DebuffCounter(spellId, timeShift)
 	return count, totalRemains, totalCount, totalCountRemains;
 end
 
+--For encounters with multiple targets
+--but only 1 takes 100% dmg
+--Eg. encounters where a target takes reduced dmg
+--or other targets are immune
+--track the encounter ID for use in SmartAoe
+local encounterID = nil
+local function UpdateEncounterID(self, event, EventencounterID, EventencounterName, EventdifficultyID, EventgroupSize)
+	--print(event, EventencounterID, EventencounterName, EventdifficultyID, EventgroupSize)
+	if event == "ENCOUNTER_START" then
+		encounterID = EventencounterID
+	end
+	if event == "ENCOUNTER_END" then
+		encounterID = nil
+	end
+end
+
+local frame = CreateFrame("Frame")
+frame:SetScript("OnEvent", UpdateEncounterID)
+frame:RegisterEvent("ENCOUNTER_START")
+frame:RegisterEvent("ENCOUNTER_END")
+
+--format is encounter id = number of targets
+--that are a part of that encounter 
+local singleTargetEncounters = {
+	-- WM Triad
+	[2113] = 3
+}
+
 local LibRangeCheck = LibStub("LibRangeCheck-3.0")
 function MaxDps:SmartAoe(itemId)
 	if self.db.global.forceSingle then
 		return 1;
 	end
 
-	local _, instanceType = IsInInstance();
+	--local _, instanceType = IsInInstance();
 	local count, units = self:ThreatCounter();
+	local originalCount = 0
 
-	local itemToCheck = itemId or 18904;
+	--local itemToCheck = itemId or 18904;
 
 	-- 5 man content, we count battleground also as small party
-	if self.isMelee then
-		-- 8 yards range
-		itemToCheck = itemId or 61323;
-	elseif instanceType == 'pvp' or instanceType == 'party' then
-		-- 30 yards range
-		itemToCheck = itemId or 7734;
-	elseif instanceType == 'arena' and instanceType == 'raid' then
-		-- 35 yards range
-		itemToCheck = itemId or 18904;
-	end
+	--if self.isMelee then
+	--	-- 8 yards range
+	--	itemToCheck = itemId or 61323;
+	--elseif instanceType == 'pvp' or instanceType == 'party' then
+	--	-- 30 yards range
+	--	itemToCheck = itemId or 7734;
+	--elseif instanceType == 'arena' and instanceType == 'raid' then
+	--	-- 35 yards range
+	--	itemToCheck = itemId or 18904;
+	--end
 
 	count = 0;
-	if not IsInInstance() then
-	    for i = 1, #units do
-	    	-- 8 yards range check IsItemInRange blocked on retail in instance since 10.2
-	    	if IsItemInRange(itemToCheck, units[i]) then
-	    		count = count + 1;
-	    	end
-	    end
+	--if not IsInInstance() then
+	--    for i = 1, #units do
+	--    	-- 8 yards range check IsItemInRange blocked on retail in instance since 10.2
+	--    	if IsItemInRange(itemToCheck, units[i]) then
+	--    		count = count + 1;
+	--    	end
+	--    end
+	--end
+	--if IsInInstance() then
+	for i = 1, #units do
+		if MaxDps.isMelee then
+			local range = LibRangeCheck:GetRange(units[i], true)
+	        if range and range <= 15 then
+	            count = count + 1
+			end
+		else
+			local range = LibRangeCheck:GetRange(units[i], true)
+	        if range and range  <= 30 then
+	            count = count + 1
+			end
+		end
 	end
-	if IsInInstance() then
-	    for i = 1, #units do
-	    	if MaxDps.isMelee then
-	    		local range = LibRangeCheck:GetRange(units[i], true)
-	            if range and range <= 15 then
-	                count = count + 1
-	    		end
-	    	else
-	    		local range = LibRangeCheck:GetRange(units[i], true)
-	            if range and range  <= 30 then
-	                count = count + 1
-	    		end
-	    	end
-	    end
-	end
+	--end
 
 	if WeakAuras then
 		WeakAuras.ScanEvents('MAXDPS_TARGET_COUNT', count);
 	end
+
+	if encounterID and singleTargetEncounters and singleTargetEncounters[encounterID] then
+		originalCount = count
+		if count <= singleTargetEncounters[encounterID] then
+		    count = 1
+		end
+		if count >= singleTargetEncounters[encounterID] then
+			count = count - singleTargetEncounters[encounterID] + 1
+		end
+		if count < 0 then
+			count = originalCount
+		end
+	end
+
 	return count;
 end
 
