@@ -115,6 +115,9 @@ local function NewTimeToDieTracker()
 	for i,plate in pairs(unitidtable) do
 		local unitguid = UnitGUID(plate)
 		if UnitExists(plate) then
+		    if not MaxDps.ttd then
+		    	MaxDps.ttd = {}
+		    end
 		    if not MaxDps.ttd.data then
 		    	MaxDps.ttd.data = {}
 		    end
