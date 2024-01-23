@@ -362,6 +362,9 @@ function MaxDps:FetchDominos()
 	for i = 1, 168 do
 		local button = _G['DominosActionButton' .. i];
 		if button then
+			button.GetPagedID = function ()
+				return button.id
+			end
 			self:AddStandardButton(button);
 		end
 	end
