@@ -264,6 +264,11 @@ function MaxDps:AddStandardButton(button)
 		if type == 'macro' then
 			spellId = GetMacroSpell(actionType);
 			if spellId == nil then
+				if not button.GetPagedID and button.id then
+					button.GetPagedID = function ()
+						return button.id
+					end
+				end
 				local macroslot = button:GetPagedID()
 				spellId = macroslot and select(2,GetActionInfo(macroslot))
 			end
