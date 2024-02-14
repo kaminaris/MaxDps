@@ -232,7 +232,7 @@ function MaxDps:AddItemButton(button)
 
 	if actionSlot and (IsEquippedAction(actionSlot) or IsConsumableAction(actionSlot)) then
 		local type, itemId = GetActionInfo(actionSlot);
-		if type == 'item' then
+		if type == 'item' and itemId then
 			local _, itemSpellId = GetItemSpell(itemId);
 			self.ItemSpells[itemId] = itemSpellId;
 
