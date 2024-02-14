@@ -10,6 +10,8 @@ local GetSpellInfo = GetSpellInfo;
 local pairs = pairs;
 local select = select;
 
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+
 MaxDps.Spells = {};
 MaxDps.ItemSpells = {}; -- hash map of itemId -> itemSpellId
 MaxDps.Flags = {};
