@@ -15,9 +15,9 @@ local IsPlayerSpell = IsPlayerSpell;
 local UnitClass = UnitClass;
 local GetSpecialization = GetSpecialization;
 local CreateFrame = CreateFrame;
-local GetAddOnInfo = GetAddOnInfo;
-local IsAddOnLoaded = IsAddOnLoaded;
-local LoadAddOn = LoadAddOn;
+local GetAddOnInfo = C_AddOns.GetAddOnInfo;
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+local LoadAddOn = C_AddOns.LoadAddOn;
 
 local spellHistoryBlacklist = {
 	[75] = true; -- Auto shot
