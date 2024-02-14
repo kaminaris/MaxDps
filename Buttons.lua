@@ -264,7 +264,7 @@ function MaxDps:AddStandardButton(button)
 		if type == 'macro' then
 			spellId = GetMacroSpell(actionType);
 			if spellId == nil then
-				if not button.GetPagedID and button.id then
+				if button and not button.GetPagedID and button.id then
 					button.GetPagedID = function ()
 						return button.id
 					end
@@ -366,10 +366,12 @@ function MaxDps:FetchDominos()
 
 	for i = 1, 168 do
 		local button = _G['DominosActionButton' .. i];
-		if button then
+		if button and not button.GetPagedID and button.id then
 			button.GetPagedID = function ()
 				return button.id
 			end
+		end
+		if button then
 			self:AddStandardButton(button);
 		end
 	end
@@ -385,10 +387,12 @@ function MaxDps:FetchAzeriteUI()
     for b = 1, 8 do
         for i = 1, 12 do
             local button = _G['AzeriteActionBar'.. b .. 'Button' .. i];
-            if button then
+            if button and not button.GetPagedID and button.id then
 				button.GetPagedID = function ()
 					return button.id
 				end
+			end
+			if button then
                 self:AddStandardButton(button)
             end
         end
