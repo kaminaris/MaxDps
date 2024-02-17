@@ -171,6 +171,8 @@ function MaxDps:OnEnable()
 	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch');
 	self:RegisterEvent('ACTIONBAR_HIDEGRID', 'ButtonFetch');
 	self:RegisterEvent('ACTIONBAR_PAGE_CHANGED', 'ButtonFetch');
+	self:RegisterEvent('ACTIONBAR_UPDATE_STATE', 'ButtonFetch');
+	self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'ButtonFetch');
 	self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch');
 	self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch');
 	self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch');
@@ -178,6 +180,7 @@ function MaxDps:OnEnable()
 	self:RegisterEvent('UPDATE_MACROS', 'ButtonFetch');
 	self:RegisterEvent('VEHICLE_UPDATE', 'ButtonFetch');
 	self:RegisterEvent('UPDATE_STEALTH', 'ButtonFetch');
+	self:RegisterEvent('SPELLS_CHANGED', 'ButtonFetch');
 
 	self:RegisterEvent('UNIT_ENTERED_VEHICLE');
 	self:RegisterEvent('UNIT_EXITED_VEHICLE');
