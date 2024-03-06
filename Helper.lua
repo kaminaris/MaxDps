@@ -1176,10 +1176,10 @@ local function TrackTimeInCombat(self, event)
 	end
 end
 
-local frame = CreateFrame("Frame")
-frame:SetScript("OnEvent", TrackTimeInCombat)
-frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+local combatTimeframe = CreateFrame("Frame")
+combatTimeframe:SetScript("OnEvent", TrackTimeInCombat)
+combatTimeframe:RegisterEvent("PLAYER_REGEN_DISABLED")
+combatTimeframe:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 --For encounters with multiple targets
 --but only 1 takes 100% dmg
@@ -1197,10 +1197,10 @@ local function UpdateEncounterID(self, event, EventencounterID, EventencounterNa
 	end
 end
 
-local frame = CreateFrame("Frame")
-frame:SetScript("OnEvent", UpdateEncounterID)
-frame:RegisterEvent("ENCOUNTER_START")
-frame:RegisterEvent("ENCOUNTER_END")
+local encounterIDframe = CreateFrame("Frame")
+encounterIDframe:SetScript("OnEvent", UpdateEncounterID)
+encounterIDframe:RegisterEvent("ENCOUNTER_START")
+encounterIDframe:RegisterEvent("ENCOUNTER_END")
 
 --format is encounter id = number of targets
 --that are a part of that encounter 
