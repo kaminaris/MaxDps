@@ -2,7 +2,7 @@
 local _, MaxDps = ...;
 local GetInventorySlotInfo = GetInventorySlotInfo
 local GetInventoryItemLink = GetInventoryItemLink
-local GetItemInfo = GetItemInfo
+local GetItemInfo = C_Item.GetItemInfo
 
 local slots = {"HEADSLOT","SHOULDERSLOT", "CHESTSLOT", "LEGSSLOT", "HANDSSLOT"}
 local tiernumbers = {30, 31}
@@ -15,10 +15,10 @@ function MaxDps:CountTier()
 
     local count = 0
 
-    local tier
     for _,tier in pairs(tiernumbers) do
         if not self.tier[tier] then
             self.tier[tier] = {}
+            self.tier[tier].count = 0
         end
         for _,slotName in pairs(slots) do
             local match = nil
@@ -146,5 +146,4 @@ function MaxDps:CountTier()
         end
         self.tier[tier].count = count
     end
-    return count
 end
