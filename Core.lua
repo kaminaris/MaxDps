@@ -3849,6 +3849,7 @@ function MaxDps:UpdateSpellsAndTalents()
 				["BrightPupil"] = 390684,
 				["Fade"] = 586,
 				["Sanlayn"] = 199855,
+				["ShadowWordPain"] = 589,
 				["FromDarknessComesLight"] = 390615,
 				["Apathy"] = 390668,
 				["ProtectiveLight"] = 193063,
