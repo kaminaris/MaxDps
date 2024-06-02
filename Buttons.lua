@@ -542,13 +542,55 @@ function MaxDps:GlowCooldown(spellId, condition, color)
 end
 
 function MaxDps:GlowSpell(spellId)
+	local BaseSpellID = spellId and FindBaseSpellByID(spellId) or nil
+	local overrideID = spellId and FindSpellOverrideByID(spellId) or nil
+	local foundspell = false
 	if self.Spells[spellId] ~= nil then
 		for _, button in pairs(self.Spells[spellId]) do
 			self:Glow(button, 'next', nil, 'normal');
 		end
 
 		self.SpellsGlowing[spellId] = 1;
-	else
+		foundspell = true
+	elseif BaseSpellID and self.Spells[BaseSpellID] ~= nil then
+		for _, button in pairs(self.Spells[BaseSpellID]) do
+			self:Glow(button, 'next', nil, 'normal');
+		end
+
+		self.SpellsGlowing[BaseSpellID] = 1;
+		foundspell = true
+	elseif overrideID and self.Spells[overrideID] ~= nil then
+		for _, button in pairs(self.Spells[overrideID]) do
+			self:Glow(button, 'next', nil, 'normal');
+		end
+
+		self.SpellsGlowing[overrideID] = 1;
+		foundspell = true
+	elseif self.Spells[spellId] == nil and (BaseSpellID and self.Spells[BaseSpellID] == nil) and (overrideID and self.Spells[overrideID] == nil) then
+		for _, index in pairs(self.Spells) do
+			for _,button in pairs(index) do
+		        local slot = button:GetPagedID() or button:CalculateAction() or button:GetAttribute("action") or 0
+				local actionName = nil
+			    if HasAction(slot) then
+			    	local actionType, id, subType = GetActionInfo(slot)
+					if not id then return end
+			    	if actionType == "macro" then
+			    		actionName, _, id = GetMacroSpell(id)
+			    	--elseif actionType == "item" then
+			    	--	actionName = C_Item.GetItemInfo(id)
+			    	--elseif actionType == "spell" then
+			    	--	actionName = GetSpellInfo(id)
+			    	end
+			    	local FindSpellName = spellId and GetSpellInfo(spellId)
+			    	if FindSpellName and id and FindSpellName == GetSpellInfo(id) then
+						foundspell = true
+			    		self:Glow(button, 'next', nil, 'normal');
+			    	end
+			    end
+			end
+		end
+	end
+	if foundspell == false then
 		local spellName = GetSpellInfo(spellId);
 		self:Print(
 			self.Colors.Error ..
