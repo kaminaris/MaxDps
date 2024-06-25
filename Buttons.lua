@@ -569,7 +569,8 @@ function MaxDps:GlowSpell(spellId)
 	elseif self.Spells[spellId] == nil and (BaseSpellID and self.Spells[BaseSpellID] == nil) and (overrideID and self.Spells[overrideID] == nil) then
 		for _, index in pairs(self.Spells) do
 			for _,button in pairs(index) do
-		        local slot = button:GetPagedID() or button:CalculateAction() or button:GetAttribute("action") or 0
+		        local slot = button and ( (button.GetPagedID and button:GetPagedID() ) or ( button.CalculateAction and button:CalculateAction() ) or ( button.GetAttribute and button:GetAttribute("action") ) or nil)
+				if slot == nil then return end
 				local actionName = nil
 			    if HasAction(slot) then
 			    	local actionType, id, subType = GetActionInfo(slot)
