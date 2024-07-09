@@ -1,0 +1,21 @@
+name: CI-LuaCheck
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout addon
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 100
+
+      - name: Run luacheck
+        uses: BigWigsMods/actions/luacheck@master
+        with:
+          args: -q
