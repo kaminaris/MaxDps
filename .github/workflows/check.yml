@@ -11,9 +11,9 @@ jobs:
 
     steps:
       - name: Checkout addon
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 100
+          fetch-depth: 1
 
       - name: Run luacheck
         uses: BigWigsMods/actions/luacheck@master
