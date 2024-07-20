@@ -1,29 +1,29 @@
 --- @type MaxDps MaxDps
-local _, MaxDps = ...;
+local _, MaxDps = ...
 
-local SharedMedia = LibStub('LibSharedMedia-3.0');
+local SharedMedia = LibStub('LibSharedMedia-3.0')
 ---@type StdUi
-local StdUi = LibStub('StdUi');
+local StdUi = LibStub('StdUi')
 
 --- @class MaxDpsCustom
-local Custom = MaxDps:NewModule('Custom', 'AceTimer-3.0');
+local Custom = MaxDps:NewModule('Custom', 'AceTimer-3.0')
 
-local IndentationLib = IndentationLib;
-local TableInsert = tinsert;
-local unpack = unpack;
-local format = format;
-local pairs = pairs;
-local loadstring = loadstring;
-local pcall = pcall;
-local GetNumClasses = GetNumClasses;
-local GetClassInfo = GetClassInfo;
-local GetNumSpecializationsForClassID = GetNumSpecializationsForClassID;
-local GetSpecializationInfoForClassID = GetSpecializationInfoForClassID;
+local IndentationLib = IndentationLib
+local TableInsert = tinsert
+local unpack = unpack
+local format = format
+local pairs = pairs
+local loadstring = loadstring
+local pcall = pcall
+local GetNumClasses = GetNumClasses
+local GetClassInfo = GetClassInfo
+local GetNumSpecializationsForClassID = GetNumSpecializationsForClassID
+local GetSpecializationInfoForClassID = GetSpecializationInfoForClassID
 
-local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS;
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 
 function Custom:GetClassIcon(classTag)
-	local x1, x2, y1, y2 = unpack(CLASS_ICON_TCOORDS[classTag]);
+	local x1, x2, y1, y2 = unpack(CLASS_ICON_TCOORDS[classTag])
 
 	return format(
 		'|TInterface\\TARGETINGFRAME\\UI-CLASSES-CIRCLES:14:14:0:0:256:256:%u:%u:%u:%u|t',
@@ -31,42 +31,42 @@ function Custom:GetClassIcon(classTag)
 		x2 * 256,
 		y1 * 256,
 		y2 * 256
-	);
+	)
 end
 
 function Custom:OnEnable()
-	self.CustomRotations = {};
-	self.Specs = {};
+	self.CustomRotations = {}
+	self.Specs = {}
 	-- private for dropdowns
-	self.classList = {};
-	self.specList = {};
+	self.classList = {}
+	self.specList = {}
 
 	for i = 1, GetNumClasses() do
-		local classDisplayName, classTag, classId = GetClassInfo(i);
+		local classDisplayName, classTag, classId = GetClassInfo(i)
 		TableInsert(self.classList, {
 			text  = self:GetClassIcon(classTag) .. ' ' .. classDisplayName,
 			value = classId
-		});
+		})
 
-		local specNum = GetNumSpecializationsForClassID(classId);
+		local specNum = GetNumSpecializationsForClassID(classId)
 		for sI = 1, specNum do
-			local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI);
+			local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI)
 
-			specName = '|T' .. specIcon .. ':0|t ' .. specName;
+			specName = '|T' .. specIcon .. ':0|t ' .. specName
 			if not self.Specs[classId] then
-				self.Specs[classId] = {};
+				self.Specs[classId] = {}
 			end
 
-			self.Specs[classId][sI] = specName;
+			self.Specs[classId][sI] = specName
 
 			if not self.specList[classId] then
 				self.specList[classId] = {}
 			end
-			TableInsert(self.specList[classId], { text = specName, value = sI });
+			TableInsert(self.specList[classId], { text = specName, value = sI })
 		end
 	end
 
-	return self;
+	return self
 end
 
 function Custom:CreateCustomRotation()
@@ -75,31 +75,31 @@ function Custom:CreateCustomRotation()
 		enabled = false,
 		class   = nil,
 		spec    = nil,
-		fn      = 'function()\n    local fd = MaxDps.FrameData;\n    -- your code here\nend',
-	};
+		fn      = 'function()\n    local fd = MaxDps.FrameData\n    -- your code here\nend',
+	}
 
-	TableInsert(MaxDps.db.global.customRotations, customRotation);
-	return customRotation;
+	TableInsert(MaxDps.db.global.customRotations, customRotation)
+	return customRotation
 end
 
 function Custom:RemoveCustomRotation()
 	for k, rotation in pairs(MaxDps.db.global.customRotations) do
 		if rotation == Custom.CurrentEditRotation then
-			MaxDps.db.global.customRotations[k] = nil;
+			MaxDps.db.global.customRotations[k] = nil
 		end
 	end
 
-	self.CurrentEditRotation = nil;
+	self.CurrentEditRotation = nil
 end
 
 function Custom:LoadCustomRotations()
 	for k, _ in pairs(self.CustomRotations) do
-		self.CustomRotations[k] = nil;
+		self.CustomRotations[k] = nil
 	end
 
 	for _, rotation in pairs(MaxDps.db.global.customRotations) do
 		if rotation.enabled and rotation.class ~= nil and rotation.spec ~= nil then
-			local fn = Custom.LoadFunction(rotation.fn);
+			local fn = Custom.LoadFunction(rotation.fn)
 			if not self.CustomRotations[rotation.class] then
 				self.CustomRotations[rotation.class] = {}
 			end
@@ -111,14 +111,14 @@ function Custom:LoadCustomRotations()
 		end
 	end
 
-	MaxDps:Print(MaxDps.Colors.Info .. 'Custom Rotations Loaded!');
+	MaxDps:Print(MaxDps.Colors.Info .. 'Custom Rotations Loaded!')
 end
 
 function Custom:GetCustomRotation(classId, spec)
 	if self.CustomRotations[classId] and self.CustomRotations[classId][spec] then
-		return self.CustomRotations[classId][spec];
+		return self.CustomRotations[classId][spec]
 	else
-		return nil;
+		return nil
 	end
 end
 
@@ -158,37 +158,37 @@ local blockedFunctions = {
 }
 
 local function forbidden()
-	print('|cffffff00A MaxDps just tried to use a forbidden function but has been blocked from doing so.|r');
+	print('|cffffff00A MaxDps just tried to use a forbidden function but has been blocked from doing so.|r')
 end
 
-local env_getglobal;
+local env_getglobal
 local exec_env = setmetatable({}, { __index = function(t, k)
 	if k == '_G' then
-		return t;
+		return t
 	elseif k == 'getglobal' then
-		return env_getglobal;
+		return env_getglobal
 	elseif blockedFunctions[k] then
-		return forbidden;
+		return forbidden
 	else
-		return _G[k];
+		return _G[k]
 	end
 end
-});
+})
 
-local function_cache = {};
+local function_cache = {}
 function Custom.LoadFunction(string)
 	if function_cache[string] then
-		return function_cache[string];
+		return function_cache[string]
 	else
-		local loadedFunction, errorString = loadstring('return ' .. string);
+		local loadedFunction, errorString = loadstring('return ' .. string)
 		if errorString then
-			print(errorString);
+			print(errorString)
 		else
-			setfenv(loadedFunction, exec_env);
-			local success, func = pcall(assert(loadedFunction));
+			setfenv(loadedFunction, exec_env)
+			local success, func = pcall(assert(loadedFunction))
 			if success then
-				function_cache[string] = func;
-				return func;
+				function_cache[string] = func
+				return func
 			end
 		end
 	end

@@ -1,131 +1,131 @@
-local addonName, MaxDps = ...;
+local addonName, MaxDps = ...
 
-LibStub('AceAddon-3.0'):NewAddon(MaxDps, 'MaxDps', 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0');
+LibStub('AceAddon-3.0'):NewAddon(MaxDps, 'MaxDps', 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
 
 --- @class MaxDps
-_G[addonName] = MaxDps;
+_G[addonName] = MaxDps
 
-local TableInsert = tinsert;
-local TableRemove = tremove;
-local TableContains = tContains;
-local TableIndexOf = tIndexOf;
+local TableInsert = tinsert
+local TableRemove = tremove
+local TableContains = tContains
+local TableIndexOf = tIndexOf
 
-local UnitIsFriend = UnitIsFriend;
-local IsPlayerSpell = IsPlayerSpell;
-local UnitClass = UnitClass;
-local GetSpecialization = GetSpecialization;
-local CreateFrame = CreateFrame;
-local GetAddOnInfo = C_AddOns.GetAddOnInfo;
+local UnitIsFriend = UnitIsFriend
+local IsPlayerSpell = IsPlayerSpell
+local UnitClass = UnitClass
+local GetSpecialization = GetSpecialization
+local CreateFrame = CreateFrame
+local GetAddOnInfo = C_AddOns.GetAddOnInfo
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
-local LoadAddOn = C_AddOns.LoadAddOn;
+local LoadAddOn = C_AddOns.LoadAddOn
 
 local spellHistoryBlacklist = {
-	[75] = true; -- Auto shot
-};
+	[75] = true -- Auto shot
+}
 
 function MaxDps:OnInitialize()
-	self.db = LibStub('AceDB-3.0'):New('MaxDpsOptions', self.defaultOptions);
+	self.db = LibStub('AceDB-3.0'):New('MaxDpsOptions', self.defaultOptions)
 
-	self:RegisterChatCommand('maxdps', 'ShowMainWindow');
+	self:RegisterChatCommand('maxdps', 'ShowMainWindow')
 
 	if not self.db.global.customRotations then
-		self.db.global.customRotations = {};
+		self.db.global.customRotations = {}
 	end
 
-	self:AddToBlizzardOptions();
+	self:AddToBlizzardOptions()
 end
 
 function MaxDps:ShowMainWindow()
 	if not self.Window then
-		self.Window = self:GetModule('Window');
+		self.Window = self:GetModule('Window')
 	end
 
-	self.Window:ShowWindow();
+	self.Window:ShowWindow()
 end
 
 function MaxDps:GetTexture()
 	if self.db.global.customTexture ~= '' and self.db.global.customTexture ~= nil then
-		self.FinalTexture = self.db.global.customTexture;
-		return self.FinalTexture;
+		self.FinalTexture = self.db.global.customTexture
+		return self.FinalTexture
 	end
 
-	self.FinalTexture = self.db.global.texture;
+	self.FinalTexture = self.db.global.texture
 	if self.FinalTexture == '' or self.FinalTexture == nil then
-		self.FinalTexture = 'Interface\\Cooldown\\ping4';
+		self.FinalTexture = 'Interface\\Cooldown\\ping4'
 	end
 
-	return self.FinalTexture;
+	return self.FinalTexture
 end
 
-MaxDps.DefaultPrint = MaxDps.Print;
+MaxDps.DefaultPrint = MaxDps.Print
 function MaxDps:Print(message,level)
 	if not level then level = "info" end
 	if self.db.global.disabledInfo and self.db.global.disabledInfo == "none" then
 		return
 	elseif self.db.global.disabledInfo and self.db.global.disabledInfo == "all" then
-		MaxDps:DefaultPrint(message);
+		MaxDps:DefaultPrint(message)
 	elseif self.db.global.disabledInfo and self.db.global.disabledInfo == "errorinfo" then
 		if level == "error" or level == "info" then
-			MaxDps:DefaultPrint(message);
+			MaxDps:DefaultPrint(message)
 		end
 	elseif self.db.global.disabledInfo and self.db.global.disabledInfo == "error" then
 		if level == "error" then
-			MaxDps:DefaultPrint(message);
+			MaxDps:DefaultPrint(message)
 		end
 	elseif self.db.global.disabledInfo and self.db.global.disabledInfo == "info" then
 		if level == "info" then
-			MaxDps:DefaultPrint(message);
+			MaxDps:DefaultPrint(message)
 		end
 	end
 end
 
-MaxDps.profilerStatus = 0;
+MaxDps.profilerStatus = 0
 function MaxDps:ProfilerStart()
-	local profiler = self:GetModule('Profiler');
-	profiler:StartProfiler();
-	self.profilerStatus = 1;
+	local profiler = self:GetModule('Profiler')
+	profiler:StartProfiler()
+	self.profilerStatus = 1
 end
 
 function MaxDps:ProfilerStop()
-	local profiler = self:GetModule('Profiler');
-	profiler:StopProfiler();
-	self.profilerStatus = 0;
+	local profiler = self:GetModule('Profiler')
+	profiler:StopProfiler()
+	self.profilerStatus = 0
 end
 
 function MaxDps:ProfilerToggle()
 	if self.profilerStatus == 0 then
-		self:ProfilerStart();
+		self:ProfilerStart()
 	else
-		self:ProfilerStop();
+		self:ProfilerStop()
 	end
 end
 
 function MaxDps:EnableRotation()
 	if self.NextSpell == nil or self.rotationEnabled then
-		self:Print(self.Colors.Error .. 'Failed to enable addon!', "error");
+		self:Print(self.Colors.Error .. 'Failed to enable addon!', "error")
 		return
 	end
 
-	self:Fetch();
-	self:UpdateButtonGlow();
+	self:Fetch()
+	self:UpdateButtonGlow()
 
-	self:CheckTalents();
-	self:GetAzeriteTraits();
-	self:GetAzeriteEssences();
-	self:GetCovenantInfo();
-	self:GetLegendaryEffects();
-	self:CheckIsPlayerMelee();
+	self:CheckTalents()
+	self:GetAzeriteTraits()
+	self:GetAzeriteEssences()
+	self:GetCovenantInfo()
+	self:GetLegendaryEffects()
+	self:CheckIsPlayerMelee()
 	if self.ModuleOnEnable then
-		self.ModuleOnEnable();
+		self.ModuleOnEnable()
 	end
 
-	self:EnableRotationTimer();
+	self:EnableRotationTimer()
 
-	self.rotationEnabled = true;
+	self.rotationEnabled = true
 end
 
 function MaxDps:EnableRotationTimer()
-	self.RotationTimer = self:ScheduleRepeatingTimer('InvokeNextSpell', self.db.global.interval);
+	self.RotationTimer = self:ScheduleRepeatingTimer('InvokeNextSpell', self.db.global.interval)
 end
 
 function MaxDps:DisableRotation()
@@ -133,18 +133,18 @@ function MaxDps:DisableRotation()
 		return
 	end
 
-	self:DisableRotationTimer();
+	self:DisableRotationTimer()
 
-	self:DestroyAllOverlays();
-	self:Print(self.Colors.Info .. 'Disabling', "info");
+	self:DestroyAllOverlays()
+	self:Print(self.Colors.Info .. 'Disabling', "info")
 
-	self.Spell = nil;
-	self.rotationEnabled = false;
+	self.Spell = nil
+	self.rotationEnabled = false
 end
 
 function MaxDps:DisableRotationTimer()
 	if self.RotationTimer then
-		self:CancelTimer(self.RotationTimer);
+		self:CancelTimer(self.RotationTimer)
 	end
 end
 
@@ -160,71 +160,71 @@ local talentUpdateEvents = {
 }
 
 function MaxDps:OnEnable()
-	self:RegisterEvent('PLAYER_TARGET_CHANGED');
-	self:RegisterEvent('PLAYER_REGEN_DISABLED');
-	self:RegisterEvent('PLAYER_REGEN_ENABLED');
+	self:RegisterEvent('PLAYER_TARGET_CHANGED')
+	self:RegisterEvent('PLAYER_REGEN_DISABLED')
+	self:RegisterEvent('PLAYER_REGEN_ENABLED')
 
 	for _, event in pairs(talentUpdateEvents) do
 		self:RegisterEvent(event, 'TalentsUpdated')
 	end
 
-	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch');
-	self:RegisterEvent('ACTIONBAR_HIDEGRID', 'ButtonFetch');
-	self:RegisterEvent('ACTIONBAR_PAGE_CHANGED', 'ButtonFetch');
-	self:RegisterEvent('ACTIONBAR_UPDATE_STATE', 'ButtonFetch');
-	self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'ButtonFetch');
-	self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch');
-	self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch');
-	self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch');
-	self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'ButtonFetch');
-	self:RegisterEvent('UPDATE_MACROS', 'ButtonFetch');
-	self:RegisterEvent('VEHICLE_UPDATE', 'ButtonFetch');
-	self:RegisterEvent('UPDATE_STEALTH', 'ButtonFetch');
-	self:RegisterEvent('SPELLS_CHANGED', 'ButtonFetch');
+	self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch')
+	self:RegisterEvent('ACTIONBAR_HIDEGRID', 'ButtonFetch')
+	self:RegisterEvent('ACTIONBAR_PAGE_CHANGED', 'ButtonFetch')
+	self:RegisterEvent('ACTIONBAR_UPDATE_STATE', 'ButtonFetch')
+	self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'ButtonFetch')
+	self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch')
+	self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch')
+	self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch')
+	self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'ButtonFetch')
+	self:RegisterEvent('UPDATE_MACROS', 'ButtonFetch')
+	self:RegisterEvent('VEHICLE_UPDATE', 'ButtonFetch')
+	self:RegisterEvent('UPDATE_STEALTH', 'ButtonFetch')
+	self:RegisterEvent('SPELLS_CHANGED', 'ButtonFetch')
 
-	self:RegisterEvent('UNIT_ENTERED_VEHICLE');
-	self:RegisterEvent('UNIT_EXITED_VEHICLE');
+	self:RegisterEvent('UNIT_ENTERED_VEHICLE')
+	self:RegisterEvent('UNIT_EXITED_VEHICLE')
 
-	self:RegisterEvent('NAME_PLATE_UNIT_ADDED');
-	self:RegisterEvent('NAME_PLATE_UNIT_REMOVED');
-	--	self:RegisterEvent('PLAYER_REGEN_ENABLED');
+	self:RegisterEvent('NAME_PLATE_UNIT_ADDED')
+	self:RegisterEvent('NAME_PLATE_UNIT_REMOVED')
+	--	self:RegisterEvent('PLAYER_REGEN_ENABLED')
 
 	if not self.playerUnitFrame then
-		self.spellHistory = {};
+		self.spellHistory = {}
 
-		self.playerUnitFrame = CreateFrame('Frame');
-		self.playerUnitFrame:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', 'player');
+		self.playerUnitFrame = CreateFrame('Frame')
+		self.playerUnitFrame:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', 'player')
 		self.playerUnitFrame:SetScript('OnEvent', function(_, _, _, _, spellId)
 			-- event, unit, lineId
 			if IsPlayerSpell(spellId) and not spellHistoryBlacklist[spellId] then
-				TableInsert(self.spellHistory, 1, spellId);
+				TableInsert(self.spellHistory, 1, spellId)
 
 				if #self.spellHistory > 5 then
-					TableRemove(self.spellHistory);
+					TableRemove(self.spellHistory)
 				end
 			end
-		end);
+		end)
 	end
 
-	self:Print(self.Colors.Info .. 'Initialized', "info");
+	self:Print(self.Colors.Info .. 'Initialized', "info")
 end
 
-MaxDps.visibleNameplates = {};
+MaxDps.visibleNameplates = {}
 function MaxDps:NAME_PLATE_UNIT_ADDED(_, nameplateUnit)
 	if not TableContains(self.visibleNameplates, nameplateUnit) then
-		TableInsert(self.visibleNameplates, nameplateUnit);
+		TableInsert(self.visibleNameplates, nameplateUnit)
 	end
 end
 
 function MaxDps:NAME_PLATE_UNIT_REMOVED(_, nameplateUnit)
-	local index = TableIndexOf(self.visibleNameplates, nameplateUnit);
+	local index = TableIndexOf(self.visibleNameplates, nameplateUnit)
 	if index ~= nil then
 		TableRemove(self.visibleNameplates, index)
 	end
 end
 
 function MaxDps:TalentsUpdated()
-	self:DisableRotation();
+	self:DisableRotation()
 	self:UpdateSpellsAndTalents()
 end
 
@@ -4933,14 +4933,14 @@ end
 
 function MaxDps:UNIT_ENTERED_VEHICLE(_, unit)
 	if unit == 'player' and self.rotationEnabled then
-		self:DisableRotation();
+		self:DisableRotation()
 	end
 end
 
 function MaxDps:UNIT_EXITED_VEHICLE(_, unit)
 	if unit == 'player' then
-		self:InitRotations();
-		self:EnableRotation();
+		self:InitRotations()
+		self:EnableRotation()
 	end
 end
 
@@ -4949,29 +4949,29 @@ function MaxDps:PLAYER_TARGET_CHANGED()
 		if UnitIsFriend('player', 'target') then
 			return
 		else
-			self:InvokeNextSpell();
+			self:InvokeNextSpell()
 		end
 	end
 end
 
 function MaxDps:PLAYER_REGEN_DISABLED()
 	if self.db.global.onCombatEnter and not self.rotationEnabled then
-		self:Print(self.Colors.Success .. 'Auto enable on combat!', "info");
-		self:InitRotations();
-		self:EnableRotation();
+		self:Print(self.Colors.Success .. 'Auto enable on combat!', "info")
+		self:InitRotations()
+		self:EnableRotation()
 	end
 end
 
 function MaxDps:PLAYER_REGEN_ENABLED()
-	self:DisableRotation();
+	self:DisableRotation()
 end
 
 function MaxDps:ButtonFetch()
 	if self.rotationEnabled then
 		if self.fetchTimer then
-			self:CancelTimer(self.fetchTimer);
+			self:CancelTimer(self.fetchTimer)
 		end
-		self.fetchTimer = self:ScheduleTimer('Fetch', 0.5);
+		self.fetchTimer = self:ScheduleTimer('Fetch', 0.5)
 	end
 end
 
@@ -4980,106 +4980,106 @@ function MaxDps:PrepareFrameData()
 		self.FrameData = {
 			cooldown  = self.PlayerCooldowns,
 			activeDot = self.ActiveDots
-		};
+		}
 	end
 
-	self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcdRemains = MaxDps:EndCast();
-	self.FrameData.gcd = self:GlobalCooldown();
-	self.FrameData.buff, self.FrameData.debuff = MaxDps:CollectAuras();
-	self.FrameData.talents = self.PlayerTalents;
-	self.FrameData.azerite = self.AzeriteTraits;
-	self.FrameData.essences = self.AzeriteEssences;
-	self.FrameData.covenant = self.CovenantInfo;
-	self.FrameData.runeforge = self.LegendaryBonusIds;
-	self.FrameData.spellHistory = self.spellHistory;
-	self.FrameData.timeToDie = self:GetTimeToDie();
+	self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcdRemains = MaxDps:EndCast()
+	self.FrameData.gcd = self:GlobalCooldown()
+	self.FrameData.buff, self.FrameData.debuff = MaxDps:CollectAuras()
+	self.FrameData.talents = self.PlayerTalents
+	self.FrameData.azerite = self.AzeriteTraits
+	self.FrameData.essences = self.AzeriteEssences
+	self.FrameData.covenant = self.CovenantInfo
+	self.FrameData.runeforge = self.LegendaryBonusIds
+	self.FrameData.spellHistory = self.spellHistory
+	self.FrameData.timeToDie = self:GetTimeToDie()
 end
 
 function MaxDps:InvokeNextSpell()
 	-- invoke spell check
-	local oldSkill = self.Spell;
+	local oldSkill = self.Spell
 
-	self:PrepareFrameData();
+	self:PrepareFrameData()
 
-	self:GlowConsumables();
+	self:GlowConsumables()
 
 	-- Removed backward compatibility
-	self.Spell = self:NextSpell();
+	self.Spell = self:NextSpell()
 
 	if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil then
-		self:GlowNextSpell(self.Spell);
+		self:GlowNextSpell(self.Spell)
 		if WeakAuras then
-			WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', self.Spell);
+			WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', self.Spell)
 		end
 	end
 
 	if self.Spell == nil and oldSkill ~= nil then
-		self:GlowClear();
+		self:GlowClear()
 		if WeakAuras then
-			WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', nil);
+			WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', nil)
 		end
 	end
 end
 
 function MaxDps:InitRotations()
-	self:Print(self.Colors.Info .. 'Initializing rotations', "info");
+	self:Print(self.Colors.Info .. 'Initializing rotations', "info")
 	self:CountTier()
 
-	local _, _, classId = UnitClass('player');
-	local spec = GetSpecialization();
-	self.ClassId = classId;
-	self.Spec = spec;
+	local _, _, classId = UnitClass('player')
+	local spec = GetSpecialization()
+	self.ClassId = classId
+	self.Spec = spec
 
 	if not self.Custom then
-		self.Custom = self:GetModule('Custom');
+		self.Custom = self:GetModule('Custom')
 	end
 
-	self.Custom:LoadCustomRotations();
-	local customRotation = self.Custom:GetCustomRotation(classId, spec);
+	self.Custom:LoadCustomRotations()
+	local customRotation = self.Custom:GetCustomRotation(classId, spec)
 
 	if customRotation then
-		self.NextSpell = customRotation.fn;
+		self.NextSpell = customRotation.fn
 
-		self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name, "info");
+		self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name, "info")
 	else
-		self:LoadModule();
+		self:LoadModule()
 	end
 end
 
 function MaxDps:LoadModule()
 	if self.Classes[self.ClassId] == nil then
-		self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.', "error");
+		self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.', "error")
 		return
 	end
 
-	local className = self.Classes[self.ClassId];
-	local module = 'MaxDps_' .. className;
-	local _, _, _, _, reason = GetAddOnInfo(module);
+	local className = self.Classes[self.ClassId]
+	local module = 'MaxDps_' .. className
+	local _, _, _, _, reason = GetAddOnInfo(module)
 
 	if IsAddOnLoaded(module) then
-		self:EnableRotationModule(className);
+		self:EnableRotationModule(className)
 		return
 	end
 
 	if reason == 'MISSING' or reason == 'DISABLED' then
-		self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason, "error");
-		self:Print(self.Colors.Error .. 'Make sure to install class module or create custom rotation', "error");
-		self:Print(self.Colors.Error .. 'Missing addon: ' .. module, "error");
+		self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason, "error")
+		self:Print(self.Colors.Error .. 'Make sure to install class module or create custom rotation', "error")
+		self:Print(self.Colors.Error .. 'Missing addon: ' .. module, "error")
 		return
 	end
 
-	LoadAddOn(module);
+	LoadAddOn(module)
 
-	self:InitTTD();
-	self:EnableRotationModule(className);
+	self:InitTTD()
+	self:EnableRotationModule(className)
 end
 
 function MaxDps:EnableRotationModule(className)
-	local loaded = self:EnableModule(className);
+	local loaded = self:EnableModule(className)
 
 	if not loaded then
-		self:Print(self.Colors.Error .. 'Could not find load module ' .. className .. ', reason: OUTDATED', "error");
+		self:Print(self.Colors.Error .. 'Could not find load module ' .. className .. ', reason: OUTDATED', "error")
 	else
-		self:Print(self.Colors.Info .. 'Finished Loading class module', "info");
+		self:Print(self.Colors.Info .. 'Finished Loading class module', "info")
 	end
 end

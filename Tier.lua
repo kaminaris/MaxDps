@@ -1,5 +1,5 @@
 --- @type MaxDps MaxDps
-local _, MaxDps = ...;
+local _, MaxDps = ...
 local GetInventorySlotInfo = GetInventorySlotInfo
 local GetInventoryItemLink = GetInventoryItemLink
 local GetItemInfo = C_Item.GetItemInfo

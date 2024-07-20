@@ -319,7 +319,7 @@ local function acUpdate(self,elapsed)
         self.info.space = self.info.perimeter/self.info.N
     end
 
-    local texIndex = 0;
+    local texIndex = 0
     for k=1,4 do
         self.timer[k] = self.timer[k]+elapsed/(self.info.period*k)
         if self.timer[k] > 1 or self.timer[k] <-1 then
@@ -489,12 +489,12 @@ local function bgHide(self)
 end
 
 local function bgUpdate(self, elapsed)
-    AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, self.throttle);
-    local cooldown = self:GetParent().cooldown;
+    AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, self.throttle)
+    local cooldown = self:GetParent().cooldown
     if(cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000) then
-        self:SetAlpha(0.5);
+        self:SetAlpha(0.5)
     else
-        self:SetAlpha(1.0);
+        self:SetAlpha(1.0)
     end
 end
 

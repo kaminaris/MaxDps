@@ -1,71 +1,71 @@
 --- @type MaxDps MaxDps
-local _, MaxDps = ...;
+local _, MaxDps = ...
 
-local StdUi = LibStub('StdUi');
-local SharedMedia = LibStub('LibSharedMedia-3.0');
-local IndentationLib = IndentationLib;
+local StdUi = LibStub('StdUi')
+local SharedMedia = LibStub('LibSharedMedia-3.0')
+local IndentationLib = IndentationLib
 
 ---@class MaxDpsWindow Window
-local Window = MaxDps:NewModule('Window', 'AceEvent-3.0', 'AceTimer-3.0');
+local Window = MaxDps:NewModule('Window', 'AceEvent-3.0', 'AceTimer-3.0')
 
 ---@type MaxDpsCustom Custom
-local Custom = MaxDps:GetModule('Custom');
+local Custom = MaxDps:GetModule('Custom')
 
 function Window:OnEnable()
-	SharedMedia:Register('font', 'Inconsolata', [[Interface\Addons\MaxDps\media\Inconsolata.otf]]);
+	SharedMedia:Register('font', 'Inconsolata', [[Interface\Addons\MaxDps\media\Inconsolata.otf]])
 
-	return self;
+	return self
 end
 
 function Window:ShowWindow()
 	if self.window then
-		self.window:Show();
+		self.window:Show()
 		return
 	end
 
-	local window = StdUi:Window(nil, 800, 600, 'MaxDps');
-	window:SetPoint('CENTER');
+	local window = StdUi:Window(nil, 800, 600, 'MaxDps')
+	window:SetPoint('CENTER')
 
-	StdUi:BuildWindow(window, self:GetWindowConfig());
-	StdUi:EasyLayout(window, { padding = { top = 40 } });
+	StdUi:BuildWindow(window, self:GetWindowConfig())
+	StdUi:EasyLayout(window, { padding = { top = 40 } })
 
 	window:SetScript('OnShow', function(of)
-		of:DoLayout();
-	end);
+		of:DoLayout()
+	end)
 
-	window:Show();
-	self.window = window;
-	self:ToggleCustomFields(false);
+	window:Show()
+	self.window = window
+	self:ToggleCustomFields(false)
 end
 
 local function updateRotationBtn(parent, btn, rotation)
-	btn.rotation = rotation;
-	StdUi:SetObjSize(btn, 60, 24);
-	btn:SetPoint('LEFT', 1, 0);
-	btn:SetPoint('RIGHT', -2, 0);
-	btn:SetText(rotation.name);
+	btn.rotation = rotation
+	StdUi:SetObjSize(btn, 60, 24)
+	btn:SetPoint('LEFT', 1, 0)
+	btn:SetPoint('RIGHT', -2, 0)
+	btn:SetText(rotation.name)
 
 	if Custom.CurrentEditRotation == rotation then
-		StdUi:ApplyBackdrop(btn, 'highlight');
+		StdUi:ApplyBackdrop(btn, 'highlight')
 	else
-		StdUi:ApplyBackdrop(btn, 'button');
+		StdUi:ApplyBackdrop(btn, 'button')
 	end
 
 	if not btn.hooked then
 		btn:SetScript('OnClick', function(self)
-			StdUi:SetTextColor(self, 'header');
-			Window:EditRotation(self.rotation);
+			StdUi:SetTextColor(self, 'header')
+			Window:EditRotation(self.rotation)
 			Window:UpdateCustomRotationButtons()
-		end);
-		btn.hooked = true;
+		end)
+		btn.hooked = true
 	end
 end
 
 local function drawCustomRotationsScroll(scrollFrame)
-	local scrollChild = scrollFrame.scrollChild;
+	local scrollChild = scrollFrame.scrollChild
 
 	if not scrollChild.items then
-		scrollChild.items = {};
+		scrollChild.items = {}
 	end
 
 	StdUi:ObjectList(
@@ -74,28 +74,28 @@ local function drawCustomRotationsScroll(scrollFrame)
 		'Button',
 		updateRotationBtn,
 		MaxDps.db.global.customRotations
-	);
-	scrollFrame:UpdateItemsCount(#MaxDps.db.global.customRotations);
+	)
+	scrollFrame:UpdateItemsCount(#MaxDps.db.global.customRotations)
 end
 
 function Window:UpdateCustomRotationButtons()
-	local customTab = self.window.elements.container:GetTabByName('custom');
-	local scrollFrame = customTab.frame.elements.customList;
+	local customTab = self.window.elements.container:GetTabByName('custom')
+	local scrollFrame = customTab.frame.elements.customList
 
-	drawCustomRotationsScroll(scrollFrame);
+	drawCustomRotationsScroll(scrollFrame)
 end
 
 function Window:SaveEditorValue(value)
-	value = IndentationLib.decode(value);
+	value = IndentationLib.decode(value)
 
 	if Custom.CurrentEditRotation then
-		Custom.CurrentEditRotation.fn = value;
+		Custom.CurrentEditRotation.fn = value
 	end
 end
 
 function Window:ConfirmRotationRemove()
 	if self.confirmRotationRemoveWindow then
-		self.confirmRotationRemoveWindow:Show();
+		self.confirmRotationRemoveWindow:Show()
 		return
 	end
 
@@ -103,90 +103,90 @@ function Window:ConfirmRotationRemove()
 		yes = {
 			text    = YES,
 			onClick = function(btn)
-				Custom:RemoveCustomRotation();
-				Window:ToggleCustomFields(true, true);
-				Window:UpdateCustomRotationButtons();
-				btn.window:Hide();
+				Custom:RemoveCustomRotation()
+				Window:ToggleCustomFields(true, true)
+				Window:UpdateCustomRotationButtons()
+				btn.window:Hide()
 			end
 		},
 		no  = {
 			text    = NO,
 			onClick = function(btn)
-				btn.window:Hide();
+				btn.window:Hide()
 			end
 		}
-	};
+	}
 
 	self.confirmRotationRemoveWindow = StdUi:Confirm(
 		'Confirm Removal',
 		'Are you sure?',
 		btn,
 		'maxdpsRemoveCustomRotation'
-	);
+	)
 end
 
 function Window:UpdateSpecList(class)
-	local specs = Custom.specList[class];
+	local specs = Custom.specList[class]
 
 	if specs then
-		local customTab = self.window.elements.container:GetTabByName('custom');
-		local container = customTab.frame.elements.customEdit.elements;
-		container.rotationSpec:SetOptions(specs);
-		container.rotationSpec:SetValue(nil);
+		local customTab = self.window.elements.container:GetTabByName('custom')
+		local container = customTab.frame.elements.customEdit.elements
+		container.rotationSpec:SetOptions(specs)
+		container.rotationSpec:SetValue(nil)
 	end
 end
 
 function Window:EditRotation(rotation)
-	self.EditingRotation = true;
-	Custom.CurrentEditRotation = rotation;
+	self.EditingRotation = true
+	Custom.CurrentEditRotation = rotation
 
-	local customTab = self.window.elements.container:GetTabByName('custom');
-	local container = customTab.frame.elements.customEdit.elements;
+	local customTab = self.window.elements.container:GetTabByName('custom')
+	local container = customTab.frame.elements.customEdit.elements
 
-	container.rotationName:SetText(rotation.name);
-	container.rotationEnabled:SetChecked(rotation.enabled);
-	container.rotationClass:SetValue(rotation.class);
+	container.rotationName:SetText(rotation.name)
+	container.rotationEnabled:SetChecked(rotation.enabled)
+	container.rotationClass:SetValue(rotation.class)
 
-	local specs = Custom.specList[rotation.class];
+	local specs = Custom.specList[rotation.class]
 
 	if specs then
-		container.rotationSpec:SetOptions(specs);
+		container.rotationSpec:SetOptions(specs)
 	else
-		container.rotationSpec:SetOptions({});
+		container.rotationSpec:SetOptions({})
 	end
 
-	container.rotationSpec:SetValue(rotation.spec);
-	container.editor:SetText(IndentationLib.encode(rotation.fn));
-	self:ToggleCustomFields(false);
-	self.EditingRotation = false;
+	container.rotationSpec:SetValue(rotation.spec)
+	container.editor:SetText(IndentationLib.encode(rotation.fn))
+	self:ToggleCustomFields(false)
+	self.EditingRotation = false
 end
 
 function Window:ToggleCustomFields(flag, clear)
-	clear = clear or false;
+	clear = clear or false
 
-	local customTab = self.window.elements.container:GetTabByName('custom');
-	local container = customTab.frame.elements.customEdit.elements;
+	local customTab = self.window.elements.container:GetTabByName('custom')
+	local container = customTab.frame.elements.customEdit.elements
 
 	if flag then
-		container.rotationName:Disable();
-		container.rotationEnabled:Disable();
-		container.rotationClass:Disable();
-		container.rotationSpec:Disable();
-		container.editor:Disable();
+		container.rotationName:Disable()
+		container.rotationEnabled:Disable()
+		container.rotationClass:Disable()
+		container.rotationSpec:Disable()
+		container.editor:Disable()
 	else
-		container.rotationName:Enable();
-		container.rotationEnabled:Enable();
-		container.rotationClass:Enable();
-		container.rotationSpec:Enable();
-		container.editor:Enable();
+		container.rotationName:Enable()
+		container.rotationEnabled:Enable()
+		container.rotationClass:Enable()
+		container.rotationSpec:Enable()
+		container.editor:Enable()
 	end
 
 	if clear then
-		container.rotationName:SetText('');
-		container.rotationEnabled:SetChecked(false);
-		container.rotationClass:SetValue(nil);
-		container.rotationSpec:SetValue(nil);
-		container.editor:SetText('');
+		container.rotationName:SetText('')
+		container.rotationEnabled:SetChecked(false)
+		container.rotationClass:SetValue(nil)
+		container.rotationSpec:SetValue(nil)
+		container.editor:SetText('')
 	end
 end
 
@@ -259,7 +259,7 @@ function Window:GetWindowConfig()
 				},
 			},
 		}
-	};
+	}
 
 	local optionsLayout = {
 		database = MaxDps.db.global,
@@ -297,8 +297,8 @@ function Window:GetWindowConfig()
 					column   = 6,
 					order    = 1,
 					onChange = function(_, flag)
-						MaxDps.db.global.disableButtonGlow = flag;
-						MaxDps:UpdateButtonGlow();
+						MaxDps.db.global.disableButtonGlow = flag
+						MaxDps:UpdateButtonGlow()
 					end
 				},
 				forceSingle       = {
@@ -324,7 +324,7 @@ function Window:GetWindowConfig()
 					column  = 6,
 					order   = 2,
 					onClick = function()
-						MaxDps:InitRotations();
+						MaxDps:InitRotations()
 					end
 				}
 			},
@@ -348,7 +348,7 @@ function Window:GetWindowConfig()
 					order  = 2,
 					options  = MaxDps.PrintLevel,
 					onChange = function(_, val)
-						MaxDps.db.global.disabledInfo = val;
+						MaxDps.db.global.disabledInfo = val
 					end
 				}
 			},
@@ -366,8 +366,8 @@ function Window:GetWindowConfig()
 					order    = 1,
 					options  = MaxDps.Textures,
 					onChange = function(_, val)
-						--Window.:SetTexture(val);
-						MaxDps:ApplyOverlayChanges();
+						--Window.:SetTexture(val)
+						MaxDps:ApplyOverlayChanges()
 					end
 				},
 				textureIcon   = {
@@ -385,9 +385,9 @@ function Window:GetWindowConfig()
 					order          = 3,
 					initialValue   = strtrim(MaxDps.db.global.customTexture or ''),
 					onValueChanged = function(_, val)
-						MaxDps.db.global.customTexture = strtrim(val or '');
-						MaxDps:ApplyOverlayChanges();
-					end;
+						MaxDps.db.global.customTexture = strtrim(val or '')
+						MaxDps:ApplyOverlayChanges()
+					end
 				}
 			},
 			{
@@ -397,7 +397,7 @@ function Window:GetWindowConfig()
 					column   = 6,
 					order    = 1,
 					onChange = function()
-						MaxDps:ApplyOverlayChanges();
+						MaxDps:ApplyOverlayChanges()
 					end
 				},
 				cooldownColor  = {
@@ -406,7 +406,7 @@ function Window:GetWindowConfig()
 					column   = 6,
 					order    = 2,
 					onChange = function()
-						MaxDps:ApplyOverlayChanges();
+						MaxDps:ApplyOverlayChanges()
 					end
 				}
 			},
@@ -419,7 +419,7 @@ function Window:GetWindowConfig()
 					column   = 6,
 					order    = 1,
 					onChange = function()
-						MaxDps:ApplyOverlayChanges();
+						MaxDps:ApplyOverlayChanges()
 					end
 				},
 			},
@@ -436,7 +436,7 @@ function Window:GetWindowConfig()
 					column   = 6,
 					order    = 1,
 					onChange = function()
-						MaxDps:ApplyOverlayChanges();
+						MaxDps:ApplyOverlayChanges()
 					end
 				},
 				customGlowType = {
@@ -449,12 +449,12 @@ function Window:GetWindowConfig()
 						{ text = 'Particle', value = 'particle' },
 					},
 					onChange = function()
-						MaxDps:ApplyOverlayChanges();
+						MaxDps:ApplyOverlayChanges()
 					end
 				}
 			},
 		}
-	};
+	}
 
 	local customEditRotation = {
 		rows = {
@@ -469,7 +469,7 @@ function Window:GetWindowConfig()
 							return
 						end
 
-						Custom.CurrentEditRotation.enabled = flag;
+						Custom.CurrentEditRotation.enabled = flag
 					end
 				},
 				rotationDelete  = {
@@ -482,7 +482,7 @@ function Window:GetWindowConfig()
 							return
 						end
 
-						Window:ConfirmRotationRemove();
+						Window:ConfirmRotationRemove()
 					end
 				},
 			},
@@ -497,8 +497,8 @@ function Window:GetWindowConfig()
 							return
 						end
 
-						Custom.CurrentEditRotation.name = text;
-						Window:UpdateCustomRotationButtons();
+						Custom.CurrentEditRotation.name = text
+						Window:UpdateCustomRotationButtons()
 					end
 				},
 				rotationClass = {
@@ -512,8 +512,8 @@ function Window:GetWindowConfig()
 							return
 						end
 
-						Custom.CurrentEditRotation.class = value;
-						Window:UpdateSpecList(value);
+						Custom.CurrentEditRotation.class = value
+						Window:UpdateSpecList(value)
 					end
 				},
 				rotationSpec  = {
@@ -527,7 +527,7 @@ function Window:GetWindowConfig()
 							return
 						end
 
-						Custom.CurrentEditRotation.spec = value;
+						Custom.CurrentEditRotation.spec = value
 					end
 				}
 			},
@@ -537,13 +537,13 @@ function Window:GetWindowConfig()
 					label          = 'Rotation Code',
 					fullHeight     = true,
 					init           = function(editor)
-						local fontPath = SharedMedia:Fetch('font', 'Inconsolata');
+						local fontPath = SharedMedia:Fetch('font', 'Inconsolata')
 
 						if fontPath then
-							editor:SetFont(fontPath, 14, '');
+							editor:SetFont(fontPath, 14, '')
 						end
 
-						IndentationLib.enable(editor.editBox, nil, 4);
+						IndentationLib.enable(editor.editBox, nil, 4)
 					end,
 					onValueChanged = function(editor, text)
 						if not Custom.CurrentEditRotation then
@@ -551,11 +551,11 @@ function Window:GetWindowConfig()
 						end
 
 						if editor.saveDebounceTimer then
-							Window:CancelTimer(editor.saveDebounceTimer);
-							editor.saveDebounceTimer = nil;
+							Window:CancelTimer(editor.saveDebounceTimer)
+							editor.saveDebounceTimer = nil
 						end
 
-						editor.saveDebounceTimer = Window:ScheduleTimer('SaveEditorValue', 0.5, text);
+						editor.saveDebounceTimer = Window:ScheduleTimer('SaveEditorValue', 0.5, text)
 					end
 				},
 			},
@@ -579,9 +579,9 @@ function Window:GetWindowConfig()
 					column  = 3,
 					order   = 1,
 					onClick = function()
-						local newRotation = Custom:CreateCustomRotation();
-						Window:EditRotation(newRotation);
-						Window:UpdateCustomRotationButtons();
+						local newRotation = Custom:CreateCustomRotation()
+						Window:EditRotation(newRotation)
+						Window:UpdateCustomRotationButtons()
 					end
 				},
 			},
@@ -602,7 +602,7 @@ function Window:GetWindowConfig()
 				},
 			},
 		}
-	};
+	}
 
 	local config = {
 		layoutConfig = { padding = { top = 30 } },
@@ -627,14 +627,14 @@ function Window:GetWindowConfig()
 							title  = 'Custom Rotations',
 							layout = customLayout,
 							onHide = function()
-								Custom:LoadCustomRotations();
+								Custom:LoadCustomRotations()
 							end
 						}
 					},
 				}
 			},
 		},
-	};
+	}
 
-	return config;
+	return config
 end
