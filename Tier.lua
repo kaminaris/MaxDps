@@ -5,7 +5,7 @@ local GetInventoryItemLink = GetInventoryItemLink
 local GetItemInfo = C_Item.GetItemInfo
 
 local slots = {"HEADSLOT","SHOULDERSLOT", "CHESTSLOT", "LEGSSLOT", "HANDSSLOT"}
-local tiernumbers = {30, 31}
+local tiernumbers = {29, 30, 31}
 
 for _,tier in pairs(tiernumbers) do
     if not MaxDps.tier then MaxDps.tier = {} end
