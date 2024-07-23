@@ -257,7 +257,7 @@ function MaxDps:AddToBlizzardOptions()
 		of:DoLayout()
 	end)
 
-	InterfaceOptions_AddCategory(optionsFrame)
+	--InterfaceOptions_AddCategory(optionsFrame)
 
 	self:AddCustomGlowOptions()
 end
@@ -354,5 +354,5 @@ function MaxDps:AddCustomGlowOptions()
 		of:DoLayout()
 	end)
 
-	InterfaceOptions_AddCategory(customGlowOptionsFrame)
+	--InterfaceOptions_AddCategory(customGlowOptionsFrame)
 end
