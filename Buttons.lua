@@ -5,7 +5,7 @@ local CustomGlow = LibStub('LibCustomGlow-1.0')
 
 local TableInsert = tinsert
 local TableRemove = tremove
-local GetItemSpell = GetItemSpell
+local GetItemSpell = C_Item.GetItemSpell
 local GetSpellInfo = GetSpellInfo
 local pairs = pairs
 local select = select
