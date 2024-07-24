@@ -13,7 +13,7 @@ jobs:
       - name: Checkout addon
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Run luacheck
         uses: BigWigsMods/actions/luacheck@master
