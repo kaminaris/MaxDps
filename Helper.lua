@@ -846,7 +846,7 @@ function MaxDps:EndCast(target)
     if target == 'player' then
         local gstart, gduration
         if MaxDps:IsRetailWow() then
-            local spellCooldownInfo = C_Spell.GetSpellCooldown(_GlobalCooldown)
+            local spellCooldownInfo = _GlobalCooldown and C_Spell.GetSpellCooldown(_GlobalCooldown)
             gstart = spellCooldownInfo and spellCooldownInfo.startTime
             gduration = spellCooldownInfo and spellCooldownInfo.duration
         else
@@ -921,7 +921,7 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
     local enabled
     local charges, maxCharges, start, duration
     if MaxDps:IsRetailWow() then
-        local chargeInfo  = C_Spell.GetSpellCharges(spellId)
+        local chargeInfo  = spellId and C_Spell.GetSpellCharges(spellId)
         charges = chargeInfo and chargeInfo.currentCharges
         maxCharges = chargeInfo and chargeInfo.maxCharges
         start = chargeInfo and chargeInfo.cooldownStartTime
@@ -933,7 +933,7 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
 
     if charges == nil then
         if MaxDps:IsRetailWow() then
-            local spellCooldownInfo = C_Spell.GetSpellCooldown(spellId)
+            local spellCooldownInfo = spellId and C_Spell.GetSpellCooldown(spellId)
             start = spellCooldownInfo and spellCooldownInfo.startTime
             duration = spellCooldownInfo and spellCooldownInfo.duration
             enabled = spellCooldownInfo and spellCooldownInfo.isEnabled
@@ -969,7 +969,10 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         end
     end
 
-    local cooldownMS, gcdMS = GetSpellBaseCooldown(spellId)
+    local cooldownMS, gcdMS
+    if spellId then
+        cooldownMS, gcdMS = GetSpellBaseCooldown(spellId)
+    end
 
     return {
         duration        = ((cooldownMS and cooldownMS) or (gcdMS and gcdMS) or 500) / 1000,
@@ -986,7 +989,7 @@ end
 function MaxDps:Cooldown(spell, timeShift)
     local start, duration, enabled
     if MaxDps:IsRetailWow() then
-        local spellCooldownInfo = C_Spell.GetSpellCooldown(spell)
+        local spellCooldownInfo = spell and C_Spell.GetSpellCooldown(spell)
         start = spellCooldownInfo and spellCooldownInfo.startTime
         duration = spellCooldownInfo and spellCooldownInfo.duration
         enabled = spellCooldownInfo and spellCooldownInfo.isEnabled
@@ -1006,7 +1009,7 @@ end
 function MaxDps:SpellCharges(spell, timeShift)
     local currentCharges, maxCharges, cooldownStart, cooldownDuration
     if MaxDps:IsRetailWow() then
-        local chargeInfo  = C_Spell.GetSpellCharges(spell)
+        local chargeInfo  = spell and C_Spell.GetSpellCharges(spell)
         currentCharges = chargeInfo and chargeInfo.currentCharges
         maxCharges = chargeInfo and chargeInfo.maxCharges
         cooldownStart = chargeInfo and chargeInfo.cooldownStartTime
