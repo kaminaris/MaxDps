@@ -245,7 +245,7 @@ function MaxDps:AddStandardButton(button)
     local type = button:GetAttribute('type')
     if type then
         local actionType = button:GetAttribute(type)
-        local spellId
+        local spellId = nil
 
         if type == 'action' then
             local slot = button:GetAttribute('action')
