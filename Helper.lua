@@ -123,7 +123,13 @@ function MaxDps:CollectAura(unit, timeShift, output, filter)
     end
 
     while true do
-        local name, _, count, _, duration, expirationTime, _, _, _, id = UnitAura(unit, i, filter)
+        -- name, _, count, _, duration, expirationTime, _, _, _, id
+        local auraData = UnitAura(unit, i, filter)
+        local name = auraData and auraData.name
+        local count = auraData and auraData.applications
+        local duration = auraData and auraData.duration
+        local expirationTime = auraData and auraData.expirationTime
+        local id = auraData and auraData.spellId
         if not name then
             break
         end
