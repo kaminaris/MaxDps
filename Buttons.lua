@@ -283,8 +283,8 @@ function MaxDps:AddStandardButton(button)
 
         if spellId and button then
             self:AddButton(spellId, button)
-        else
-            MaxDps.print("Eror Adding Standard Button", "error")
+        --else
+            --MaxDps:Print(self.Colors.Error .. "Erorr Adding Standard Button", "error", spellId)
         end
     end
 end
