@@ -45,9 +45,9 @@ local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local IsEquippedItem = C_Item.IsEquippedItem
 local GetManaRegen = GetManaRegen
-local GetSpellTabInfo = GetSpellTabInfo
+local GetSpellTabInfo = C_SpellBook and C_SpellBook.GetSpellBookSkillLineInfo or GetSpellTabInfo
 local GetSpellBookItemInfo = GetSpellBookItemInfo
-local GetSpellBookItemName = GetSpellBookItemName
+local GetSpellBookItemName = C_SpellBook and C_SpellBook.GetSpellBookItemName or GetSpellBookItemName
 local IsInInstance = IsInInstance
 local IsItemInRange = C_Item.IsItemInRange
 local UnitThreatSituation = UnitThreatSituation
@@ -793,7 +793,13 @@ end
 
 function MaxDps:DumpAzeriteTraits()
     for id, rank in pairs(self.AzeriteTraits) do
-        local n = MaxDps:IsRetailWow() and GetSpellInfo(id).name or GetSpellInfo(id)
+        local n
+        if MaxDps:IsRetailWow() then
+            local spellInfo = GetSpellInfo(id)
+            n = spellInfo and spellInfo.name
+        else
+            n = GetSpellInfo(id)
+        end
         print(n .. ' (' .. id .. '): ' .. rank)
     end
 end
@@ -841,8 +847,8 @@ function MaxDps:EndCast(target)
         local gstart, gduration
         if MaxDps:IsRetailWow() then
             local spellCooldownInfo = C_Spell.GetSpellCooldown(_GlobalCooldown)
-            gstart = spellCooldownInfo.startTime
-            gduration = spellCooldownInfo.duration
+            gstart = spellCooldownInfo and spellCooldownInfo.startTime
+            gduration = spellCooldownInfo and spellCooldownInfo.duration
         else
             gstart, gduration = GetSpellCooldown(_GlobalCooldown)
         end
@@ -916,10 +922,10 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
     local charges, maxCharges, start, duration
     if MaxDps:IsRetailWow() then
         local chargeInfo  = C_Spell.GetSpellCharges(spellId)
-        charges = chargeInfo.currentCharges
-        maxCharges = chargeInfo.maxCharges
-        start = chargeInfo.cooldownStartTime
-        duration = chargeInfo.cooldownDuration
+        charges = chargeInfo and chargeInfo.currentCharges
+        maxCharges = chargeInfo and chargeInfo.maxCharges
+        start = chargeInfo and chargeInfo.cooldownStartTime
+        duration = chargeInfo and chargeInfo.cooldownDuration
     else
         charges, maxCharges, start, duration = GetSpellCharges(spellId)
     end
@@ -928,9 +934,9 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
     if charges == nil then
         if MaxDps:IsRetailWow() then
             local spellCooldownInfo = C_Spell.GetSpellCooldown(spellId)
-            start = spellCooldownInfo.startTime
-            duration = spellCooldownInfo.duration
-            enabled = spellCooldownInfo.isEnabled
+            start = spellCooldownInfo and spellCooldownInfo.startTime
+            duration = spellCooldownInfo and spellCooldownInfo.duration
+            enabled = spellCooldownInfo and spellCooldownInfo.isEnabled
         else
             start, duration, enabled = GetSpellCooldown(spellId)
         end
@@ -981,9 +987,9 @@ function MaxDps:Cooldown(spell, timeShift)
     local start, duration, enabled
     if MaxDps:IsRetailWow() then
         local spellCooldownInfo = C_Spell.GetSpellCooldown(spell)
-        start = spellCooldownInfo.startTime
-        duration = spellCooldownInfo.duration
-        enabled = spellCooldownInfo.isEnabled
+        start = spellCooldownInfo and spellCooldownInfo.startTime
+        duration = spellCooldownInfo and spellCooldownInfo.duration
+        enabled = spellCooldownInfo and spellCooldownInfo.isEnabled
     else
         start, duration, enabled = GetSpellCooldown(spell)
     end
@@ -1001,10 +1007,10 @@ function MaxDps:SpellCharges(spell, timeShift)
     local currentCharges, maxCharges, cooldownStart, cooldownDuration
     if MaxDps:IsRetailWow() then
         local chargeInfo  = C_Spell.GetSpellCharges(spell)
-        currentCharges = chargeInfo.currentCharges
-        maxCharges = chargeInfo.maxCharges
-        cooldownStart = chargeInfo.cooldownStartTime
-        cooldownDuration = chargeInfo.cooldownDuration
+        currentCharges = chargeInfo and chargeInfo.currentCharges
+        maxCharges = chargeInfo and chargeInfo.maxCharges
+        cooldownStart = chargeInfo and chargeInfo.cooldownStartTime
+        cooldownDuration = chargeInfo and chargeInfo.cooldownDuration
     else
         currentCharges, maxCharges, cooldownStart, cooldownDuration = GetSpellCharges(spell)
     end
@@ -1108,7 +1114,13 @@ end
 
 MaxDps.Spellbook = {}
 function MaxDps:FindSpellInSpellbook(spellId)
-    local spellName = MaxDps:IsRetailWow() and GetSpellInfo(spellId).name or GetSpellInfo(spellId)
+    local spellName
+    if MaxDps:IsRetailWow() then
+        local spellInfo = GetSpellInfo(spellId)
+        spellName = spellInfo.name
+    else
+        spellName = GetSpellInfo(spellId)
+    end
     if MaxDps.Spellbook[spellName] then
         return MaxDps.Spellbook[spellName]
     end

@@ -278,7 +278,12 @@ function MaxDps:AddStandardButton(button)
             self:AddItemButton(button)
             return
         elseif type == 'spell' then
-            spellId = actionType and (MaxDps:IsRetailWow() and GetSpellInfo(actionType).spellID or GetSpellInfo(actionType))
+            if MaxDps:IsRetailWow() then
+                local spellInfo = GetSpellInfo(spellId)
+                spellId = spellInfo and spellInfo.spellID
+            else
+                spellId = GetSpellInfo(spellId)
+            end
         end
 
         if spellId and button then
@@ -504,7 +509,13 @@ end
 
 function MaxDps:Dump()
     for k, _ in pairs(self.Spells) do
-        local name = MaxDps:IsRetailWow() and GetSpellInfo(k).name or GetSpellInfo(k)
+        local name
+        if MaxDps:IsRetailWow() then
+            local spellInfo = GetSpellInfo(k)
+            name = spellInfo and spellInfo.name
+        else
+            GetSpellInfo(k)
+        end
         print(k, name)
     end
 end
@@ -586,8 +597,21 @@ function MaxDps:GlowSpell(spellId)
                     --elseif actionType == "spell" then
                     --	actionName = GetSpellInfo(id)
                     end
-                    local FindSpellName = MaxDps:IsRetailWow() and GetSpellInfo(spellId).name or GetSpellInfo(spellId)
-                    if FindSpellName and id and FindSpellName == GetSpellInfo(id).name then
+                    local FindSpellName
+                    if MaxDps:IsRetailWow() then
+                        local spellInfo = GetSpellInfo(spellId)
+                        FindSpellName = spellInfo and spellInfo.name
+                    else
+                        FindSpellName = GetSpellInfo(spellId)
+                    end
+                    local searchName
+                    if MaxDps:IsRetailWow() then
+                        local spellInfo = id and GetSpellInfo(id)
+                        searchName = spellInfo and spellInfo.name
+                    else
+                        searchName = id and GetSpellInfo(id)
+                    end
+                    if FindSpellName and id and searchName and FindSpellName == searchName then
                         foundspell = true
                         self:Glow(button, 'next', nil, 'normal')
                     end
@@ -596,7 +620,13 @@ function MaxDps:GlowSpell(spellId)
         end
     end
     if foundspell == false then
-        local spellName = MaxDps:IsRetailWow() and GetSpellInfo(spellId).name or GetSpellInfo(spellId)
+        local spellName
+        if MaxDps:IsRetailWow() then
+            local spellInfo = GetSpellInfo(spellId)
+            spellName = spellInfo and spellInfo.name
+        else
+            spellName = GetSpellInfo(spellId)
+        end
         self:Print(
             self.Colors.Error ..
             'Spell not found on action bars: ' ..
