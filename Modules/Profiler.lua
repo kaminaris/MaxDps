@@ -59,7 +59,7 @@ function Profiler:SpellEvent(e, unit, _, spellId)
 		return
 	end
 
-	local spellName = GetSpellInfo(spellId)
+	local spellName = MaxDps:IsRetailWow() and GetSpellInfo(spellId).name or GetSpellInfo(spellId)
 	self.Spells[spellId] = spellName
 end
 

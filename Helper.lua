@@ -33,7 +33,7 @@ local UnitCastingInfo = UnitCastingInfo
 local GetItemCooldown = C_Item.GetItemCooldown
 local GetTime = GetTime
 local GetSpellCooldown = GetSpellCooldown
-local GetSpellInfo = GetSpellInfo
+local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or _G.GetSpellInfo
 local UnitGUID = UnitGUID
 local GetSpellBaseCooldown = GetSpellBaseCooldown
 local IsSpellInRange = IsSpellInRange
@@ -793,7 +793,7 @@ end
 
 function MaxDps:DumpAzeriteTraits()
     for id, rank in pairs(self.AzeriteTraits) do
-        local n = GetSpellInfo(id)
+        local n = MaxDps:IsRetailWow() and GetSpellInfo(id).name or GetSpellInfo(id)
         print(n .. ' (' .. id .. '): ' .. rank)
     end
 end
@@ -1068,7 +1068,7 @@ end
 
 MaxDps.Spellbook = {}
 function MaxDps:FindSpellInSpellbook(spellId)
-    local spellName = GetSpellInfo(spellId)
+    local spellName = MaxDps:IsRetailWow() and GetSpellInfo(spellId).name or GetSpellInfo(spellId)
     if MaxDps.Spellbook[spellName] then
         return MaxDps.Spellbook[spellName]
     end
