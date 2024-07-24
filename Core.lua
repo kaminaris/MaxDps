@@ -35,6 +35,10 @@ function MaxDps:OnInitialize()
 	self:AddToBlizzardOptions()
 end
 
+function MaxDps:IsRetailWow()
+    return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+end
+
 function MaxDps:ShowMainWindow()
 	if not self.Window then
 		self.Window = self:GetModule('Window')
