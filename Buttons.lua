@@ -279,10 +279,10 @@ function MaxDps:AddStandardButton(button)
             return
         elseif type == 'spell' then
             if MaxDps:IsRetailWow() then
-                local spellInfo = GetSpellInfo(spellId)
+                local spellInfo = GetSpellInfo(actionType)
                 spellId = spellInfo and spellInfo.spellID
             else
-                spellId = GetSpellInfo(spellId)
+                spellId = GetSpellInfo(actionType)
             end
         end
 
