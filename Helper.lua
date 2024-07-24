@@ -1112,8 +1112,10 @@ function MaxDps:Bloodlust(timeShift)
     return false
 end
 
-MaxDps.Spellbook = {}
 function MaxDps:FindSpellInSpellbook(spellId)
+    if not MaxDps.Spellbook then
+        MaxDps.Spellbook = {}
+    end
     local spellName
     if MaxDps:IsRetailWow() then
         local spellInfo = GetSpellInfo(spellId)
