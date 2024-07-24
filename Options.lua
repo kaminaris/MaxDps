@@ -258,6 +258,13 @@ function MaxDps:AddToBlizzardOptions()
 	end)
 
 	--InterfaceOptions_AddCategory(optionsFrame)
+	if InterfaceOptions_AddCategory then
+		InterfaceOptions_AddCategory(optionsFrame)
+	else
+		local category, layout = Settings.RegisterCanvasLayoutCategory(optionsFrame, optionsFrame.name);
+		Settings.RegisterAddOnCategory(category);
+		MaxDps.settingsCategory = category
+	end
 
 	self:AddCustomGlowOptions()
 end
@@ -355,4 +362,11 @@ function MaxDps:AddCustomGlowOptions()
 	end)
 
 	--InterfaceOptions_AddCategory(customGlowOptionsFrame)
+	if InterfaceOptions_AddCategory then
+		InterfaceOptions_AddCategory(customGlowOptionsFrame)
+	else
+		local category, layout = Settings.RegisterCanvasLayoutCategory(customGlowOptionsFrame, customGlowOptionsFrame.parent);
+		Settings.RegisterAddOnCategory(category);
+		MaxDps.settingsCategory = category
+	end
 end
