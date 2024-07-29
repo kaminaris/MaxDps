@@ -69,14 +69,22 @@ function MaxDps:IntUnitAura(unit, nameOrId, filter, timeShift)
         count          = 0,
         expirationTime = 0,
         remains        = 0,
-        refreshable    = true -- well if it doesn't exist, then it is refreshable
+        refreshable    = true, -- well if it doesn't exist, then it is refreshable
+        maxStacks      = 0,
     }
 
     local i = 1
     local t = GetTime()
 
     while true do
-        local name, _, count, _, duration, expirationTime, _, _, _, id = UnitAura(unit, i, filter)
+        --local name, _, count, _, duration, expirationTime, _, _, _, id = UnitAura(unit, i, filter)
+        local auraData = UnitAura(unit, i, filter)
+        local name = auraData and auraData.name
+        local count = auraData and auraData.applications
+        local duration = auraData and auraData.duration
+        local expirationTime = auraData and auraData.expirationTime
+        local id = auraData and auraData.spellId
+        local maxstacks = auraData and auraData.maxCharges
         if not name then
             break
         end
@@ -104,6 +112,7 @@ function MaxDps:IntUnitAura(unit, nameOrId, filter, timeShift)
                 expirationTime = expirationTime,
                 remains        = remains,
                 refreshable    = remains < 0.3 * duration,
+                maxStacks      = maxstacks or 1,
             }
         end
 
@@ -130,6 +139,7 @@ function MaxDps:CollectAura(unit, timeShift, output, filter)
         local duration = auraData and auraData.duration
         local expirationTime = auraData and auraData.expirationTime
         local id = auraData and auraData.spellId
+        local maxstacks = auraData and auraData.maxCharges
         if not name then
             break
         end
@@ -148,16 +158,19 @@ function MaxDps:CollectAura(unit, timeShift, output, filter)
             count = 1
         end
 
-        output[id] = {
-            name           = name,
-            up             = remains > 0,
-            upMath         = remains > 0 and 1 or 0,
-            count          = count,
-            expirationTime = expirationTime,
-            remains        = remains,
-            duration       = duration,
-            refreshable    = remains < 0.3 * duration,
-        }
+        if id then
+            output[id] = {
+                name           = name,
+                up             = remains > 0,
+                upMath         = remains > 0 and 1 or 0,
+                count          = count,
+                expirationTime = expirationTime,
+                remains        = remains,
+                duration       = duration,
+                refreshable    = remains < 0.3 * duration,
+                maxStacks      = maxstacks or 1,
+            }
+        end
 
         i = i + 1
     end
@@ -172,6 +185,7 @@ local auraMetaTable = {
             remains     = 0,
             duration    = 0,
             refreshable = true,
+            maxStacks   = 0,
         }
     end
 }
