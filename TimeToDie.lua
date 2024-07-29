@@ -138,7 +138,7 @@ local function NewTimeToDieTracker()
             end
             if MaxDps.ttd.data[plate] and MaxDps.ttd.data[plate].oldHP and MaxDps.ttd.data[plate].newHP then
                 local dps = MaxDps.ttd.data[plate].oldHP - MaxDps.ttd.data[plate].newHP
-                if dps ~= 0 then
+                if dps >= 0 then
                     MaxDps.ttd.data[plate].DPS = MaxDps.ttd.data[plate].oldHP - MaxDps.ttd.data[plate].newHP
                 end
             end
@@ -190,4 +190,33 @@ function MaxDps:GetTimeToPct(Pct)
         timeToReach = 0
     end
     return timeToReach
+end
+
+-- Function to find what mod has the longest ttd and how long that is
+function MaxDps:MaxAddDuration()
+    local duration = 0
+    local durationtotal = 0
+    if MaxDps.ttd and MaxDps.ttd.data then
+       for target,data in pairs(MaxDps.ttd.data) do
+          if target and data and data.DPS and data.DPS>0 then
+             local howFar
+             local damagePerSecond = data.DPS
+             local currentHealth = UnitHealth(target)
+             local goalHP = 0 / 100 * UnitHealthMax(target)
+             if currentHealth > goalHP then
+                howFar = UnitHealth(target) - goalHP
+                duration = howFar / damagePerSecond
+                if duration == math.huge then
+                   duration = 500
+                end
+             else
+                duration = 0
+             end
+             if duration > durationtotal then
+                durationtotal = duration
+             end
+          end
+       end
+    end
+    return durationtotal
 end
