@@ -140,6 +140,7 @@ function MaxDps:CollectAura(unit, timeShift, output, filter)
         local expirationTime = auraData and auraData.expirationTime
         local id = auraData and auraData.spellId
         local maxstacks = auraData and auraData.maxCharges
+        local value = auraData and auraData.points and auraData.points[1]
         if not name then
             break
         end
@@ -169,6 +170,7 @@ function MaxDps:CollectAura(unit, timeShift, output, filter)
                 duration       = duration,
                 refreshable    = remains < 0.3 * duration,
                 maxStacks      = maxstacks or 1,
+                value          = value or 0
             }
         end
 
@@ -186,6 +188,7 @@ local auraMetaTable = {
             duration    = 0,
             refreshable = true,
             maxStacks   = 0,
+            value       = 0,
         }
     end
 }
