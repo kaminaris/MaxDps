@@ -256,7 +256,7 @@ function MaxDps:CheckTalents()
                 local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 
                 if definitionInfo ~= nil then
-                    self.PlayerTalents[definitionInfo.spellID] = 1
+                    self.PlayerTalents[definitionInfo.spellID] = nodeInfo.currentRank
                 end
             end
         end
