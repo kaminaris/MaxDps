@@ -194,7 +194,7 @@ end
 
 -- Function to find what mod has the longest ttd and how long that is
 function MaxDps:MaxAddDuration()
-    local duration = 0
+    local duration
     local durationtotal = 0
     if MaxDps.ttd and MaxDps.ttd.data then
        for target,data in pairs(MaxDps.ttd.data) do
