@@ -771,7 +771,8 @@ function MaxDps:GetLegendaryEffects()
     return legendaryBonusIds
 end
 
-local bfaConsumables = {
+local Consumables = {
+    --BFA
     [169299] = true, -- Potion of Unbridled Fury
     [168529] = true, -- Potion of Empowered Proximity
     [168506] = true, -- Potion of Focused Resolve
@@ -783,6 +784,13 @@ local bfaConsumables = {
     [163224] = true, -- Battle Potion of Strength
     [152559] = true, -- Potion of Rising Death
     [152560] = true, -- Potion of Bursting Blood
+    --DF
+    [191383] = true, -- Elemental Potion of Ultimate Power
+    [191389] = true, -- Elemental Potion of Power
+    [191401] = true, -- Potion of Shocking Disclosure
+    --TWW
+    [212259] = true, -- Potion of Unwavering Focus
+    [212265] = true, -- Tempered Potion
 }
 
 function MaxDps:GlowConsumables()
@@ -790,7 +798,7 @@ function MaxDps:GlowConsumables()
         return
     end
 
-    for itemId, _ in pairs(bfaConsumables) do
+    for itemId in pairs(Consumables) do
         local itemSpellId = self.ItemSpells[itemId]
 
         if itemSpellId then
