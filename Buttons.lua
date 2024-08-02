@@ -228,12 +228,12 @@ end
 -- this should be pretty universal
 function MaxDps:AddItemButton(button)
     -- support for trinkets and potions
-    local actionSlot = button:GetAttribute('action')
+    local actionSlot = button:GetAttribute('action') or button.action
 
     if actionSlot and (IsEquippedAction(actionSlot) or IsConsumableAction(actionSlot)) then
         local type, itemId = GetActionInfo(actionSlot)
         if type == 'item' and itemId then
-            local _, itemSpellId = GetItemSpell(itemId)
+            local _, itemSpellId = GetItemSpell(itemId) --spellName, itemSpellId
             self.ItemSpells[itemId] = itemSpellId
 
             self:AddButton(itemSpellId, button)
