@@ -1365,6 +1365,10 @@ function MaxDps:SmartAoe(itemId)
         end
     end
 
+    if count == 0 and UnitExists("target") and UnitHealth("target") > 0 and UnitIsEnemy("player","target") == true then
+        count = 1
+    end
+
     return count
 end
 
