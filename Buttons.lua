@@ -541,6 +541,84 @@ function MaxDps:ClearGlowIndependent(spellId, id)
 end
 
 function MaxDps:GlowCooldown(spellId, condition, color)
+    local idtoclass = {
+        [1] = "Warrior",
+        [2] = "Paladin",
+        [3] = "Hunter",
+        [4] = "Rogue",
+        [5] = "Priest",
+        [6] = "Death Knight",
+        [7] = "Shaman",
+        [8] = "Mage",
+        [9] = "Warlock",
+        [10] = "Monk",
+        [11] = "Druid",
+        [12] = "Demon Hunter",
+        [13] = "Evoker",
+    }
+	local idtospec = {
+	    --Death Knight
+	    [250] = "Blood",
+	    [251] = "Frost",
+	    [252] = "Unholy",
+	    --Demon Hunter
+	    [577] = "Havoc",
+	    [581] = "Vengeance",
+	    --Druid
+	    [102] = "Balance",
+	    [103] = "Feral",
+	    [104] = "Guardian",
+	    [105] = "Restoration",
+		--Evoker
+		[1473] = "Augmentation",
+		[1467] = "Devastation",
+		[1468] = "Preservation",
+	    --Hunter
+	    [253] = "Beast Mastery",
+	    [254] = "Marksmanship",
+	    [255] = "Survival",
+	    --Mage
+	    [62] = "Arcane",
+	    [63] = "Fire",
+	    [64] = "Frost",
+	    --Monk
+	    [268] = "Brewmaster",
+	    [269] = "Windwalker",
+	    [270] = "Mistweaver",
+	    --Paladin
+	    [65] = "Holy",
+	    [66] = "Protection",
+	    [70] = "Retribution",
+	    --Priest
+	    [256] = "Discipline",
+	    [257] = "Holy",
+	    [258] = "Shadow",
+	    --Rogue
+	    [259] = "Assassination",
+	    [260] = "Outlaw",
+	    [261] = "Subtlety",
+	    --Shaman
+	    [262] = "Elemental",
+	    [263] = "Enhancement",
+	    [264] = "Restoration",
+	    --Warlock
+	    [265] = "Affliction",
+	    [266] = "Demonology",
+	    [267] = "Destruction",
+	    --Warrior
+	    [71] = "Arms",
+	    [72] = "Fury",
+	    [73] = "Protection",
+    }
+    local id = GetSpecializationInfo(GetSpecialization())
+    if spellId == nil then
+        self:Print(
+            self.Colors.Error ..
+            'Cannot find spellId for GlowCooldown in: ' .. "Class: " .. idtoclass[self.ClassId] .. "Spec: " .. id,
+            "error"
+        )
+        return
+    end
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
