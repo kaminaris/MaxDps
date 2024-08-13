@@ -6990,7 +6990,7 @@ function MaxDps:PrepareFrameData()
 
 	self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcdRemains = MaxDps:EndCast()
 	self.FrameData.gcd = self:GlobalCooldown()
-	self.FrameData.buff, self.FrameData.debuff = MaxDps:CollectAuras()
+	self.FrameData.buff, self.FrameData.debuff = self.PlayerAuras, self.TargetAuras
 	self.FrameData.talents = self.PlayerTalents
 	self.FrameData.azerite = self.AzeriteTraits
 	self.FrameData.essences = self.AzeriteEssences
