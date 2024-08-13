@@ -614,7 +614,7 @@ function MaxDps:GlowCooldown(spellId, condition, color)
     if spellId == nil then
         self:Print(
             self.Colors.Error ..
-            'Cannot find spellId for GlowCooldown in: ' .. "Class: " .. idtoclass[self.ClassId] .. "Spec: " .. id,
+            'Cannot find spellId for GlowCooldown in: ' .. "Class: " .. idtoclass[self.ClassId] .. "Spec: " .. idtospec[id],
             "error"
         )
         return
@@ -689,6 +689,7 @@ function MaxDps:GlowSpell(spellId)
                     else
                         searchName = id and GetSpellInfo(id)
                     end
+                    print(searchName)
                     if FindSpellName and id and searchName and FindSpellName == searchName then
                         foundspell = true
                         self:Glow(button, 'next', nil, 'normal')
