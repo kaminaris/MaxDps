@@ -268,7 +268,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 			if guid == playerGUID then
 			    self.PlayerAuras[aura.spellId] = {
 		        	name           = aura.name,
-		        	up             = aura.expirationTime - GetTime() > 0,
+		        	up             = true,
 		        	upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
 		        	count          = aura.applications > 0 and aura.applications or 1,
 		        	expirationTime = aura.expirationTime,
@@ -283,7 +283,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 			if guid == targetGUID then
 			    self.TargetAuras[aura.spellId] = {
 		        	name           = aura.name,
-		        	up             = aura.expirationTime - GetTime() > 0,
+		        	up             = true,
 		        	upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
 		        	count          = aura.applications > 0 and aura.applications or 1,
 		        	expirationTime = aura.expirationTime,
@@ -302,7 +302,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 			if guid == playerGUID and aura.isHelpful then
 			    self.PlayerAuras[aura.spellId] = {
 		        	name           = aura.name,
-		        	up             = aura.expirationTime - GetTime() > 0,
+		        	up             = true,
 		        	upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
 		        	count          = aura.applications > 0 and aura.applications or 1,
 		        	expirationTime = aura.expirationTime,
@@ -317,7 +317,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 			if guid == targetGUID and aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
 			    self.TargetAuras[aura.spellId] = {
 		        	name           = aura.name,
-		        	up             = aura.expirationTime - GetTime() > 0,
+		        	up             = true,
 		        	upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
 		        	count          = aura.applications > 0 and aura.applications or 1,
 		        	expirationTime = aura.expirationTime,
@@ -339,7 +339,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 			    if guid == playerGUID and aura.isHelpful then
 			        self.PlayerAuras[aura.spellId] = {
 		            	name           = aura.name,
-		            	up             = aura.expirationTime - GetTime() > 0,
+		            	up             = true,
 		            	upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
 		            	count          = aura.applications > 0 and aura.applications or 1,
 		            	expirationTime = aura.expirationTime,
@@ -354,7 +354,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 			    if guid == targetGUID and aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
 			        self.TargetAuras[aura.spellId] = {
 		            	name           = aura.name,
-		            	up             = aura.expirationTime - GetTime() > 0,
+		            	up             = true,
 		            	upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
 		            	count          = aura.applications > 0 and aura.applications or 1,
 		            	expirationTime = aura.expirationTime,
