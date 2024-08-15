@@ -409,12 +409,17 @@ collectAurasframe:SetScript("OnEvent", function(self, event, unitTarget, updateI
             MaxDps:CollectAuras(unitTarget, updateInfo)
         end
 	end
+	if event == "LOADING_SCREEN_DISABLED" then
+        MaxDps:CollectAuras("player", {isFullUpdate = true} )
+	end
 	if event == "PLAYER_TARGET_CHANGED" then
         MaxDps:CollectAuras("target", {isFullUpdate = true} )
 	end
 end)
 collectAurasframe:RegisterEvent("UNIT_AURA")
 collectAurasframe:RegisterEvent("PLAYER_TARGET_CHANGED")
+collectAurasframe:RegisterEvent("LOADING_SCREEN_DISABLED")
+
 
 function MaxDps:DumpAuras()
     print('Player Auras')
