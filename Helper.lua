@@ -200,11 +200,16 @@ MaxDps.PlayerCooldowns = setmetatable({}, {
         return MaxDps:CooldownConsolidated(key, MaxDps.FrameData.timeShift)
     end
 })
-MaxDps.ActiveDots = setmetatable({}, {
-    __index = function(table, key)
-        return MaxDps:DebuffCounter(key, MaxDps.FrameData.timeShift)
-    end
-})
+--local activeDotsMetaTable = {
+--    __index = function()
+--        return {
+--            count          = 0,
+--            remains        = 0,
+--        }
+--    end
+--}
+--MaxDps.ActiveDots = setmetatable({}, activeDotsMetaTable)
+MaxDps.ActiveDots = {}
 
 --function MaxDps:CollectAuras()
 --    self:CollectAura('player', self.FrameData.timeShift, self.PlayerAuras)
@@ -219,40 +224,30 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 	local guid = UnitGUID(unitTarget)
 	local targetGUID = UnitGUID("target")
 	local playerGUID = UnitGUID("player")
-	--if ( (targetGUID and guid ~= targetGUID) or ( playerGUID and guid ~= playerGUID ) ) then return end
-	local playerupdate
-	local targetupdate
-	if guid == playerGUID then
-		playerupdate = true
-	else
-		playerupdate = false
-	end
-	if guid == targetGUID then
-		targetupdate = true
-	else
-		targetupdate = false
-	end
 	if (updateInfo and updateInfo.isFullUpdate) then
-		local unitauraInfo = {}
+		local playerUnitauraInfo = {}
+        local targetUnitauraInfo = {}
+        local unitauraInfo = {}
         if (AuraUtil.ForEachAura) then
-			if playerupdate then
+			if guid == playerGUID then
                 AuraUtil.ForEachAura(unitTarget, "HELPFUL", nil,
                     function(aura)
                         if aura and aura.auraInstanceID then
-                            unitauraInfo[aura.auraInstanceID] = aura
+                            playerUnitauraInfo[aura.auraInstanceID] = aura
                         end
                     end,
                 true)
 			end
-			if targetupdate then
-                AuraUtil.ForEachAura(unitTarget, "PLAYER|HARMFUL", nil,
-                    function(aura)
-                        if aura and aura.auraInstanceID then
-                            unitauraInfo[aura.auraInstanceID] = aura
+            AuraUtil.ForEachAura(unitTarget, "PLAYER|HARMFUL", nil,
+                function(aura)
+                    if aura and aura.auraInstanceID then
+                        if guid == targetGUID then
+                            targetUnitauraInfo[aura.auraInstanceID] = aura
                         end
-                    end,
-                true)
-			end
+                        unitauraInfo[aura.auraInstanceID] = aura
+                    end
+                end,
+            true)
         end
 		if guid == playerGUID then
 			for id, aura in pairs(self.PlayerAuras) do
@@ -264,7 +259,10 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 				self.TargetAuras[id] = nil
 			end
 		end
-		for _, aura in pairs(unitauraInfo) do
+        if guid and self.ActiveDots[guid] then
+            self.ActiveDots[guid] = nil
+        end
+		for _, aura in pairs(playerUnitauraInfo) do
 			if guid == playerGUID then
 			    self.PlayerAuras[aura.spellId] = {
 		        	name           = aura.name,
@@ -280,6 +278,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 					auraID         = aura.auraInstanceID
 		        }
 			end
+        end
+        for _, aura in pairs(targetUnitauraInfo) do
 			if guid == targetGUID then
 			    self.TargetAuras[aura.spellId] = {
 		        	name           = aura.name,
@@ -295,6 +295,25 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 					auraID         = aura.auraInstanceID
 		        }
 			end
+		end
+        for _, aura in pairs(unitauraInfo) do
+            if guid and not self.ActiveDots[guid] then
+                self.ActiveDots[guid] = {}
+            end
+			self.ActiveDots[guid][aura.auraInstanceID] = {
+		    	name           = aura.name,
+		    	up             = true,
+		    	upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
+		    	count          = aura.applications > 0 and aura.applications or 1,
+		    	expirationTime = aura.expirationTime,
+		    	remains        = aura.expirationTime - GetTime(),
+		    	duration       = aura.duration,
+		    	refreshable    = aura.expirationTime - GetTime() < 0.3 * aura.duration,
+                maxStacks      = aura.maxCharges,
+                value          = aura.points[1],
+                spellId        = aura.spellId,
+				auraID         = aura.auraInstanceID
+		    }
 		end
 	end
 	if updateInfo and updateInfo.addedAuras then
@@ -326,6 +345,25 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 		        	refreshable    = aura.expirationTime - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges,
                     value          = aura.points[1],
+					auraID         = aura.auraInstanceID
+		        }
+			end
+			if aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
+                if guid and not self.ActiveDots[guid] then
+                    self.ActiveDots[guid] = {}
+                end
+			    self.ActiveDots[guid][aura.auraInstanceID] = {
+		        	name           = aura.name,
+		        	up             = true,
+		        	upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
+		        	count          = aura.applications > 0 and aura.applications or 1,
+		        	expirationTime = aura.expirationTime,
+		        	remains        = aura.expirationTime - GetTime(),
+		        	duration       = aura.duration,
+		        	refreshable    = aura.expirationTime - GetTime() < 0.3 * aura.duration,
+                    maxStacks      = aura.maxCharges,
+                    value          = aura.points[1],
+                    spellId        = aura.spellId,
 					auraID         = aura.auraInstanceID
 		        }
 			end
@@ -366,6 +404,25 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 						auraID         = aura.auraInstanceID
 		            }
 			    end
+                if aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
+                    if guid and not self.ActiveDots[guid] then
+                        self.ActiveDots[guid] = {}
+                    end
+                    self.ActiveDots[guid][aura.auraInstanceID] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = aura.expirationTime - GetTime() > 0 and 1 or 0,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = aura.expirationTime,
+                        remains        = aura.expirationTime - GetTime(),
+                        duration       = aura.duration,
+                        refreshable    = aura.expirationTime - GetTime() < 0.3 * aura.duration,
+                        maxStacks      = aura.maxCharges,
+                        value          = aura.points[1],
+                        spellId        = aura.spellId,
+                        auraID         = aura.auraInstanceID
+                    }
+                end
             else
                 for spellID,auraTable in pairs(self.PlayerAuras) do
                     if auraTable.auraID == auraInstanceID then
@@ -375,6 +432,13 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 for spellID,auraTable in pairs(self.TargetAuras) do
                     if auraTable.auraID == auraInstanceID then
                         self.TargetAuras[spellID] = nil
+                    end
+                end
+                if guid and self.ActiveDots[guid] then
+                    for auraID,auraTable in pairs(self.ActiveDots[guid]) do
+                        if auraID == auraInstanceID then
+                            self.ActiveDots[guid][auraID] = nil
+                        end
                     end
                 end
 			end
@@ -393,6 +457,22 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 					self.TargetAuras[id] = nil
 				end
 			end
+            if guid and self.ActiveDots[guid] then
+                for auraID,auraTable in pairs(self.ActiveDots[guid]) do
+                    if auraID == auraInstanceID then
+                        self.ActiveDots[guid][auraID] = nil
+                    end
+                end
+            end
+        end
+    end
+    if guid and self.ActiveDots[guid] then
+        local numAuras = 0
+        for id, info in pairs(self.ActiveDots[guid]) do
+            numAuras = numAuras + 1
+        end
+        if numAuras == 0 then
+            self.ActiveDots[guid] = nil
         end
     end
 
@@ -402,12 +482,7 @@ end
 local collectAurasframe = CreateFrame("Frame")
 collectAurasframe:SetScript("OnEvent", function(self, event, unitTarget, updateInfo)
 	if event == "UNIT_AURA" then
-        local updateGUID = UnitGUID(unitTarget)
-        local playerGUID = UnitGUID("player")
-        local targetGUID = UnitGUID("target")
-        if updateGUID == playerGUID or updateGUID == targetGUID then
-            MaxDps:CollectAuras(unitTarget, updateInfo)
-        end
+        MaxDps:CollectAuras(unitTarget, updateInfo)
 	end
 	if event == "LOADING_SCREEN_DISABLED" then
         MaxDps:CollectAuras("player", {isFullUpdate = true} )
@@ -1438,13 +1513,14 @@ end
 function MaxDps:DebuffCounter(spellId, timeShift)
     local count, totalRemains, totalCount, totalCountRemains = 0, 0, 0, 0
 
-    for _, unit in ipairs(self.visibleNameplates) do
-        local aura = MaxDps:IntUnitAura(unit, spellId, 'PLAYER|HARMFUL', timeShift)
-        if aura.up then
-            count = count + 1
-            totalCount = totalCount + aura.count
-            totalRemains = totalRemains + aura.remains
-            totalCountRemains = totalRemains + (aura.remains * aura.count)
+    for mobID, AuraID in pairs(self.ActiveDots) do
+        for AuraIDTable,auraTable in pairs(AuraID) do
+            if auraTable.spellId == spellId then
+                count = count + 1
+                totalCount = totalCount + auraTable.count
+                totalRemains = totalRemains + auraTable.remains
+                totalCountRemains = totalRemains + (auraTable.remains * auraTable.count)
+            end
         end
     end
 

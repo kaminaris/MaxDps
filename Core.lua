@@ -6984,10 +6984,10 @@ function MaxDps:PrepareFrameData()
 	if not self.FrameData then
 		self.FrameData = {
 			cooldown  = self.PlayerCooldowns,
-			activeDot = self.ActiveDots
 		}
 	end
 
+	self.FrameData.activeDot = self.ActiveDots
 	self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcdRemains = MaxDps:EndCast()
 	self.FrameData.gcd = self:GlobalCooldown()
 	self.FrameData.buff, self.FrameData.debuff = self.PlayerAuras, self.TargetAuras
