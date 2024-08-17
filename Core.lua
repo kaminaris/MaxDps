@@ -160,13 +160,15 @@ local talentUpdateEvents = {
 	"AZERITE_ESSENCE_ACTIVATED",
 	"TRAIT_CONFIG_DELETED",
 	"TRAIT_CONFIG_UPDATED",
-	"LOADING_SCREEN_DISABLED",
+	--"LOADING_SCREEN_DISABLED",
 }
 
 function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_TARGET_CHANGED')
 	self:RegisterEvent('PLAYER_REGEN_DISABLED')
 	self:RegisterEvent('PLAYER_REGEN_ENABLED')
+	self:RegisterEvent('LOADING_SCREEN_DISABLED')
+	self:RegisterEvent('LOADING_SCREEN_ENABLED')
 
 	for _, event in pairs(talentUpdateEvents) do
 		self:RegisterEvent(event, 'TalentsUpdated')
@@ -6943,7 +6945,7 @@ function MaxDps:UNIT_ENTERED_VEHICLE(_, unit)
 end
 
 function MaxDps:UNIT_EXITED_VEHICLE(_, unit)
-	if unit == 'player' then
+	if unit == 'player' and not self.rotationEnabled then
 		self:InitRotations()
 		self:EnableRotation()
 	end
@@ -6968,7 +6970,25 @@ function MaxDps:PLAYER_REGEN_DISABLED()
 end
 
 function MaxDps:PLAYER_REGEN_ENABLED()
-	self:DisableRotation()
+	if self.db.global.onCombatEnter and self.rotationEnabled then
+	    self:DisableRotation()
+	end
+end
+
+function MaxDps:LOADING_SCREEN_DISABLED()
+	if not self.db.global.onCombatEnter and not self.rotationEnabled then
+		self:Print(self.Colors.Success .. 'Rotation Enabled!', "info")
+		self:UpdateSpellsAndTalents()
+		self:InitRotations()
+		self:EnableRotation()
+	end
+end
+
+function MaxDps:LOADING_SCREEN_ENABLED()
+	if not self.db.global.onCombatEnter and self.rotationEnabled then
+		self:Print(self.Colors.Success .. 'Rotation Disabled!', "info")
+		self:DisableRotation()
+	end
 end
 
 function MaxDps:ButtonFetch()
