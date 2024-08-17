@@ -6964,6 +6964,7 @@ end
 function MaxDps:PLAYER_REGEN_DISABLED()
 	if self.db.global.onCombatEnter and not self.rotationEnabled then
 		self:Print(self.Colors.Success .. 'Auto enable on combat!', "info")
+		self:UpdateSpellsAndTalents()
 		self:InitRotations()
 		self:EnableRotation()
 	end
