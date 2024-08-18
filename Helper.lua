@@ -606,14 +606,16 @@ function MaxDps:CheckTalents()
     for _, treeID in ipairs(treeIDs) do
         local nodes = C_Traits.GetTreeNodes(treeID)
         for _, nodeID in ipairs(nodes) do
-            local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
-            if nodeInfo.currentRank and nodeInfo.currentRank > 0 then
-                local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID
-                local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID)
-                local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+            if configID then
+                local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
+                if nodeInfo.currentRank and nodeInfo.currentRank > 0 then
+                    local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID
+                    local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID)
+                    local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 
-                if definitionInfo ~= nil then
-                    self.PlayerTalents[definitionInfo.spellID] = nodeInfo.currentRank
+                    if definitionInfo ~= nil then
+                        self.PlayerTalents[definitionInfo.spellID] = nodeInfo.currentRank
+                    end
                 end
             end
         end
