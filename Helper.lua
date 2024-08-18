@@ -1212,6 +1212,11 @@ function MaxDps:TargetAura(name, timeShift)
     return self:UnitAura(name, timeShift, 'target')
 end
 
+-- TODO
+function MaxDps:HasDispellableAura()
+    return false
+end
+
 -----------------------------------------------------------------
 --- Casting info helpers
 -----------------------------------------------------------------
@@ -1353,7 +1358,7 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         end
     end
 
-    if charges == nil and C_Spell and C_Spell.GetSpellCharges then
+    if charges == nil and spellId and C_Spell and C_Spell.GetSpellCharges then
         charges = C_Spell.GetSpellCharges(spellId) or 0
     end
 
