@@ -1353,6 +1353,11 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         end
     end
 
+    if charges == nil and C_Spell and C_Spell.GetSpellCharges then
+        charges = C_Spell.GetSpellCharges(spellId) or 0
+    end
+
+
     local cooldownMS, gcdMS
     if spellId then
         cooldownMS, gcdMS = GetSpellBaseCooldown(spellId)
