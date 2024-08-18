@@ -6946,6 +6946,7 @@ end
 
 function MaxDps:UNIT_EXITED_VEHICLE(_, unit)
 	if unit == 'player' and not self.rotationEnabled then
+		self:UpdateSpellsAndTalents()
 		self:InitRotations()
 		self:EnableRotation()
 	end
