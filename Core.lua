@@ -7027,6 +7027,7 @@ function MaxDps:InvokeNextSpell()
 	local oldSkill = self.Spell
 
 	self:PrepareFrameData()
+	self:UpdateAuraData()
 
 	self:GlowConsumables()
 

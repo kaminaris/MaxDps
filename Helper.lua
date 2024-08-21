@@ -568,6 +568,39 @@ collectAurasframe:RegisterEvent("UNIT_AURA")
 collectAurasframe:RegisterEvent("PLAYER_TARGET_CHANGED")
 collectAurasframe:RegisterEvent("LOADING_SCREEN_DISABLED")
 
+function MaxDps:UpdateAuraData()
+    if MaxDps.PlayerAuras then
+        for id, aura in pairs(MaxDps.PlayerAuras) do
+            MaxDps.PlayerAuras[id].upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0
+            MaxDps.PlayerAuras[id].remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime()
+            MaxDps.PlayerAuras[id].refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration
+        end
+    end
+    if MaxDps.TargetAuras then
+        for id, aura in pairs(MaxDps.TargetAuras) do
+            MaxDps.TargetAuras[id].upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0
+            MaxDps.TargetAuras[id].remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime()
+            MaxDps.TargetAuras[id].refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration
+        end
+    end
+    if MaxDps.ActiveDots then
+        for MobID, auraID in pairs(MaxDps.ActiveDots) do
+            --print(MobID,auraID)
+            for aid,info in pairs(auraID) do
+                MaxDps.ActiveDots[MobID][aid].upMath         = (info.expirationTime >0 and info.expirationTime or math.huge) - GetTime() > 0 and 1 or 0
+                MaxDps.ActiveDots[MobID][aid].remains        = (info.expirationTime >0 and info.expirationTime or math.huge) - GetTime()
+                MaxDps.ActiveDots[MobID][aid].refreshable    = (info.expirationTime >0 and info.expirationTime or math.huge) - GetTime() < 0.3 * info.duration
+            end
+        end
+    end
+    if MaxDps.TargetDispels then
+        for id, aura in pairs(MaxDps.TargetDispels) do
+            MaxDps.TargetAuras[id].upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0
+            MaxDps.TargetAuras[id].remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime()
+            MaxDps.TargetAuras[id].refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration
+        end
+    end
+end
 
 function MaxDps:DumpAuras()
     print('Player Auras')
