@@ -689,7 +689,7 @@ function MaxDps:GlowSpell(spellId)
                     else
                         searchName = id and GetSpellInfo(id)
                     end
-                    print(searchName)
+                    --print("looking for: ",FindSpellName, " found", searchName)
                     if FindSpellName and id and searchName and FindSpellName == searchName then
                         foundspell = true
                         self:Glow(button, 'next', nil, 'normal')
