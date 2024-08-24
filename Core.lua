@@ -6934,19 +6934,22 @@ function MaxDps:UpdateSpellsAndTalents()
 	local className, classFilename, classId = UnitClass("player")
 	local currentSpec = GetSpecialization()
 	local id, name, description, icon, background, role = GetSpecializationInfo(currentSpec)
-	-- Insert Racials
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Berserking"] = 26297
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["HyperOrganicLightOriginator"] = 312924
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["BloodFury"] = 20572
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Shadowmeld"] = 58984
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["FerocityoftheFrostwolf"] = 274741
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["MightoftheBlackrock"] = 274742
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["ZealoftheBurningBlade"] = 274740
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["RictusoftheLaughingSkull"] = 274739
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["AncestralCall"] = 274738
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["ArcanePulse"] = 260369
-	MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Fireblood "] = 273104
-	MaxDps.SpellTable = MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]
+	if id then
+		-- Insert Racials
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Berserking"] = 26297
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["HyperOrganicLightOriginator"] = 312924
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["BloodFury"] = 20572
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Shadowmeld"] = 58984
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["FerocityoftheFrostwolf"] = 274741
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["MightoftheBlackrock"] = 274742
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["ZealoftheBurningBlade"] = 274740
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["RictusoftheLaughingSkull"] = 274739
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["AncestralCall"] = 274738
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["ArcanePulse"] = 260369
+	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Fireblood "] = 273104
+		--
+	    MaxDps.SpellTable = MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]
+	end
 	--MaxDps.SpellInfoTable = {}
 end
 
