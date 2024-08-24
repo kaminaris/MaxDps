@@ -648,6 +648,12 @@ function MaxDps:CheckTalents()
 
                     if definitionInfo ~= nil then
                         self.PlayerTalents[definitionInfo.spellID] = nodeInfo.currentRank
+                        if nodeInfo.subTreeID then
+                            local subTreeInfo = C_Traits.GetSubTreeInfo(configID, nodeInfo.subTreeID)
+                            if not subTreeInfo.isActive then
+                                self.PlayerTalents[definitionInfo.spellID] = nil
+                            end
+                        end
                     end
                 end
             end
