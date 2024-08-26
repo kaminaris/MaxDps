@@ -1803,7 +1803,7 @@ end
 
 function MaxDps:CheckSpellUsable(spell,spellstring)
     if (not spell) and spellstring then
-        MaxDps:Print(self.Colors.Error .. "Error No Spell Data For", "error", spellstring)
+        MaxDps:Print(self.Colors.Error .. "Error No Spell Data For " .. spellstring, "error")
         return false
     end
     if not IsSpellKnownOrOverridesKnown(spell) then return false end
