@@ -641,20 +641,23 @@ function MaxDps:GlowSpell(spellId)
     if self.Spells[spellId] ~= nil then
         for _, button in pairs(self.Spells[spellId]) do
             self:Glow(button, 'next', nil, 'normal')
-            self.SpellsGlowing[spellId] = button
         end
+
+        self.SpellsGlowing[spellId] = 1
         foundspell = true
     elseif BaseSpellID and self.Spells[BaseSpellID] ~= nil then
         for _, button in pairs(self.Spells[BaseSpellID]) do
             self:Glow(button, 'next', nil, 'normal')
-            self.SpellsGlowing[BaseSpellID] = button
         end
+
+        self.SpellsGlowing[BaseSpellID] = 1
         foundspell = true
     elseif overrideID and self.Spells[overrideID] ~= nil then
         for _, button in pairs(self.Spells[overrideID]) do
             self:Glow(button, 'next', nil, 'normal')
-            self.SpellsGlowing[overrideID] = button
         end
+
+        self.SpellsGlowing[overrideID] = 1
         foundspell = true
     elseif self.Spells[spellId] == nil and (BaseSpellID and self.Spells[BaseSpellID] == nil) and (overrideID and self.Spells[overrideID] == nil) then
         for _, index in pairs(self.Spells) do
@@ -690,7 +693,6 @@ function MaxDps:GlowSpell(spellId)
                     if FindSpellName and id and searchName and FindSpellName == searchName then
                         foundspell = true
                         self:Glow(button, 'next', nil, 'normal')
-                        self.SpellsGlowing[id] = button
                     end
                 end
             end
@@ -720,26 +722,13 @@ function MaxDps:GlowNextSpell(spellId)
 end
 
 function MaxDps:GlowClear()
-    --for spellId, v in pairs(self.SpellsGlowing) do
-    --    if v == 1 then
-    --        for _, button in pairs(self.Spells[spellId]) do
-    --            self:HideGlow(button, 'next')
-    --        end
-    --        self.SpellsGlowing[spellId] = 0
-    --    end
-    --end
-    --NEW
-    --for _,buttonIndex in pairs(MaxDps.Spells) do
-    --    for _,button in pairs(buttonIndex) do
-    --       self:HideGlow(button, 'next')
-    --    end
-    --end
-    --for spellId, v in pairs(self.SpellsGlowing) do
-    --    self.SpellsGlowing[spellId] = nil
-    --end
-    for spellId, button in pairs(self.SpellsGlowing) do
-        self:HideGlow(button, 'next')
-        self.SpellsGlowing[spellId] = nil
+    for spellId, v in pairs(self.SpellsGlowing) do
+        if v == 1 then
+            for _, button in pairs(self.Spells[spellId]) do
+                self:HideGlow(button, 'next')
+            end
+            self.SpellsGlowing[spellId] = 0
+        end
     end
 end
 
