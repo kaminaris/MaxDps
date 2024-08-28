@@ -626,6 +626,7 @@ end
 
 function MaxDps:CheckTalents()
     self.PlayerTalents = {}
+    self.ActiveHeroTree = ""
 
     -- last selected configID or fall back to default spec config
     local configID = C_ClassTalents.GetActiveConfigID()
@@ -652,6 +653,9 @@ function MaxDps:CheckTalents()
                             local subTreeInfo = C_Traits.GetSubTreeInfo(configID, nodeInfo.subTreeID)
                             if not subTreeInfo.isActive then
                                 self.PlayerTalents[definitionInfo.spellID] = nil
+                            end
+                            if subTreeInfo.isActive then
+                                self.ActiveHeroTree = string.lower(subTreeInfo.name:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", ""))
                             end
                         end
                     end
