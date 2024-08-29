@@ -6934,7 +6934,7 @@ function MaxDps:UpdateSpellsAndTalents()
 	local className, classFilename, classId = UnitClass("player")
 	local currentSpec = GetSpecialization()
 	local id, name, description, icon, background, role = GetSpecializationInfo(currentSpec)
-	if id then
+	if MaxDpsSpellTable and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
 		-- Insert Racials
 	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Berserking"] = 26297
 	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["HyperOrganicLightOriginator"] = 312924
