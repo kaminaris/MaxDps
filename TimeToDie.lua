@@ -145,7 +145,7 @@ local function NewTimeToDieTracker()
             -- Reset old hp for next calculation
             MaxDps.ttd.data[plate].oldHP = UnitHealth(plate)
         else
-            if MaxDps.ttd.data and MaxDps.ttd.data[plate] then
+            if MaxDps and MaxDps.ttd and MaxDps.ttd.data and MaxDps.ttd.data[plate] then
                 MaxDps.ttd.data[plate] = nil
             end
         end
