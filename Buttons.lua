@@ -22,6 +22,7 @@ MaxDps.Frames = {}
 local LABs = {
     ['LibActionButton-1.0'] = true,
     ['LibActionButton-1.0-ElvUI'] = true,
+    ["LibActionButton-1.0-KkthnxUI"] = true,
 }
 
 --- Creates frame overlay over a specific frame, it doesn't need to be a button.
