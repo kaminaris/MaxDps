@@ -293,6 +293,12 @@ function MaxDps:AddStandardButton(button)
             --MaxDps:Print(self.Colors.Error .. "Erorr Adding Standard Button", "error", spellId)
         end
     end
+    if not type and button and button.HasAction then
+        local id, _, hasAction, spellID = button:HasAction()
+        if spellID then
+            self:AddButton(spellID, button)
+        end
+    end
 end
 
 function MaxDps:Fetch()
@@ -477,6 +483,11 @@ function MaxDps:FetchBlizzard()
     for _, barName in pairs(BlizzardBars) do
         for i = 1, 12 do
             local button = _G[barName .. 'Button' .. i]
+            self:AddStandardButton(button)
+        end
+
+        for i = 1, 10 do
+            local button = _G["Stance" .. 'Button' .. i]
             self:AddStandardButton(button)
         end
     end
