@@ -1805,6 +1805,12 @@ function MaxDps:FormatTime(left)
     end
 end
 
+function MaxDps:FormatItemorSpell(str)
+    if not str then return "" end
+    if type(str) ~= "string" then return end
+    return str:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", "")
+end
+
 function MaxDps:CheckSpellUsable(spell,spellstring)
     if (not spell) and spellstring then
         MaxDps:Print(self.Colors.Error .. "Error No Spell Data For " .. spellstring, "error")
@@ -1837,7 +1843,7 @@ function MaxDps:CheckEquipped(checkName)
     for i=1,14 do
         local itemID = GetInventoryItemID('player', i)
         local itemName = itemID and C_Item.GetItemInfo(itemID) or ''
-        if checkName == itemName then
+        if MaxDps:FormatItemorSpell(checkName) == MaxDps:FormatItemorSpell(itemName) then
             return true
         end
     end
@@ -1847,8 +1853,9 @@ end
 function MaxDps:CheckTrinketNames(checkName)
     for i=13,14 do
         local itemID = GetInventoryItemID('player', i)
+        if not itemID then return false end
         local itemName = C_Item.GetItemInfo(itemID)
-        if checkName == itemName then
+        if MaxDps:FormatItemorSpell(checkName) == MaxDps:FormatItemorSpell(itemName) then
             return true
         end
     end
