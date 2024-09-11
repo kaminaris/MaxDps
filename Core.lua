@@ -163,6 +163,12 @@ local talentUpdateEvents = {
 	--"LOADING_SCREEN_DISABLED",
 }
 
+local function FormatItemorSpell(str)
+    if not str then return "" end
+    if type(str) ~= "string" then return end
+    return str:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", "")
+end
+
 function MaxDps:OnEnable()
 	self:RegisterEvent('PLAYER_TARGET_CHANGED')
 	self:RegisterEvent('PLAYER_REGEN_DISABLED')
@@ -197,6 +203,7 @@ function MaxDps:OnEnable()
 
 	if not self.playerUnitFrame then
 		self.spellHistory = {}
+		self.spellHistoryTime = {}
 
 		self.playerUnitFrame = CreateFrame('Frame')
 		self.playerUnitFrame:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', 'player')
@@ -204,6 +211,10 @@ function MaxDps:OnEnable()
 			-- event, unit, lineId
 			if IsPlayerSpell(spellId) and not spellHistoryBlacklist[spellId] then
 				TableInsert(self.spellHistory, 1, spellId)
+				if not self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] then
+					self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] = {}
+				end
+				self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))].last_used = GetTime()
 
 				if #self.spellHistory > 5 then
 					TableRemove(self.spellHistory)
