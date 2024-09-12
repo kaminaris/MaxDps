@@ -386,20 +386,22 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 if guid and not self.ActiveDots[guid] then
                     self.ActiveDots[guid] = {}
                 end
-			    self.ActiveDots[guid][aura.auraInstanceID] = {
-		        	name           = aura.name,
-		        	up             = true,
-		        	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		        	count          = aura.applications > 0 and aura.applications or 1,
-		        	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		        	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		        	duration       = aura.duration >0 and aura.duration or math.huge,
-		        	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
-                    maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    value          = aura.points[1],
-                    spellId        = aura.spellId,
-					auraID         = aura.auraInstanceID
-		        }
+                if guid then
+			        self.ActiveDots[guid][aura.auraInstanceID] = {
+		            	name           = aura.name,
+		            	up             = true,
+		            	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+		            	count          = aura.applications > 0 and aura.applications or 1,
+		            	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+		            	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+		            	duration       = aura.duration >0 and aura.duration or math.huge,
+		            	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                        maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
+                        value          = aura.points[1],
+                        spellId        = aura.spellId,
+				    	auraID         = aura.auraInstanceID
+		            }
+                end
 			end
 			if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
 			    self.TargetDispels[aura.spellId] = {
@@ -457,20 +459,22 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     if guid and not self.ActiveDots[guid] then
                         self.ActiveDots[guid] = {}
                     end
-                    self.ActiveDots[guid][aura.auraInstanceID] = {
-                        name           = aura.name,
-                        up             = true,
-                        upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-                        count          = aura.applications > 0 and aura.applications or 1,
-                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-                        remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-                        duration       = aura.duration >0 and aura.duration or math.huge,
-                        refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
-                        maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                        value          = aura.points[1],
-                        spellId        = aura.spellId,
-                        auraID         = aura.auraInstanceID
-                    }
+                    if guid then
+                        self.ActiveDots[guid][aura.auraInstanceID] = {
+                            name           = aura.name,
+                            up             = true,
+                            upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                            count          = aura.applications > 0 and aura.applications or 1,
+                            expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                            remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                            duration       = aura.duration >0 and aura.duration or math.huge,
+                            refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                            maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
+                            value          = aura.points[1],
+                            spellId        = aura.spellId,
+                            auraID         = aura.auraInstanceID
+                        }
+                    end
                 end
                 if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
                     self.TargetDispels[aura.spellId] = {
@@ -1804,6 +1808,8 @@ function MaxDps:FormatTime(left)
         return string.format("%d [S]", seconds)
     end
 end
+--FindSpellOverrideByID
+--FindBaseSpellByID
 
 function MaxDps:FormatItemorSpell(str)
     if not str then return "" end
