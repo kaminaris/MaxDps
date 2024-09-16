@@ -1720,6 +1720,9 @@ function MaxDps:SmartAoe(itemId)
     if self.db.global.forceSingle then
         return 1
     end
+    if self.db.global.forceTargetAmount then
+        return self.db.global.forceTargetAmountCount
+    end
 
     --local _, instanceType = IsInInstance()
     --local count, units
