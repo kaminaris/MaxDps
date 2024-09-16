@@ -320,7 +320,7 @@ function Window:GetWindowConfig()
 					label     = 'Number of targets to force the rotation to use',
 					min       = 1,
 					max       = 10,
-					precision = 1,
+					precision = 0,
 					column    = 6,
 					order     = 2,
 				},

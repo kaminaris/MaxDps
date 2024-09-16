@@ -149,7 +149,7 @@ function MaxDps:AddToBlizzardOptions()
 	forceTargetAmount.OnValueChanged = function(_, flag) MaxDps.db.global.forceTargetAmount = flag end
 
 	local forceTargetAmountCount = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.forceTargetAmountCount, 1, 10)
-	forceTargetAmountCount:SetPrecision(1)
+	forceTargetAmountCount:SetPrecision(0)
 	StdUi:AddLabel(optionsFrame, forceTargetAmountCount, 'Number of targets to force the rotation to use')
 	forceTargetAmountCount.OnValueChanged = function(_, val) MaxDps.db.global.forceTargetAmountCount = val end
 
