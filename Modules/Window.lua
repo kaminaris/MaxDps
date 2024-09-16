@@ -23,7 +23,7 @@ function Window:ShowWindow()
 		return
 	end
 
-	local window = StdUi:Window(nil, 800, 600, 'MaxDps')
+	local window = StdUi:Window(nil, 800, 700, 'MaxDps')
 	window:SetPoint('CENTER')
 
 	StdUi:BuildWindow(window, self:GetWindowConfig())
@@ -307,6 +307,23 @@ function Window:GetWindowConfig()
 					column = 6,
 					order  = 2
 				}
+			},
+			{
+				forceTargetAmount       = {
+					type   = 'checkbox',
+					label  = 'Enable forcing the number of targets',
+					column = 6,
+					order  = 1
+				},
+				forceTargetAmountCount   = {
+					type      = 'slider',
+					label     = 'Number of targets to force the rotation to use',
+					min       = 1,
+					max       = 10,
+					precision = 1,
+					column    = 6,
+					order     = 2,
+				},
 			},
 			{
 				interval   = {

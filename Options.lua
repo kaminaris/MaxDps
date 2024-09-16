@@ -47,6 +47,8 @@ MaxDps.defaultOptions = {
 		disabledInfo = 'errorinfo',
 		debugMode = false,
 		forceSingle = false,
+		forceTargetAmount = false,
+		forceTargetAmountCount = 1,
 		disableButtonGlow = false,
 
 		customGlow = false,
@@ -115,7 +117,7 @@ function MaxDps:AddToBlizzardOptions()
 		return
 	end
 
-	local optionsFrame = StdUi:PanelWithTitle(UIParent, 100, 100, 'MaxDps Options')
+	local optionsFrame = StdUi:PanelWithTitle(UIParent, 100, 150, 'MaxDps Options')
 	self.optionsFrame = optionsFrame
 	optionsFrame:Hide()
 	optionsFrame.name = 'MaxDps'
@@ -141,6 +143,15 @@ function MaxDps:AddToBlizzardOptions()
 	local forceSingle = StdUi:Checkbox(optionsFrame, 'Force single target mode', 200, 24)
 	forceSingle:SetChecked(MaxDps.db.global.forceSingle)
 	forceSingle.OnValueChanged = function(_, flag) MaxDps.db.global.forceSingle = flag end
+
+	local forceTargetAmount = StdUi:Checkbox(optionsFrame, 'Enable forcing the number of targets', 200, 24)
+	forceTargetAmount:SetChecked(MaxDps.db.global.forceTargetAmount)
+	forceTargetAmount.OnValueChanged = function(_, flag) MaxDps.db.global.forceTargetAmount = flag end
+
+	local forceTargetAmountCount = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.forceTargetAmountCount, 1, 10)
+	forceTargetAmountCount:SetPrecision(1)
+	StdUi:AddLabel(optionsFrame, forceTargetAmountCount, 'Number of targets to force the rotation to use')
+	forceTargetAmountCount.OnValueChanged = function(_, val) MaxDps.db.global.forceTargetAmountCount = val end
 
 	local disableConsumables = StdUi:Checkbox(optionsFrame, 'Disable consumable support', 200, 24)
 	disableConsumables:SetChecked(MaxDps.db.global.disableConsumables)
@@ -240,6 +251,8 @@ function MaxDps:AddToBlizzardOptions()
 	optionsFrame:AddRow():AddElement(general)
 	optionsFrame:AddRow():AddElements(enabled, onCombatEnter, { column = 'even' })
 	optionsFrame:AddRow():AddElements(disableButtonGlow, forceSingle, { column = 'even' })
+	optionsFrame:AddRow():AddElements(forceSingle, forceTargetAmount, { column = 'even' })
+	optionsFrame:AddRow():AddElements(forceTargetAmount, forceTargetAmountCount, { column = 'even' })
 	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, {column = 'even'})
 	optionsFrame:AddRow():AddElements(disableConsumables, debug, {column = 'even'})
 	optionsFrame:AddRow():AddElements(debugMode, disabledInfo, { column = 'even' })
