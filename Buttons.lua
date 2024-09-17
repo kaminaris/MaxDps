@@ -672,6 +672,20 @@ function MaxDps:GlowSpell(spellId)
 
         self.SpellsGlowing[overrideID] = 1
         foundspell = true
+    else
+        C_Spell.RequestLoadSpellData(spellId)
+        local searchName = C_Spell.GetSpellName(spellId)
+        for spellid,v in pairs(self.Spells) do
+            local knownSpellName = C_Spell.GetSpellName(spellid)
+            if searchName == knownSpellName then
+                for _, button in pairs(self.Spells[spellid]) do
+                    self:Glow(button, 'next', nil, 'normal')
+                end
+                self.SpellsGlowing[spellid] = 1
+                foundspell = true
+            end
+        end
+
     --elseif self.Spells[spellId] == nil and (BaseSpellID and self.Spells[BaseSpellID] == nil) and (overrideID and self.Spells[overrideID] == nil) then
     --    for _, index in pairs(self.Spells) do
     --        for _,button in pairs(index) do
