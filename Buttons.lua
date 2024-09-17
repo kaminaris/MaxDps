@@ -672,44 +672,44 @@ function MaxDps:GlowSpell(spellId)
 
         self.SpellsGlowing[overrideID] = 1
         foundspell = true
-    elseif self.Spells[spellId] == nil and (BaseSpellID and self.Spells[BaseSpellID] == nil) and (overrideID and self.Spells[overrideID] == nil) then
-        for _, index in pairs(self.Spells) do
-            for _,button in pairs(index) do
-                local slot = button and ( (button.GetPagedID and button:GetPagedID() ) or ( button.CalculateAction and button:CalculateAction() ) or ( button.GetAttribute and button:GetAttribute("action") ) or nil)
-                if slot == nil then return end
-                local actionName = nil
-                if HasAction(slot) then
-                    local actionType, id, subType = GetActionInfo(slot)
-                    if not id then return end
-                    if actionType == "macro" then
-                        actionName, _, id = GetMacroSpell(id)
-                    --elseif actionType == "item" then
-                    --	actionName = C_Item.GetItemInfo(id)
-                    --elseif actionType == "spell" then
-                    --	actionName = GetSpellInfo(id)
-                    end
-                    local FindSpellName
-                    if MaxDps:IsRetailWow() then
-                        local spellInfo = GetSpellInfo(spellId)
-                        FindSpellName = spellInfo and spellInfo.name
-                    else
-                        FindSpellName = GetSpellInfo(spellId)
-                    end
-                    local searchName
-                    if MaxDps:IsRetailWow() then
-                        local spellInfo = id and GetSpellInfo(id)
-                        searchName = spellInfo and spellInfo.name
-                    else
-                        searchName = id and GetSpellInfo(id)
-                    end
-                    --print("looking for: ",FindSpellName, " found", searchName)
-                    if FindSpellName and id and searchName and FindSpellName == searchName then
-                        foundspell = true
-                        self:Glow(button, 'next', nil, 'normal')
-                    end
-                end
-            end
-        end
+    --elseif self.Spells[spellId] == nil and (BaseSpellID and self.Spells[BaseSpellID] == nil) and (overrideID and self.Spells[overrideID] == nil) then
+    --    for _, index in pairs(self.Spells) do
+    --        for _,button in pairs(index) do
+    --            local slot = button and ( (button.GetPagedID and button:GetPagedID() ) or ( button.CalculateAction and button:CalculateAction() ) or ( button.GetAttribute and button:GetAttribute("action") ) or nil)
+    --            if slot == nil then return end
+    --            local actionName = nil
+    --            if HasAction(slot) then
+    --                local actionType, id, subType = GetActionInfo(slot)
+    --                if not id then return end
+    --                if actionType == "macro" then
+    --                    actionName, _, id = GetMacroSpell(id)
+    --                --elseif actionType == "item" then
+    --                --	actionName = C_Item.GetItemInfo(id)
+    --                --elseif actionType == "spell" then
+    --                --	actionName = GetSpellInfo(id)
+    --                end
+    --                local FindSpellName
+    --                if MaxDps:IsRetailWow() then
+    --                    local spellInfo = GetSpellInfo(spellId)
+    --                    FindSpellName = spellInfo and spellInfo.name
+    --                else
+    --                    FindSpellName = GetSpellInfo(spellId)
+    --                end
+    --                local searchName
+    --                if MaxDps:IsRetailWow() then
+    --                    local spellInfo = id and GetSpellInfo(id)
+    --                    searchName = spellInfo and spellInfo.name
+    --                else
+    --                    searchName = id and GetSpellInfo(id)
+    --                end
+    --                --print("looking for: ",FindSpellName, " found", searchName)
+    --                if FindSpellName and id and searchName and FindSpellName == searchName then
+    --                    foundspell = true
+    --                    self:Glow(button, 'next', nil, 'normal')
+    --                end
+    --            end
+    --        end
+    --    end
     end
     if foundspell == false then
         local spellName
