@@ -28,3 +28,23 @@ jobs:
         uses: BigWigsMods/packager@master
         with:
             args: -g retail
+
+      - name: Package Classic
+        uses: BigWigsMods/packager@master
+        with:
+            args: -g classic
+    
+      - name: Package BC Classic
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g bcc
+
+      - name: Package Wrath Classic
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g wrath
+
+      - name: Package Cata Classic
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g cata
