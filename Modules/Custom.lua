@@ -49,20 +49,21 @@ function Custom:OnEnable()
 		})
 
 		local specNum = GetNumSpecializationsForClassID(classId)
-		for sI = 1, specNum do
+		for sI = 0, specNum do
 			local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI)
+            if specName then
+			    specName = '|T' .. specIcon .. ':0|t ' .. specName
+			    if not self.Specs[classId] then
+			    	self.Specs[classId] = {}
+			    end
 
-			specName = '|T' .. specIcon .. ':0|t ' .. specName
-			if not self.Specs[classId] then
-				self.Specs[classId] = {}
+			    self.Specs[classId][sI] = specName
+
+			    if not self.specList[classId] then
+			    	self.specList[classId] = {}
+			    end
+			    TableInsert(self.specList[classId], { text = specName, value = sI })
 			end
-
-			self.Specs[classId][sI] = specName
-
-			if not self.specList[classId] then
-				self.specList[classId] = {}
-			end
-			TableInsert(self.specList[classId], { text = specName, value = sI })
 		end
 	end
 

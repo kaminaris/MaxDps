@@ -32,7 +32,7 @@ local FindSpellOverrideByID = FindSpellOverrideByID
 local UnitCastingInfo = UnitCastingInfo
 local GetItemCooldown = C_Item.GetItemCooldown
 local GetTime = GetTime
-local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown
+local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown and C_Spell.GetSpellCooldown or GetSpellCooldown
 local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
 local UnitGUID = UnitGUID
 local GetSpellBaseCooldown = GetSpellBaseCooldown
@@ -51,9 +51,9 @@ local GetSpellBookItemName = C_SpellBook and C_SpellBook.GetSpellBookItemName or
 local IsInInstance = IsInInstance
 local IsItemInRange = C_Item.IsItemInRange
 local UnitThreatSituation = UnitThreatSituation
-local GetActiveCovenantID = C_Covenants.GetActiveCovenantID
-local GetActiveSoulbindID = C_Soulbinds.GetActiveSoulbindID
-local GetSoulbindData = C_Soulbinds.GetSoulbindData
+local GetActiveCovenantID = C_Covenants and C_Covenants.GetActiveCovenantID
+local GetActiveSoulbindID = C_Soulbinds and C_Soulbinds.GetActiveSoulbindID
+local GetSoulbindData = C_Soulbinds and C_Soulbinds.GetSoulbindData
 
 
 -----------------------------------------------------------------
@@ -630,36 +630,38 @@ end
 
 function MaxDps:CheckTalents()
     self.PlayerTalents = {}
-    self.ActiveHeroTree = ""
+    if MaxDps:IsRetailWow() then
+        self.ActiveHeroTree = ""
 
-    -- last selected configID or fall back to default spec config
-    local configID = C_ClassTalents.GetActiveConfigID()
-    local configInfo = configID and C_Traits.GetConfigInfo(configID)
-    local treeIDs = configInfo and configInfo.treeIDs
+        -- last selected configID or fall back to default spec config
+        local configID = C_ClassTalents.GetActiveConfigID()
+        local configInfo = configID and C_Traits.GetConfigInfo(configID)
+        local treeIDs = configInfo and configInfo.treeIDs
 
-    if not treeIDs then
-        return
-    end
+        if not treeIDs then
+            return
+        end
 
-    for _, treeID in ipairs(treeIDs) do
-        local nodes = C_Traits.GetTreeNodes(treeID)
-        for _, nodeID in ipairs(nodes) do
-            if configID then
-                local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
-                if nodeInfo.currentRank and nodeInfo.currentRank > 0 then
-                    local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID
-                    local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID)
-                    local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+        for _, treeID in ipairs(treeIDs) do
+            local nodes = C_Traits.GetTreeNodes(treeID)
+            for _, nodeID in ipairs(nodes) do
+                if configID then
+                    local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID)
+                    if nodeInfo.currentRank and nodeInfo.currentRank > 0 then
+                        local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID
+                        local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID)
+                        local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 
-                    if definitionInfo ~= nil then
-                        self.PlayerTalents[definitionInfo.spellID] = nodeInfo.currentRank
-                        if nodeInfo.subTreeID then
-                            local subTreeInfo = C_Traits.GetSubTreeInfo(configID, nodeInfo.subTreeID)
-                            if not subTreeInfo.isActive then
-                                self.PlayerTalents[definitionInfo.spellID] = nil
-                            end
-                            if subTreeInfo.isActive then
-                                self.ActiveHeroTree = string.lower(subTreeInfo.name:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", ""))
+                        if definitionInfo ~= nil then
+                            self.PlayerTalents[definitionInfo.spellID] = nodeInfo.currentRank
+                            if nodeInfo.subTreeID then
+                                local subTreeInfo = C_Traits.GetSubTreeInfo(configID, nodeInfo.subTreeID)
+                                if not subTreeInfo.isActive then
+                                    self.PlayerTalents[definitionInfo.spellID] = nil
+                                end
+                                if subTreeInfo.isActive then
+                                    self.ActiveHeroTree = string.lower(subTreeInfo.name:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", ""))
+                                end
                             end
                         end
                     end

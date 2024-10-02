@@ -6,7 +6,8 @@ local CustomGlow = LibStub('LibCustomGlow-1.0')
 local TableInsert = tinsert
 local TableRemove = tremove
 local GetItemSpell = C_Item.GetItemSpell
-local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or _G.GetSpellInfo
+local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo or _G.GetSpellInfo
+local GetSpellName = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName
 local pairs = pairs
 local select = select
 
@@ -252,7 +253,7 @@ function MaxDps:AddStandardButton(button)
         if type == 'action' then
             local slot = button:GetAttribute('action')
             if not slot or slot == 0 then
-                slot = button:GetPagedID()
+                slot = button.GetPagedID and button:GetPagedID() or button.action
             end
             if not slot or slot == 0 then
                 slot = button:CalculateAction()
@@ -273,7 +274,7 @@ function MaxDps:AddStandardButton(button)
                         return button.id
                     end
                 end
-                local macroslot = button:GetPagedID()
+                local macroslot = button.GetPagedID and button:GetPagedID() or button.action
                 spellId = macroslot and select(2,GetActionInfo(macroslot))
             end
         elseif type == 'item' then
@@ -284,7 +285,7 @@ function MaxDps:AddStandardButton(button)
                 local spellInfo = GetSpellInfo(actionType)
                 spellId = spellInfo and spellInfo.spellID
             else
-                spellId = GetSpellInfo(actionType)
+                spellId = select(7,GetSpellInfo(actionType))
             end
         end
 
@@ -480,7 +481,12 @@ function MaxDps:FetchLibActionButton()
 end
 
 function MaxDps:FetchBlizzard()
-    local BlizzardBars = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft', 'MultiBar5', 'MultiBar6', 'MultiBar7'}
+    local BlizzardBars
+    if MaxDps:IsRetailWow() then
+        BlizzardBars = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft', 'MultiBar5', 'MultiBar6', 'MultiBar7'}
+    else
+        BlizzardBars = {'Action'}
+    end
     for _, barName in pairs(BlizzardBars) do
         for i = 1, 12 do
             local button = _G[barName .. 'Button' .. i]
@@ -673,16 +679,18 @@ function MaxDps:GlowSpell(spellId)
         self.SpellsGlowing[overrideID] = 1
         foundspell = true
     else
-        C_Spell.RequestLoadSpellData(spellId)
-        local searchName = C_Spell.GetSpellName(spellId)
-        for spellid,v in pairs(self.Spells) do
-            local knownSpellName = C_Spell.GetSpellName(spellid)
-            if searchName == knownSpellName then
-                for _, button in pairs(self.Spells[spellid]) do
-                    self:Glow(button, 'next', nil, 'normal')
+        if MaxDps:IsRetailWow() then
+            C_Spell.RequestLoadSpellData(spellId)
+            local searchName = GetSpellName and GetSpellName(spellId) or GetSpellInfo(spellId)
+            for spellid,v in pairs(self.Spells) do
+                local knownSpellName = GetSpellName and GetSpellName(spellid) or GetSpellInfo(spellId)
+                if searchName == knownSpellName then
+                    for _, button in pairs(self.Spells[spellid]) do
+                        self:Glow(button, 'next', nil, 'normal')
+                    end
+                    self.SpellsGlowing[spellid] = 1
+                    foundspell = true
                 end
-                self.SpellsGlowing[spellid] = 1
-                foundspell = true
             end
         end
 

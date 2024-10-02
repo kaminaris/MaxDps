@@ -19,6 +19,17 @@ local GetAddOnInfo = C_AddOns.GetAddOnInfo
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local LoadAddOn = C_AddOns.LoadAddOn
 
+local WOW_PROJECT_ID = WOW_PROJECT_ID
+local WOW_PROJECT_CLASSIC = WOW_PROJECT_CLASSIC
+local WOW_PROJECT_BURNING_CRUSADE_CLASSIC = WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+local WOW_PROJECT_WRATH_CLASSIC = WOW_PROJECT_WRATH_CLASSIC
+local WOW_PROJECT_CATACLYSM_CLASSIC = WOW_PROJECT_CATACLYSM_CLASSIC
+local WOW_PROJECT_MAINLINE = WOW_PROJECT_MAINLINE
+local LE_EXPANSION_LEVEL_CURRENT = LE_EXPANSION_LEVEL_CURRENT
+local LE_EXPANSION_BURNING_CRUSADE =  LE_EXPANSION_BURNING_CRUSADE
+local LE_EXPANSION_WRATH_OF_THE_LICH_KING = LE_EXPANSION_WRATH_OF_THE_LICH_KING
+local LE_EXPANSION_CATACLYSM = LE_EXPANSION_CATACLYSM
+
 local spellHistoryBlacklist = {
 	[75] = true -- Auto shot
 }
@@ -33,6 +44,22 @@ function MaxDps:OnInitialize()
 	end
 
 	self:AddToBlizzardOptions()
+end
+
+function MaxDps:IsClassicWow()
+    return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+end
+
+function MaxDps:IsTBCWow()
+    return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE
+end
+
+function MaxDps:IsWrathWow()
+    return WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING
+end
+
+function MaxDps:IsCataWow()
+    return WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_CATACLYSM
 end
 
 function MaxDps:IsRetailWow()
@@ -114,11 +141,13 @@ function MaxDps:EnableRotation()
 	self:UpdateButtonGlow()
 
 	self:CheckTalents()
-	self:GetAzeriteTraits()
-	self:GetAzeriteEssences()
-	self:GetCovenantInfo()
-	self:GetLegendaryEffects()
-	self:CheckIsPlayerMelee()
+	if MaxDps:IsRetailWow() then
+	    self:GetAzeriteTraits()
+	    self:GetAzeriteEssences()
+	    self:GetCovenantInfo()
+	    self:GetLegendaryEffects()
+		self:CheckIsPlayerMelee()
+	end
 	if self.ModuleOnEnable then
 		self.ModuleOnEnable()
 	end
@@ -152,16 +181,30 @@ function MaxDps:DisableRotationTimer()
 	end
 end
 
-local talentUpdateEvents = {
-	"TRAIT_CONFIG_CREATED",
-	"ACTIVE_COMBAT_CONFIG_CHANGED",
-	"STARTER_BUILD_ACTIVATION_FAILED",
-	"PLAYER_TALENT_UPDATE",
-	"AZERITE_ESSENCE_ACTIVATED",
-	"TRAIT_CONFIG_DELETED",
-	"TRAIT_CONFIG_UPDATED",
-	--"LOADING_SCREEN_DISABLED",
-}
+local talentUpdateEvents
+if MaxDps.IsRetailWow() then
+    talentUpdateEvents = {
+    	"TRAIT_CONFIG_CREATED",
+    	"ACTIVE_COMBAT_CONFIG_CHANGED",
+    	"STARTER_BUILD_ACTIVATION_FAILED",
+    	"PLAYER_TALENT_UPDATE",
+    	"AZERITE_ESSENCE_ACTIVATED",
+    	"TRAIT_CONFIG_DELETED",
+    	"TRAIT_CONFIG_UPDATED",
+    	--"LOADING_SCREEN_DISABLED",
+    }
+else
+	talentUpdateEvents = {
+    	"TRAIT_CONFIG_CREATED",
+    	--"ACTIVE_COMBAT_CONFIG_CHANGED",
+    	--"STARTER_BUILD_ACTIVATION_FAILED",
+    	"PLAYER_TALENT_UPDATE",
+    	"AZERITE_ESSENCE_ACTIVATED",
+    	"TRAIT_CONFIG_DELETED",
+    	"TRAIT_CONFIG_UPDATED",
+    	--"LOADING_SCREEN_DISABLED",
+    }
+end
 
 local function FormatItemorSpell(str)
     if not str then return "" end
@@ -211,13 +254,24 @@ function MaxDps:OnEnable()
 			-- event, unit, lineId
 			if IsPlayerSpell(spellId) and not spellHistoryBlacklist[spellId] then
 				TableInsert(self.spellHistory, 1, spellId)
-				if not self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] then
-					self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] = {}
-				end
-				self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))].last_used = GetTime()
+				if MaxDps:IsRetailWow() then
+				    if not self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] then
+				    	self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] = {}
+				    end
+				    self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))].last_used = GetTime()
 
-				if #self.spellHistory > 5 then
-					TableRemove(self.spellHistory)
+				    if #self.spellHistory > 5 then
+				    	TableRemove(self.spellHistory)
+				    end
+				else
+				    if not self.spellHistoryTime[FormatItemorSpell(GetSpellInfo(spellId))] then
+				    	self.spellHistoryTime[FormatItemorSpell(GetSpellInfo(spellId))] = {}
+				    end
+				    self.spellHistoryTime[FormatItemorSpell(GetSpellInfo(spellId))].last_used = GetTime()
+
+				    if #self.spellHistory > 5 then
+				    	TableRemove(self.spellHistory)
+				    end
 				end
 			end
 		end)
@@ -316,6 +370,7 @@ function MaxDps:UpdateSpellsAndTalents()
 	    [72] = "Fury",
 	    [73] = "Protection",
     }
+	if MaxDps:IsRetailWow() then
 	MaxDpsSpellTable = {
 		["Warrior"] = {
 			["Fury"] = {
@@ -6941,10 +6996,22 @@ function MaxDps:UpdateSpellsAndTalents()
 			},
 		},
 	}
-	
+    end
+
 	local className, classFilename, classId = UnitClass("player")
-	local currentSpec = GetSpecialization()
-	local id, name, description, icon, background, role = GetSpecializationInfo(currentSpec)
+	local currentSpec
+	if MaxDps:IsRetailWow() then
+		currentSpec = GetSpecialization()
+	else
+		currentSpec = GetSpecializationInfoForClassID(classId)
+	end
+	local id, name, description, icon, background, role
+	if MaxDps:IsRetailWow() then
+		id, name, description, icon, background, role = GetSpecializationInfo(currentSpec)
+	else
+		id, name, description, icon, background, role = GetSpecializationInfoForSpecID(currentSpec)
+	end
+
 	if MaxDpsSpellTable and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
 		-- Insert Racials
 	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Berserking"] = 26297
@@ -6960,6 +7027,22 @@ function MaxDps:UpdateSpellsAndTalents()
 	    MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Fireblood "] = 273104
 		--
 	    MaxDps.SpellTable = MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]
+	end
+	if not MaxDps:IsRetailWow() and  MaxDpsSpellTable and id and idtoclass and idtoclass[classId] then
+		-- Insert Racials
+	    MaxDpsSpellTable[idtoclass[classId]][name]["Berserking"] = 26297
+	    MaxDpsSpellTable[idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
+	    MaxDpsSpellTable[idtoclass[classId]][name]["BloodFury"] = 20572
+	    MaxDpsSpellTable[idtoclass[classId]][name]["Shadowmeld"] = 58984
+	    MaxDpsSpellTable[idtoclass[classId]][name]["FerocityoftheFrostwolf"] = 274741
+	    MaxDpsSpellTable[idtoclass[classId]][name]["MightoftheBlackrock"] = 274742
+	    MaxDpsSpellTable[idtoclass[classId]][name]["ZealoftheBurningBlade"] = 274740
+	    MaxDpsSpellTable[idtoclass[classId]][name]["RictusoftheLaughingSkull"] = 274739
+	    MaxDpsSpellTable[idtoclass[classId]][name]["AncestralCall"] = 274738
+	    MaxDpsSpellTable[idtoclass[classId]][name]["ArcanePulse"] = 260369
+	    MaxDpsSpellTable[idtoclass[classId]][name]["Fireblood "] = 273104
+		--
+	    MaxDps.SpellTable = MaxDpsSpellTable[idtoclass[classId]][name]
 	end
 	--MaxDps.SpellInfoTable = {}
 end
@@ -7080,7 +7163,14 @@ function MaxDps:InitRotations()
 	self:CountTier()
 
 	local _, _, classId = UnitClass('player')
-	local spec = GetSpecialization()
+	local spec
+
+	if MaxDps:IsRetailWow() then
+		spec = GetSpecialization()
+	else
+		spec = GetSpecializationInfoForClassID(classId)
+	end
+
 	self.ClassId = classId
 	self.Spec = spec
 
