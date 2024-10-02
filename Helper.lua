@@ -222,16 +222,16 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
     if not unitTarget then
         return
     end
-	local guid = UnitGUID(unitTarget)
-	local targetGUID = UnitGUID("target")
-	local playerGUID = UnitGUID("player")
-	if (updateInfo and updateInfo.isFullUpdate) then
-		local playerUnitauraInfo = {}
+    local guid = UnitGUID(unitTarget)
+    local targetGUID = UnitGUID("target")
+    local playerGUID = UnitGUID("player")
+    if (updateInfo and updateInfo.isFullUpdate) then
+        local playerUnitauraInfo = {}
         local targetUnitauraInfo = {}
         local unitauraInfo = {}
         local targetDispelUnitAuraInfo = {}
         if (AuraUtil.ForEachAura) then
-			if guid == playerGUID then
+            if guid == playerGUID then
                 AuraUtil.ForEachAura(unitTarget, "HELPFUL", nil,
                     function(aura)
                         if aura and aura.auraInstanceID then
@@ -239,7 +239,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                     end,
                 true)
-			end
+            end
             AuraUtil.ForEachAura(unitTarget, "PLAYER|HARMFUL", nil,
                 function(aura)
                     if aura and aura.auraInstanceID then
@@ -260,77 +260,77 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 true)
             end
         end
-		if guid == playerGUID then
-			for id, aura in pairs(self.PlayerAuras) do
-				self.PlayerAuras[id] = nil
-			end
-		end
-		if guid == targetGUID then
-			for id, aura in pairs(self.TargetAuras) do
-				self.TargetAuras[id] = nil
-			end
-		end
+        if guid == playerGUID then
+            for id, aura in pairs(self.PlayerAuras) do
+                self.PlayerAuras[id] = nil
+            end
+        end
+        if guid == targetGUID then
+            for id, aura in pairs(self.TargetAuras) do
+                self.TargetAuras[id] = nil
+            end
+        end
         if guid and self.ActiveDots[guid] then
             self.ActiveDots[guid] = nil
         end
-		if guid == targetGUID and UnitIsEnemy('player',unitTarget) then
-			for id, aura in pairs(self.TargetDispels) do
-				self.TargetDispels[id] = nil
-			end
-		end
-		for _, aura in pairs(playerUnitauraInfo) do
-			if guid == playerGUID then
-			    self.PlayerAuras[aura.spellId] = {
-		        	name           = aura.name,
-		        	up             = true,
-		        	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		        	count          = aura.applications > 0 and aura.applications or 1,
-		        	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		        	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		        	duration       = aura.duration >0 and aura.duration or math.huge,
-		        	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+        if guid == targetGUID and UnitIsEnemy('player',unitTarget) then
+            for id, aura in pairs(self.TargetDispels) do
+                self.TargetDispels[id] = nil
+            end
+        end
+        for _, aura in pairs(playerUnitauraInfo) do
+            if guid == playerGUID then
+                self.PlayerAuras[aura.spellId] = {
+                    name           = aura.name,
+                    up             = true,
+                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    count          = aura.applications > 0 and aura.applications or 1,
+                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                    remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                    duration       = aura.duration >0 and aura.duration or math.huge,
+                    refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                     value          = aura.points[1],
-					auraID         = aura.auraInstanceID
-		        }
-			end
+                    auraID         = aura.auraInstanceID
+                }
+            end
         end
         for _, aura in pairs(targetUnitauraInfo) do
-			if guid == targetGUID then
-			    self.TargetAuras[aura.spellId] = {
-		        	name           = aura.name,
-		        	up             = true,
-		        	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge)- GetTime() > 0 and 1 or 0,
-		        	count          = aura.applications > 0 and aura.applications or 1,
-		        	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		        	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		        	duration       = aura.duration >0 and aura.duration or math.huge,
-		        	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+            if guid == targetGUID then
+                self.TargetAuras[aura.spellId] = {
+                    name           = aura.name,
+                    up             = true,
+                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge)- GetTime() > 0 and 1 or 0,
+                    count          = aura.applications > 0 and aura.applications or 1,
+                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                    remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                    duration       = aura.duration >0 and aura.duration or math.huge,
+                    refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                     value          = aura.points[1],
-					auraID         = aura.auraInstanceID
-		        }
-			end
-		end
+                    auraID         = aura.auraInstanceID
+                }
+            end
+        end
         for _, aura in pairs(unitauraInfo) do
             if guid and not self.ActiveDots[guid] then
                 self.ActiveDots[guid] = {}
             end
-			self.ActiveDots[guid][aura.auraInstanceID] = {
-		    	name           = aura.name,
-		    	up             = true,
-		    	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		    	count          = aura.applications > 0 and aura.applications or 1,
-		    	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		    	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		    	duration       = aura.duration >0 and aura.duration or math.huge,
-		    	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+            self.ActiveDots[guid][aura.auraInstanceID] = {
+                name           = aura.name,
+                up             = true,
+                upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                count          = aura.applications > 0 and aura.applications or 1,
+                expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                duration       = aura.duration >0 and aura.duration or math.huge,
+                refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                 maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                 value          = aura.points[1],
                 spellId        = aura.spellId,
-				auraID         = aura.auraInstanceID
-		    }
-		end
+                auraID         = aura.auraInstanceID
+            }
+        end
         for _, aura in pairs(targetDispelUnitAuraInfo) do
             if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
                 self.TargetDispels[aura.spellId] = {
@@ -348,113 +348,113 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 }
             end
         end
-	end
+    end
 
-	if updateInfo and updateInfo.addedAuras then
-		for _, aura in pairs(updateInfo.addedAuras) do
-			if guid == playerGUID and aura.isHelpful then
-			    self.PlayerAuras[aura.spellId] = {
-		        	name           = aura.name,
-		        	up             = true,
-		        	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		        	count          = aura.applications > 0 and aura.applications or 1,
-		        	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		        	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		        	duration       = aura.duration >0 and aura.duration or math.huge,
-		        	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+    if updateInfo and updateInfo.addedAuras then
+        for _, aura in pairs(updateInfo.addedAuras) do
+            if guid == playerGUID and aura.isHelpful then
+                self.PlayerAuras[aura.spellId] = {
+                    name           = aura.name,
+                    up             = true,
+                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    count          = aura.applications > 0 and aura.applications or 1,
+                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                    remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                    duration       = aura.duration >0 and aura.duration or math.huge,
+                    refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                     value          = aura.points[1],
-					auraID         = aura.auraInstanceID
-		        }
-			end
-			if guid == targetGUID and aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
-			    self.TargetAuras[aura.spellId] = {
-		        	name           = aura.name,
-		        	up             = true,
-		        	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		        	count          = aura.applications > 0 and aura.applications or 1,
-		        	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		        	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		        	duration       = aura.duration >0 and aura.duration or math.huge,
-		        	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                    auraID         = aura.auraInstanceID
+                }
+            end
+            if guid == targetGUID and aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
+                self.TargetAuras[aura.spellId] = {
+                    name           = aura.name,
+                    up             = true,
+                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    count          = aura.applications > 0 and aura.applications or 1,
+                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                    remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                    duration       = aura.duration >0 and aura.duration or math.huge,
+                    refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                     value          = aura.points[1],
-					auraID         = aura.auraInstanceID
-		        }
-			end
-			if aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
+                    auraID         = aura.auraInstanceID
+                }
+            end
+            if aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
                 if guid and not self.ActiveDots[guid] then
                     self.ActiveDots[guid] = {}
                 end
                 if guid then
-			        self.ActiveDots[guid][aura.auraInstanceID] = {
-		            	name           = aura.name,
-		            	up             = true,
-		            	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		            	count          = aura.applications > 0 and aura.applications or 1,
-		            	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		            	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		            	duration       = aura.duration >0 and aura.duration or math.huge,
-		            	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                    self.ActiveDots[guid][aura.auraInstanceID] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                        remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                        duration       = aura.duration >0 and aura.duration or math.huge,
+                        refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                         maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                         value          = aura.points[1],
                         spellId        = aura.spellId,
-				    	auraID         = aura.auraInstanceID
-		            }
+                        auraID         = aura.auraInstanceID
+                    }
                 end
-			end
-			if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
-			    self.TargetDispels[aura.spellId] = {
-		        	name           = aura.name,
-		        	up             = true,
-		        	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		        	count          = aura.applications > 0 and aura.applications or 1,
-		        	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		        	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		        	duration       = aura.duration >0 and aura.duration or math.huge,
-		        	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+            end
+            if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
+                self.TargetDispels[aura.spellId] = {
+                    name           = aura.name,
+                    up             = true,
+                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    count          = aura.applications > 0 and aura.applications or 1,
+                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                    remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                    duration       = aura.duration >0 and aura.duration or math.huge,
+                    refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                     value          = aura.points[1],
-					auraID         = aura.auraInstanceID
-		        }
-			end
-		end
-	end
+                    auraID         = aura.auraInstanceID
+                }
+            end
+        end
+    end
 
     if updateInfo and updateInfo.updatedAuraInstanceIDs then
         for _, auraInstanceID in ipairs(updateInfo.updatedAuraInstanceIDs) do
             local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(unitTarget, auraInstanceID)
-			if aura then
-			    if guid == playerGUID and aura.isHelpful then
-			        self.PlayerAuras[aura.spellId] = {
-		            	name           = aura.name,
-		            	up             = true,
-		            	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		            	count          = aura.applications > 0 and aura.applications or 1,
-		            	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		            	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		            	duration       = aura.duration >0 and aura.duration or math.huge,
-		            	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+            if aura then
+                if guid == playerGUID and aura.isHelpful then
+                    self.PlayerAuras[aura.spellId] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                        remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                        duration       = aura.duration >0 and aura.duration or math.huge,
+                        refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                         maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                         value          = aura.points[1],
-						auraID         = aura.auraInstanceID
-		            }
-			    end
-			    if guid == targetGUID and aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
-			        self.TargetAuras[aura.spellId] = {
-		            	name           = aura.name,
-		            	up             = true,
-		            	upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
-		            	count          = aura.applications > 0 and aura.applications or 1,
-		            	expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-		            	remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-		            	duration       = aura.duration >0 and aura.duration or math.huge,
-		            	refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                        auraID         = aura.auraInstanceID
+                    }
+                end
+                if guid == targetGUID and aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
+                    self.TargetAuras[aura.spellId] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                        remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                        duration       = aura.duration >0 and aura.duration or math.huge,
+                        refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                         maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
                         value          = aura.points[1],
-						auraID         = aura.auraInstanceID
-		            }
-			    end
+                        auraID         = aura.auraInstanceID
+                    }
+                end
                 if aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
                     if guid and not self.ActiveDots[guid] then
                         self.ActiveDots[guid] = {}
@@ -514,22 +514,22 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         self.TargetDispels[spellID] = nil
                     end
                 end
-			end
+            end
         end
     end
 
     if updateInfo and updateInfo.removedAuraInstanceIDs then
         for _, auraInstanceID in ipairs(updateInfo.removedAuraInstanceIDs) do
-			for id, aura in pairs(self.PlayerAuras) do
-				if auraInstanceID == aura.auraID then
-					self.PlayerAuras[id] = nil
-				end
-			end
-			for id, aura in pairs(self.TargetAuras) do
-				if auraInstanceID == aura.auraID then
-					self.TargetAuras[id] = nil
-				end
-			end
+            for id, aura in pairs(self.PlayerAuras) do
+                if auraInstanceID == aura.auraID then
+                    self.PlayerAuras[id] = nil
+                end
+            end
+            for id, aura in pairs(self.TargetAuras) do
+                if auraInstanceID == aura.auraID then
+                    self.TargetAuras[id] = nil
+                end
+            end
             if guid and self.ActiveDots[guid] then
                 for auraID,auraTable in pairs(self.ActiveDots[guid]) do
                     if auraID == auraInstanceID then
@@ -537,11 +537,11 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     end
                 end
             end
-			for id, aura in pairs(self.TargetDispels) do
-				if auraInstanceID == aura.auraID then
-					self.TargetDispels[id] = nil
-				end
-			end
+            for id, aura in pairs(self.TargetDispels) do
+                if auraInstanceID == aura.auraID then
+                    self.TargetDispels[id] = nil
+                end
+            end
         end
     end
     if guid and self.ActiveDots[guid] then
@@ -558,15 +558,15 @@ end
 
 local collectAurasframe = CreateFrame("Frame")
 collectAurasframe:SetScript("OnEvent", function(self, event, unitTarget, updateInfo)
-	if event == "UNIT_AURA" then
+    if event == "UNIT_AURA" then
         MaxDps:CollectAuras(unitTarget, updateInfo)
-	end
-	if event == "LOADING_SCREEN_DISABLED" then
+    end
+    if event == "LOADING_SCREEN_DISABLED" then
         MaxDps:CollectAuras("player", {isFullUpdate = true} )
-	end
-	if event == "PLAYER_TARGET_CHANGED" then
+    end
+    if event == "PLAYER_TARGET_CHANGED" then
         MaxDps:CollectAuras("target", {isFullUpdate = true} )
-	end
+    end
 end)
 collectAurasframe:RegisterEvent("UNIT_AURA")
 collectAurasframe:RegisterEvent("PLAYER_TARGET_CHANGED")
