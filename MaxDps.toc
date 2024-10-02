@@ -1,6 +1,6 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 11.0.38
+## Version: 11.0.39
 ## Author: Kaminaris
 ## Interface: 110002
 ## Interface-Retail: 110002
@@ -26,7 +26,9 @@ Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
 Libs\LibRangeCheck-3.0\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
+#@non-retail@
 Libs\LibClassicSpecs\LibClassicSpecs.lua
+#@end-non-retail@
 
 Core.lua
 Tier.lua
