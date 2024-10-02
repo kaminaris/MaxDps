@@ -17,8 +17,15 @@ local loadstring = loadstring
 local pcall = pcall
 local GetNumClasses = GetNumClasses
 local GetClassInfo = GetClassInfo
-local GetNumSpecializationsForClassID = GetNumSpecializationsForClassID
-local GetSpecializationInfoForClassID = GetSpecializationInfoForClassID
+
+local LCS
+
+if not MaxDps:IsRetailWow() then
+    LCS = LibStub("LibClassicSpecs-Doadin")
+end
+
+local GetNumSpecializationsForClassID =  LCS and LCS.GetNumSpecializationsForClassID or GetNumSpecializationsForClassID
+local GetSpecializationInfoForClassID =  LCS and LCS.GetSpecializationInfoForClassID or GetSpecializationInfoForClassID
 
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 

@@ -26,6 +26,7 @@ Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
 Libs\LibRangeCheck-3.0\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
+Libs\LibClassicSpecs\LibClassicSpecs.lua
 
 Core.lua
 Tier.lua

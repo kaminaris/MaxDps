@@ -13,7 +13,6 @@ local TableIndexOf = tIndexOf
 local UnitIsFriend = UnitIsFriend
 local IsPlayerSpell = IsPlayerSpell
 local UnitClass = UnitClass
-local GetSpecialization = GetSpecialization
 local CreateFrame = CreateFrame
 local GetAddOnInfo = C_AddOns.GetAddOnInfo
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
@@ -64,6 +63,16 @@ end
 
 function MaxDps:IsRetailWow()
     return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+end
+
+local LCS
+local GetSpecialization = LCS and LCS.GetSpecialization or GetSpecialization
+if MaxDps:IsRetailWow() then
+    GetSpecialization = GetSpecialization
+end
+if not MaxDps:IsRetailWow() then
+    LCS = LibStub("LibClassicSpecs-Doadin")
+    GetSpecialization = LCS and LCS.GetSpecialization
 end
 
 function MaxDps:ShowMainWindow()
@@ -7163,13 +7172,7 @@ function MaxDps:InitRotations()
     self:CountTier()
 
     local _, _, classId = UnitClass('player')
-    local spec
-
-    if MaxDps:IsRetailWow() then
-        spec = GetSpecialization()
-    else
-        spec = GetSpecializationInfoForClassID(classId)
-    end
+    local spec = GetSpecialization()
 
     self.ClassId = classId
     self.Spec = spec

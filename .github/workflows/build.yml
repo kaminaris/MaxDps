@@ -32,19 +32,19 @@ jobs:
       - name: Package Classic
         uses: BigWigsMods/packager@master
         with:
-            args: -g classic
+            args: -g classic -m .pkgmeta-classic
     
       - name: Package BC Classic
         uses: BigWigsMods/packager@master
         with:
-          args: -g bcc
+          args: -g bcc -m .pkgmeta-classic
 
       - name: Package Wrath Classic
         uses: BigWigsMods/packager@master
         with:
-          args: -g wrath
+          args: -g wrath -m .pkgmeta-classic
 
       - name: Package Cata Classic
         uses: BigWigsMods/packager@master
         with:
-          args: -g cata
+          args: -g cata -m .pkgmeta-classic
