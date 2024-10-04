@@ -629,14 +629,16 @@ function MaxDps:GlowCooldown(spellId, condition, color)
 	    [72] = "Fury",
 	    [73] = "Protection",
     }
-    local id = GetSpecializationInfo(GetSpecialization())
-    if spellId == nil then
-        self:Print(
-            self.Colors.Error ..
-            'Cannot find spellId for GlowCooldown in: ' .. "Class: " .. idtoclass[self.ClassId] .. "Spec: " .. idtospec[id],
-            "error"
-        )
-        return
+    if MaxDps:IsRetailWow() then
+        local id = GetSpecializationInfo(GetSpecialization())
+        if spellId == nil then
+            self:Print(
+                self.Colors.Error ..
+                'Cannot find spellId for GlowCooldown in: ' .. "Class: " .. idtoclass[self.ClassId] .. "Spec: " .. idtospec[id],
+                "error"
+            )
+            return
+        end
     end
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
