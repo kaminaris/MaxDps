@@ -1,6 +1,6 @@
 ## Title: MaxDps
 ## Notes: Rotation helper framework.
-## Version: 11.0.42
+## Version: 11.0.43
 ## Author: Kaminaris
 ## Interface: 110002
 ## Interface-Retail: 110002
