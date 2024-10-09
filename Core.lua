@@ -7875,7 +7875,7 @@ function MaxDps:UpdateSpellsAndTalents()
         id, name, description, icon, background, role = GetSpecializationInfoForSpecID(currentSpec)
     end
 
-    if MaxDpsSpellTable and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
+    if MaxDps:IsRetailWow() and MaxDpsSpellTable and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
         -- Insert Racials
         MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Berserking"] = 26297
         MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["HyperOrganicLightOriginator"] = 312924
