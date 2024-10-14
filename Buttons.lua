@@ -381,10 +381,8 @@ function MaxDps:FetchDiabolic()
 end
 
 function MaxDps:FetchDominos()
-    -- Dominos is using half of the blizzard frames so we just fetch the missing one
-
-    for i = 1, 168 do
-        local button = _G['DominosActionButton' .. i]
+    local _,dominosButtons = Dominos.ActionButtons:GetAll()
+    for button in pairs(dominosButtons) do
         if button and not button.GetPagedID and button.id then
             button.GetPagedID = function ()
                 return button.id
