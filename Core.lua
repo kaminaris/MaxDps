@@ -306,6 +306,10 @@ end
 function MaxDps:TalentsUpdated()
     self:DisableRotation()
     self:UpdateSpellsAndTalents()
+    if not self.db.global.onCombatEnter and not self.rotationEnabled then
+        self:InitRotations()
+        self:EnableRotation()
+    end
 end
 
 local MaxDpsSpellTable
