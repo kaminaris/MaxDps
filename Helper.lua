@@ -711,6 +711,22 @@ function MaxDps:CheckTalents()
                 end
             end
         end
+    else
+        local tip = CreateFrame( "GameTooltip", "MyScanningTooltip", nil, "GameTooltipTemplate" )
+		tip:SetOwner(WorldFrame, "ANCHOR_NONE")
+        for tab = 1, GetNumTalentTabs() do
+            for num_talent = 1, GetNumTalents(tab) do
+                tip:SetTalent(tab, num_talent)
+                local _, spellID = tip:GetSpell()
+                local talentName, talentIcon, row , column , rank, maxrank = GetTalentInfo(tab, num_talent)
+                --local talentId = (tab - 1) * MAX_NUM_TALENTS + num_talent
+                if (talentName and talentIcon and spellID) then
+                    if spellID then
+                        self.PlayerTalents[spellID] = rank
+                    end
+                end
+            end
+        end
     end
 end
 
