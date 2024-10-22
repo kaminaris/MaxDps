@@ -628,6 +628,48 @@ function MaxDps:SpecName()
     return currentSpecName
 end
 
+local heroidtoname = {
+    [31] = "sanlayn",
+    [38] = "chronowarden",
+    [54] = "totemic",
+    [62] = "colossus",
+    [39] = "sunfury",
+    [55] = "stormbringer",
+    [20] = "oracle",
+    [24] = "eluneschosen",
+    [32] = "rideroftheapocalypse",
+    [40] = "spellslinger",
+    [48] = "templar",
+    [56] = "farseer",
+    [64] = "conduitofthecelestials",
+    [65] = "shadopan",
+    [41] = "frostfire",
+    [49] = "lightsmith",
+    [57] = "soulharvester",
+    [66] = "masterofharmony",
+    [21] = "druidoftheclaw",
+    [34] = "felscarred",
+    [42] = "sentinel",
+    [50] = "heraldofthesun",
+    [58] = "hellcaller",
+    [35] = "aldrachireaver",
+    [43] = "packleader",
+    [51] = "trickster",
+    [59] = "diabolist",
+    [18] = "voidweaver",
+    [22] = "wildstalker",
+    [36] = "scalecommander",
+    [44] = "darkranger",
+    [52] = "fatebound",
+    [60] = "slayer",
+    [37] = "flameshaper",
+    [53] = "deathstalker",
+    [61] = "mountainthane",
+    [19] = "archon",
+    [23] = "keeperofthegrove",
+    [33] = "deathbringer",
+}
+
 function MaxDps:CheckTalents()
     self.PlayerTalents = {}
     if MaxDps:IsRetailWow() then
@@ -660,7 +702,8 @@ function MaxDps:CheckTalents()
                                     self.PlayerTalents[definitionInfo.spellID] = nil
                                 end
                                 if subTreeInfo.isActive then
-                                    self.ActiveHeroTree = string.lower(subTreeInfo.name:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", ""))
+                                    --self.ActiveHeroTree = string.lower(subTreeInfo.name:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", ""))
+                                    self.ActiveHeroTree = subTreeInfo and subTreeInfo.ID and heroidtoname[subTreeInfo.ID] or ""
                                 end
                             end
                         end
