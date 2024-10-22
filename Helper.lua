@@ -24,7 +24,6 @@ local Select = select
 local TableInsert = tinsert
 local GetTalentInfo = GetTalentInfo
 local C_AzeriteEmpoweredItem = C_AzeriteEmpoweredItem
-local GetSpecialization = GetSpecialization
 local GetSpecializationInfo = GetSpecializationInfo
 local AzeriteUtil = AzeriteUtil
 local C_AzeriteEssence = C_AzeriteEssence
@@ -55,6 +54,15 @@ local GetActiveCovenantID = C_Covenants and C_Covenants.GetActiveCovenantID
 local GetActiveSoulbindID = C_Soulbinds and C_Soulbinds.GetActiveSoulbindID
 local GetSoulbindData = C_Soulbinds and C_Soulbinds.GetSoulbindData
 
+local LCS
+local GetSpecialization = LCS and LCS.GetSpecialization or GetSpecialization
+if MaxDps:IsRetailWow() then
+    GetSpecialization = GetSpecialization
+end
+if not MaxDps:IsRetailWow() then
+    LCS = LibStub("LibClassicSpecs-Doadin")
+    GetSpecialization = LCS and LCS.GetSpecialization
+end
 
 -----------------------------------------------------------------
 --- Internal replacement for UnitAura that no longer has ability

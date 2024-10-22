@@ -150,12 +150,12 @@ function MaxDps:EnableRotation()
     self:UpdateButtonGlow()
 
     self:CheckTalents()
+    self:CheckIsPlayerMelee()
     if MaxDps:IsRetailWow() then
         self:GetAzeriteTraits()
         self:GetAzeriteEssences()
         self:GetCovenantInfo()
         self:GetLegendaryEffects()
-        self:CheckIsPlayerMelee()
     end
     if self.ModuleOnEnable then
         self.ModuleOnEnable()
