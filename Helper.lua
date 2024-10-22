@@ -1242,6 +1242,20 @@ local Consumables = {
     --TWW
     [212259] = true, -- Potion of Unwavering Focus
     [212265] = true, -- Tempered Potion
+    [431419] = true, --Cavedweller's Delight
+    [431416] = true, --Healing Potion algari
+    [431914] = true, --Potion of Unwavering Focus
+    [431932] = true, --Tempered Potion
+    [453205] = true, --Potion Bomb of Power
+    [453162] = true, --Potion Bomb of Recovery
+    [453283] = true, --Potion Bomb of Speed
+    [431925] = true, --Frontline Potion
+    [431941] = true, --Potion of the Reborn Cheetah
+    [431418] = true, --Algari Mana Potion
+    [431422] = true, --Slumbering Soul Serum
+    [431432] = true, --Draught of Shocking Revelations
+    [431424] = true, --Draught of Silent Footfalls / Treading Lightly
+    [460074] = true, --Grotesque Vial
 }
 
 function MaxDps:GlowConsumables()
