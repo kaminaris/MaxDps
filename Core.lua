@@ -7866,17 +7866,13 @@ function MaxDps:UpdateSpellsAndTalents()
     end
 
     local className, classFilename, classId = UnitClass("player")
-    local currentSpec
-    if MaxDps:IsRetailWow() then
-        currentSpec = GetSpecialization()
-    else
-        currentSpec = GetSpecializationInfoForClassID(classId)
-    end
+    local currentSpec = GetSpecialization()
     local id, name, description, icon, background, role
     if MaxDps:IsRetailWow() then
         id, name, description, icon, background, role = GetSpecializationInfo(currentSpec)
     else
-        id, name, description, icon, background, role = GetSpecializationInfoForSpecID(currentSpec)
+        --id, name, description, icon, background, role = GetSpecializationInfoForSpecID(currentSpec)
+        id, name, description, icon, background, role = GetSpecializationInfoForClassID(classId, currentSpec)
     end
 
     if MaxDps:IsRetailWow() and MaxDpsSpellTable and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
@@ -7895,7 +7891,7 @@ function MaxDps:UpdateSpellsAndTalents()
         --
         MaxDps.SpellTable = MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]
     end
-    if not MaxDps:IsRetailWow() and  MaxDpsSpellTable and id and idtoclass and idtoclass[classId] then
+    if not MaxDps:IsRetailWow() and MaxDpsSpellTable and id and idtoclass and idtoclass[classId] then
         -- Insert Racials
         --MaxDpsSpellTable[idtoclass[classId]][name]["Berserking"] = 26297
         --MaxDpsSpellTable[idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
