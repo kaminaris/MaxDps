@@ -1908,8 +1908,8 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         MaxDps:Print(self.Colors.Error .. "Error No Spell Data For " .. spellstring, "error")
         return false
     end
-    if not IsSpellKnownOrOverridesKnown(spell) then return false end
     if MaxDps:IsRetailWow() then
+        if not IsSpellKnownOrOverridesKnown(spell) then return false end
         if not C_Spell.IsSpellUsable(spell) then return false end
         local costs = C_Spell.GetSpellPowerCost(spell)
         if type(costs) ~= 'table' and spellstring then return true end
