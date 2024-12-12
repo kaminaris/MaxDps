@@ -641,11 +641,11 @@ function MaxDps:GlowCooldown(spellId, condition, color)
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
-    if condition and not self.Flags[spellId] then
+    if condition then
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, color)
     end
-    if not condition and self.Flags[spellId] then
+    if not condition then
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)
     end
