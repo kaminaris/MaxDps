@@ -1654,16 +1654,18 @@ function MaxDps:FindSpellInSpellbook(spellId)
         return MaxDps.Spellbook[spellName]
     end
 
-    local bookType = "spell"
+    local bookType = Enum.SpellBookSpellBank.Player
     local spellSlot = FindSpellBookSlotBySpellID(spellId)
 
     if not spellSlot then
-        bookType = "pet"
+        bookType = Enum.SpellBookSpellBank.Pet
         spellSlot = FindSpellBookSlotBySpellID(spellId, true)
     end
 
     if spellSlot then
-        local spellBookItemName, _, spellBookSpellId = GetSpellBookItemName(spellSlot, bookType)
+        local spellBookItemName = GetSpellBookItemName(spellSlot, bookType)
+        local SBII = GetSpellBookItemInfo(spellSlot, bookType)
+        local spellBookSpellId = SBII and SBII.spellID
 
         if spellBookItemName and spellBookItemName == spellName and spellBookSpellId and spellBookSpellId == spellId then
             MaxDps.Spellbook[spellName] = spellSlot
