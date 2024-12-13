@@ -1913,6 +1913,15 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
     if MaxDps:IsRetailWow() then
         if not IsSpellKnownOrOverridesKnown(spell) then return false end
         if not C_Spell.IsSpellUsable(spell) then return false end
+        local ORID = FindSpellOverrideByID(spell)
+        -- Check that the Override ID is active
+        if ORID and ORID ~= spell and MaxDps.Spells[ORID] then
+            local spellCooldownInfo = C_Spell.GetSpellCooldown(ORID)
+            -- If the spell is currently over written and its on cooldown return false
+            if spellCooldownInfo and spellCooldownInfo.duration > 0 then
+                return false
+            end
+        end
         local costs = C_Spell.GetSpellPowerCost(spell)
         if type(costs) ~= 'table' and spellstring then return true end
         for i,costtable in pairs(costs) do
