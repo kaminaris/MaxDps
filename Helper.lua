@@ -2023,3 +2023,39 @@ function MaxDps:boss()
     end
     return false
 end
+
+function MaxDps:GetPartyState()
+    local _, instanceType, _, _, maxPlayers = GetInstanceInfo()
+    if maxPlayers == 0 then
+        maxPlayers = 1
+    end
+    if instanceType == "arena" then
+        return "arena", maxPlayers or 5
+    elseif instanceType == "pvp" or (instanceType == "none" and C_PvP.GetZonePVPInfo() == "combat") then
+        return "bg", maxPlayers or 40
+    elseif maxPlayers == 1 or not IsInGroup() then -- treat solo scenarios as solo, not party or raid
+        return "solo", 1
+    elseif IsInRaid() then
+        if instanceType == "none" then
+            -- GetInstanceInfo reports maxPlayers = 5 in Broken Isles
+            maxPlayers = 40
+        end
+        return "raid", maxPlayers or 40
+    else
+        return "party", 5
+    end
+end
+
+function MaxDps:NumGroupFriends()
+    local groupType, maxPlayers = MaxDps:GetPartyState()
+    local num = GetNumGroupMembers()
+    -- In world BG zones such as wintergrasp
+    -- GetNumGroupMembers when solo returns 0
+    if num == 0 and groupType == "bg" then
+        return 1
+    end
+    if num == 0 then
+        num = 1
+    end
+    return num
+end
