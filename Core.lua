@@ -146,6 +146,9 @@ function MaxDps:EnableRotation()
         return
     end
 
+    -- Track if error message was displayed to not spam
+    self.Error = false
+
     self:Fetch()
     self:UpdateButtonGlow()
 
@@ -8013,7 +8016,21 @@ function MaxDps:InvokeNextSpell()
     self:GlowConsumables()
 
     -- Removed backward compatibility
-    self.Spell = self:NextSpell()
+    --self.Spell = self.NextSpell()
+    local ok, res = xpcall(self.NextSpell, geterrorhandler(),self)
+    if ok then
+        self.Spell = res
+    else
+        if not self.Error then
+            if GetCVar('ScriptErrors')=='1' then
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord. Thanks!")
+            else
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error, displaying errors is not enabled please enable then report on Discord. Thanks!")
+                self:Print(self.Colors.Error .. res)
+            end
+        end
+        self.Error = true
+    end
 
     if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil then
         self:GlowNextSpell(self.Spell)
