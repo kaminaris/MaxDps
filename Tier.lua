@@ -5,7 +5,7 @@ local GetInventoryItemLink = GetInventoryItemLink
 local GetItemInfo = C_Item.GetItemInfo
 
 local slots = {"HEADSLOT","SHOULDERSLOT", "CHESTSLOT", "LEGSSLOT", "HANDSSLOT"}
-local tiernumbers = {29, 30, 31}
+local tiernumbers = {29, 30, 31, 32}
 
 for _,tier in pairs(tiernumbers) do
     if not MaxDps.tier then MaxDps.tier = {} end
@@ -13,7 +13,7 @@ for _,tier in pairs(tiernumbers) do
     if not MaxDps.tier[tier].count then MaxDps.tier[tier].count = 0 end
 end
 
-for i=32,40 do
+for i=33,40 do
     if not MaxDps.tier then MaxDps.tier = {} end
     if not MaxDps.tier[i] then MaxDps.tier[i] = {} end
     if not MaxDps.tier[i].count then MaxDps.tier[i].count = 0 end
@@ -144,6 +144,60 @@ function MaxDps:CountTier()
                 -- Warrior
                 if classIndex == 1 then
                     match = string.match(itemName,"Molten Vanguard's")
+                end
+            end
+            if tier == 32 then
+                -- DK
+                if classIndex == 6 then
+                    match = string.match(itemName,"Exhumed Centurion's")
+                end
+                -- DH
+                if classIndex == 12 then
+                    match = string.match(itemName,"of the Hypogeal Nemesis")
+                end
+                -- Druid
+                if classIndex == 11 then
+                    match = string.match(itemName,"of the Greatlynx")
+                end
+                -- Evoker
+                if classIndex == 13 then
+                    match = string.match(itemName,"of the Destroyer")
+                end
+                -- Hunter
+                if classIndex == 3 then
+                    match = string.match(itemName,"Lightless Scavenger's")
+                end
+                -- Mage
+                if classIndex == 8 then
+                    match = string.match(itemName,"of Violet Rebirth")
+                end
+                -- Monk
+                if classIndex == 10 then
+                    match = string.match(itemName,"Gatecrasher's")
+                end
+                -- Paladin
+                if classIndex == 2 then
+                    match = string.match(itemName,"Entombed Seraph's")
+                end
+                -- Priest
+                if classIndex == 5 then
+                    match = string.match(itemName,"Living Luster's")
+                end
+                -- Rogue
+                if classIndex == 4 then
+                    match = string.match(itemName,"K'areshi Phantom's")
+                end
+                -- Shaman
+                if classIndex == 7 then
+                    match = string.match(itemName,"of the Forgotten Reservoir")
+                end
+                -- Warlock
+                if classIndex == 9 then
+                    match = string.match(itemName,"Hexflame Coven's")
+                end
+                -- Warrior
+                if classIndex == 1 then
+                    match = string.match(itemName,"Warsculptor's")
                 end
             end
             if match then count = count + 1 end
