@@ -7890,6 +7890,15 @@ function MaxDps:UpdateSpellsAndTalents()
         MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]["Fireblood "] = 273104
         --
         MaxDps.SpellTable = MaxDpsSpellTable[idtoclass[classId]][idtospec[id]]
+        for spellName,spellID in pairs(MaxDps.SpellTable) do
+            local origSpellData = C_Spell.GetSpellInfo(spellID)
+            local origSpellName = origSpellData and origSpellData.name
+            local spellData = origSpellName and C_Spell.GetSpellInfo(origSpellName)
+            if spellID and origSpellName and spellData then
+               local newID = C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spellID).name).spellID
+               MaxDps.SpellTable[spellName] = newID
+            end
+        end
     end
     if not MaxDps:IsRetailWow() and MaxDpsSpellTable and id and idtoclass and idtoclass[classId] then
         -- Insert Racials
