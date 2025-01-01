@@ -7917,6 +7917,11 @@ function MaxDps:UpdateSpellsAndTalents()
         --MaxDpsSpellTable[idtoclass[classId]][name]["ArcanePulse"] = 260369
         --MaxDpsSpellTable[idtoclass[classId]][name]["Fireblood "] = 273104
         --
+        --Insert Potions
+        MaxDpsSpellTable[idtoclass[classId]]["VolcanicPotion"] = 58091
+        MaxDpsSpellTable[idtoclass[classId]]["GolembloodPotion"] = 58146
+        MaxDpsSpellTable[idtoclass[classId]]["TolvirPotion"] = 58145
+        --
         MaxDps.SpellTable = MaxDpsSpellTable[idtoclass[classId]]
     end
     --MaxDps.SpellInfoTable = {}
