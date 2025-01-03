@@ -7898,8 +7898,11 @@ function MaxDps:UpdateSpellsAndTalents()
             local origSpellName = origSpellData and origSpellData.name
             local spellData = origSpellName and C_Spell.GetSpellInfo(origSpellName)
             if spellID and origSpellName and spellData then
-               local newID = C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spellID).name).spellID
-               MaxDps.SpellTable[spellName] = newID
+                local newID = C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spellID).name).spellID
+                local newSpellName = C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spellID).name).name
+                if spellName == FormatItemorSpell(newSpellName) and spellID ~= newID then
+                    MaxDps.SpellTable[spellName] = newID
+                end
             end
         end
     end
