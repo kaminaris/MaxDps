@@ -8034,7 +8034,10 @@ function MaxDps:InvokeNextSpell()
                 self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord. Thanks!")
             else
                 self:Print(self.Colors.Error .. "MaxDps Encountered an error, displaying errors is not enabled please enable then report on Discord. Thanks!")
-                self:Print(self.Colors.Error .. res)
+                self:Print(self.Colors.Error .. "Can Enable Errors By Typing /run SetCVar(“ScriptErrors”,“1”)")
+                if res then
+                    self:Print(self.Colors.Error .. res)
+                end
             end
         end
         self.Error = true
