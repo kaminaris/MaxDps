@@ -1910,6 +1910,10 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         MaxDps:Print(self.Colors.Error .. "Error No Spell Data For " .. spellstring, "error")
         return false
     end
+    local isPassive = C_Spell.IsSpellPassive(spell)
+    if isPassive then
+        return false
+    end
     if MaxDps:IsRetailWow() then
         if not IsSpellKnownOrOverridesKnown(spell) then return false end
         if not C_Spell.IsSpellUsable(spell) then return false end
