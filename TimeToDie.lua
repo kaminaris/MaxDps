@@ -166,6 +166,12 @@ frame:SetScript("OnEvent", function(self, event, ...)
         if newTTDtimer and not newTTDtimer:IsCancelled() then
             newTTDtimer:Cancel()
         end
+        if not MaxDps.ttd then
+            MaxDps.ttd = {}
+        end
+        if not MaxDps.ttd.data then
+            MaxDps.ttd.data = {}
+        end
         MaxDps.ttd.data = {}
     end
 end)
