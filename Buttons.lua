@@ -25,6 +25,7 @@ local LABs = {
     ['LibActionButton-1.0-ElvUI'] = true,
     ["LibActionButton-1.0-KkthnxUI"] = true,
     ["LibActionButton-1.0-NDui"] = true,
+    ["LibActionButton-1.0-ls"] = true,
 }
 
 --- Creates frame overlay over a specific frame, it doesn't need to be a button.
