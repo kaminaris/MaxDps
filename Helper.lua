@@ -2120,3 +2120,24 @@ function MaxDps:NumGroupFriends()
     end
     return num
 end
+
+function MaxDps:HasGlyphEnabled(spellID)
+    if not MaxDps:IsRetailWow() then
+        for i = 1, GetNumGlyphSockets() do
+            local enabled, glyphType, glyphTooltipIndex, glyphSpellID, icon = GetGlyphSocketInfo(i)
+            if ( enabled ) then
+                local link = GetGlyphLink(i)-- Retrieves the Glyph's link ("" if no glyph in Socket)
+                if ( link ~= "") and spellID == glyphSpellID then
+                    return true
+                   --DEFAULT_CHAT_FRAME:AddMessage("Glyph Socket "..i.." contains "..link)
+                else
+                --   DEFAULT_CHAT_FRAME:AddMessage("Glyph Socket "..i.." is unlocked and empty!")
+                end
+            --else
+            --    DEFAULT_CHAT_FRAME:AddMessage("Glyph Socket "..i.." is locked!")
+            end
+        end
+        return false
+    end
+    return false
+end
