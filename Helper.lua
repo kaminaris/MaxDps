@@ -1934,6 +1934,9 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
             end
         end
     end
+    if not MaxDps:IsRetailWow() then
+        if not IsSpellKnownOrOverridesKnown(spell) then return false end
+    end
     return true
 end
 
