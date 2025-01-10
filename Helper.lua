@@ -1999,6 +1999,21 @@ function MaxDps:CheckTrinketCooldown(slot)
     return math.huge
 end
 
+function MaxDps:HasOnUseEffect(itemSlot)
+    -- Get the item ID of the trinket in the given slot
+    local itemID = GetInventoryItemID("player", itemSlot)
+    -- If the trinket slot is empty (no item in the slot), return false
+    if not itemID then
+        return false
+    end
+    -- Check if the item has an on-use effect (if it's usable)
+    if C_Item.IsUsableItem(itemID) then
+        return true
+    else
+        return false
+    end
+end
+
 function MaxDps:CheckPrevSpell(spell,number)
     if MaxDps and MaxDps.spellHistory and not number then
         if MaxDps.spellHistory[1] then
