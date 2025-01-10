@@ -1999,13 +1999,23 @@ function MaxDps:CheckTrinketCooldown(slot)
     return math.huge
 end
 
-function MaxDps:CheckPrevSpell(spell)
-    if MaxDps and MaxDps.spellHistory then
+function MaxDps:CheckPrevSpell(spell,number)
+    if MaxDps and MaxDps.spellHistory and not number then
         if MaxDps.spellHistory[1] then
             if MaxDps.spellHistory[1] == spell then
                 return true
             end
             if MaxDps.spellHistory[1] ~= spell then
+                return false
+            end
+        end
+    end
+    if MaxDps and MaxDps.spellHistory and number then
+        if MaxDps.spellHistory[number] then
+            if MaxDps.spellHistory[number] == spell then
+                return true
+            end
+            if MaxDps.spellHistory[number] ~= spell then
                 return false
             end
         end
