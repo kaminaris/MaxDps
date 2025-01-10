@@ -1981,6 +1981,34 @@ function MaxDps:CheckTrinketCooldown(slot)
     if slot == 13 or slot == 14 then
         local itemID = GetInventoryItemID('player', slot)
         local _, duration, _ = C_Item.GetItemCooldown(itemID)
+        return duration
+    else
+        local tOneitemID = GetInventoryItemID('player', 13)
+        local tTwoitemID = GetInventoryItemID('player', 14)
+        local tOneitemName = C_Item.GetItemInfo(tOneitemID)
+        local tTwoitemName = C_Item.GetItemInfo(tTwoitemID)
+        if tOneitemName == slot then
+            local _, duration, _ = C_Item.GetItemCooldown(tOneitemID)
+            return duration
+        end
+        if tTwoitemName == slot then
+            local _, duration, _ = C_Item.GetItemCooldown(tTwoitemID)
+            return duration
+        end
+    end
+    return math.huge
+end
+
+function MaxDps:CheckTrinketReady(slot)
+    if slot == 1 then
+        slot = 13
+    end
+    if slot == 2 then
+        slot = 14
+    end
+    if slot == 13 or slot == 14 then
+        local itemID = GetInventoryItemID('player', slot)
+        local _, duration, _ = C_Item.GetItemCooldown(itemID)
         if duration == 0 then return true else return false end
     else
         local tOneitemID = GetInventoryItemID('player', 13)
@@ -1996,7 +2024,7 @@ function MaxDps:CheckTrinketCooldown(slot)
             if duration == 0 then return true else return false end
         end
     end
-    return math.huge
+    return false
 end
 
 function MaxDps:HasOnUseEffect(itemSlot)
