@@ -1925,6 +1925,10 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
             if spellCooldownInfo and spellCooldownInfo.duration > 0 then
                 return false
             end
+            local isPassiveORID = C_Spell.IsSpellPassive(ORID)
+            if isPassiveORID then
+                return false
+            end
         end
         local costs = C_Spell.GetSpellPowerCost(spell)
         if type(costs) ~= 'table' and spellstring then return true end
