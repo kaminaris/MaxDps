@@ -352,6 +352,10 @@ function MaxDps:Fetch()
         self:FetchNeuron()
     end
 
+    if IsAddOnLoaded('DragonflightUI') then
+        self:FetchDragonflightUIButtons()
+    end
+
     if self.rotationEnabled then
         self:EnableRotationTimer()
         self:InvokeNextSpell()
@@ -522,6 +526,29 @@ function MaxDps:FetchButtonForge()
         i = i + 1
 
         MaxDps:AddStandardButton(button)
+    end
+end
+
+function MaxDps:FetchDragonflightUIButtons()
+    local DragonflightUIBars = {'DragonflightUIActionbarFrame1',
+    'DragonflightUIActionbarFrame2',
+    'DragonflightUIActionbarFrame3',
+    'DragonflightUIActionbarFrame4',
+    'DragonflightUIActionbarFrame5',
+    'DragonflightUIActionbarFrame6',
+    'DragonflightUIActionbarFrame7',
+    'DragonflightUIActionbarFrame8'}
+    for _, barName in pairs(DragonflightUIBars) do
+        if type(_G[barName]) == "table" then
+            for i,button in pairs(_G[barName].buttonTable) do
+                if button and not button.GetPagedID and button.action then
+                    button.GetPagedID = function ()
+                        return button.action
+                    end
+                end
+                self:AddStandardButton(button)
+            end
+        end
     end
 end
 
