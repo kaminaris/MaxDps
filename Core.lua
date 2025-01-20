@@ -264,7 +264,7 @@ function MaxDps:OnEnable()
         self.playerUnitFrame:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', 'player')
         self.playerUnitFrame:SetScript('OnEvent', function(_, _, _, _, spellId)
             -- event, unit, lineId
-            if not spellHistoryBlacklist[spellId] then
+            if not spellHistoryBlacklist[spellId] and IsPlayerSpell(spellId) then
                 TableInsert(self.spellHistory, 1, spellId)
                 if MaxDps:IsRetailWow() then
                     if not self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] then
