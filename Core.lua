@@ -146,6 +146,9 @@ function MaxDps:EnableRotation()
         return
     end
 
+    -- Set for Default
+    MaxDps.incoming_damage_5 = 0
+
     -- Track if error message was displayed to not spam
     self.Error = false
 
@@ -248,6 +251,7 @@ function MaxDps:OnEnable()
     self:RegisterEvent('VEHICLE_UPDATE', 'ButtonFetch')
     self:RegisterEvent('UPDATE_STEALTH', 'ButtonFetch')
     self:RegisterEvent('SPELLS_CHANGED', 'ButtonFetch')
+    self:RegisterEvent('SPELL_UPDATE_USABLE', 'ButtonFetch')
 
     self:RegisterEvent('UNIT_ENTERED_VEHICLE')
     self:RegisterEvent('UNIT_EXITED_VEHICLE')
