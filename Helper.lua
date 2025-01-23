@@ -2177,9 +2177,6 @@ local function incoming_damage_5()
 
         -- Set the total damage taken in the last 5 seconds to MaxDps.incoming_damage_5
         MaxDps.incoming_damage_5 = totalDamage
-        if MaxDps.incoming_damage_5 ~= totalDamage then
-            print(totalDamage)
-        end
     end
 end
 
