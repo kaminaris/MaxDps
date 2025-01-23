@@ -2145,3 +2145,46 @@ function MaxDps:HasGlyphEnabled(spellID)
     end
     return false
 end
+
+local damageEvents = {}  -- Table to store damage events
+
+-- Function to handle combat log events and set incoming damage to MaxDps.incoming_damage_5
+local function incoming_damage_5(_, _, eventType, _, _, _, _, _, _, _, _, _, damage)
+    local timestamp = GetTime()  -- Current time in seconds
+
+    -- Check if the event is related to damage taken
+    if eventType == "SPELL_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SWING_DAMAGE" then
+        -- Store the damage and the timestamp
+        table.insert(damageEvents, {timestamp = timestamp, damage = damage})
+
+        -- Remove events that are older than 5 seconds
+        for i = #damageEvents, 1, -1 do
+            if damageEvents[i].timestamp < timestamp - 5 then
+                table.remove(damageEvents, i)
+            end
+        end
+    end
+
+    -- Calculate total damage taken in the last 5 seconds
+    local totalDamage = 0
+    for _, event in ipairs(damageEvents) do
+        if timestamp - event.timestamp <= 5 then
+            totalDamage = totalDamage + event.damage
+        end
+    end
+
+    -- Set the total damage taken in the last 5 seconds to MaxDps.incoming_damage_5
+    MaxDps.incoming_damage_5 = totalDamage
+end
+
+-- Register the event listeners
+local incomingDamageFrame = CreateFrame("Frame")
+incomingDamageFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+incomingDamageFrame:RegisterEvent("PLAYER_REGEN_ENABLED")  -- Event for leaving combat
+incomingDamageFrame:SetScript("OnEvent", function(self, event, ...)
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        incoming_damage_5(...)
+    elseif event == "PLAYER_REGEN_ENABLED" then
+        damageEvents = {}
+    end
+end)
