@@ -2126,6 +2126,7 @@ function MaxDps:NumGroupFriends()
 end
 
 function MaxDps:HasGlyphEnabled(spellID)
+    if not spellID then return end
     if not MaxDps:IsRetailWow() then
         for i = 1, GetNumGlyphSockets() do
             local enabled, glyphType, glyphTooltipIndex, glyphSpellID, icon = GetGlyphSocketInfo(i)
