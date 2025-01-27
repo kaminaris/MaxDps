@@ -1940,6 +1940,13 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
     end
     if not MaxDps:IsRetailWow() then
         if not IsSpellKnownOrOverridesKnown(spell) then return false end
+        local costs = C_Spell.GetSpellPowerCost(spell)
+        if type(costs) ~= 'table' and spellstring then return true end
+        for i,costtable in pairs(costs) do
+            if UnitPower('player', costtable.type) < costtable.cost then
+                return false
+            end
+        end
     end
     return true
 end
