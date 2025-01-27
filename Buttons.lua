@@ -488,7 +488,7 @@ function MaxDps:FetchBlizzard()
     if MaxDps:IsRetailWow() then
         BlizzardBars = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft', 'MultiBar5', 'MultiBar6', 'MultiBar7'}
     else
-        BlizzardBars = {'Action'}
+        BlizzardBars = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft'}
     end
     for _, barName in pairs(BlizzardBars) do
         for i = 1, 12 do
