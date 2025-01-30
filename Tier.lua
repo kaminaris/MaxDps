@@ -7,13 +7,7 @@ local GetItemInfo = C_Item.GetItemInfo
 local slots = {"HEADSLOT","SHOULDERSLOT", "CHESTSLOT", "LEGSSLOT", "HANDSSLOT"}
 local tiernumbers = {29, 30, 31, 32}
 
-for _,tier in pairs(tiernumbers) do
-    if not MaxDps.tier then MaxDps.tier = {} end
-    if not MaxDps.tier[tier] then MaxDps.tier[tier] = {} end
-    if not MaxDps.tier[tier].count then MaxDps.tier[tier].count = 0 end
-end
-
-for i=33,40 do
+for i=1,40 do
     if not MaxDps.tier then MaxDps.tier = {} end
     if not MaxDps.tier[i] then MaxDps.tier[i] = {} end
     if not MaxDps.tier[i].count then MaxDps.tier[i].count = 0 end
