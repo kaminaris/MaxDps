@@ -2235,8 +2235,8 @@ function MaxDps:FindADAuraData(spellID)
                 aura.expirationTime = Data.expirationTime
                 aura.remains = remains
                 aura.refreshable = remains < 0.3 * Data.duration
-                return aura
             end
         end
     end
+    return aura
 end
