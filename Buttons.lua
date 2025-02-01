@@ -707,7 +707,7 @@ function MaxDps:GlowSpell(spellId)
         self.SpellsGlowing[overrideID] = 1
         foundspell = true
     else
-        if MaxDps:IsRetailWow() then
+        if MaxDps:IsRetailWow() or MaxDps:IsClassicWow() then
             C_Spell.RequestLoadSpellData(spellId)
             local searchName = GetSpellName and GetSpellName(spellId) or GetSpellInfo(spellId)
             for spellid,v in pairs(self.Spells) do
