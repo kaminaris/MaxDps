@@ -2202,3 +2202,41 @@ incomingDamageFrame:SetScript("OnEvent", function(self, event, ...)
         damageEvents = {}
     end
 end)
+
+function MaxDps:FindADAuraData(spellID)
+    local aura = {
+        name           = nil,
+        up             = false,
+        upMath         = 0,
+        count          = 0,
+        expirationTime = 0,
+        remains        = 0,
+        refreshable    = true, -- well if it doesn't exist, then it is refreshable
+        maxStacks      = 0,
+    }
+    local lname = C_Spell.GetSpellName(spellID)
+    if not lname then return end
+    for guid,AuraIDTable in pairs(MaxDps.ActiveDots) do
+        --print(guid,AuraIDTable)
+        for iD, Data in pairs(AuraIDTable) do
+            if lname == Data.name then
+                local remains = 0
+                if Data.expirationTime == nil then
+                    remains = 0
+                elseif (Data.expirationTime - GetTime()) > 1 then
+                    remains = Data.expirationTime - GetTime() - 1
+                elseif Data.expirationTime == 0 then
+                    remains = 99999
+                end
+                aura.name = Data.name
+                aura.up = true
+                aura.Math = 1
+                aura.count = Data.applications
+                aura.expirationTime = Data.expirationTime
+                aura.remains = remains
+                aura.refreshable = remains < 0.3 * Data.duration
+                return aura
+            end
+        end
+    end
+end
