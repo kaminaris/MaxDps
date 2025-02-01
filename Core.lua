@@ -7931,6 +7931,28 @@ function MaxDps:UpdateSpellsAndTalents()
         --
         MaxDps.SpellTable = MaxDpsSpellTable[idtoclass[classId]]
     end
+    if MaxDps:IsClassicWow() then
+        -- Insert Racials
+        --MaxDpsSpellTable[idtoclass[classId]][name]["Berserking"] = 26297
+        --MaxDpsSpellTable[idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
+        --MaxDpsSpellTable[idtoclass[classId]][name]["BloodFury"] = 20572
+        --MaxDpsSpellTable[idtoclass[classId]][name]["Shadowmeld"] = 58984
+        --MaxDpsSpellTable[idtoclass[classId]][name]["FerocityoftheFrostwolf"] = 274741
+        --MaxDpsSpellTable[idtoclass[classId]][name]["MightoftheBlackrock"] = 274742
+        --MaxDpsSpellTable[idtoclass[classId]][name]["ZealoftheBurningBlade"] = 274740
+        --MaxDpsSpellTable[idtoclass[classId]][name]["RictusoftheLaughingSkull"] = 274739
+        --MaxDpsSpellTable[idtoclass[classId]][name]["AncestralCall"] = 274738
+        --MaxDpsSpellTable[idtoclass[classId]][name]["ArcanePulse"] = 260369
+        --MaxDpsSpellTable[idtoclass[classId]][name]["Fireblood "] = 273104
+        --
+        --Insert Potions
+        --MaxDpsSpellTable[idtoclass[classId]]["VolcanicPotion"] = 58091
+        --MaxDpsSpellTable[idtoclass[classId]]["GolembloodPotion"] = 58146
+        --MaxDpsSpellTable[idtoclass[classId]]["TolvirPotion"] = 58145
+        --
+
+        MaxDps.SpellTable = {}
+    end
     --MaxDps.SpellInfoTable = {}
 end
 
