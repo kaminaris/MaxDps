@@ -1944,13 +1944,37 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         end
         if not C_Spell.IsSpellUsable(spell) then return false end
         local costs = C_Spell.GetSpellPowerCost(spell)
-        if type(costs) ~= 'table' and spellstring then return true end
-        for i,costtable in pairs(costs) do
-            if UnitPower('player', costtable.type) < costtable.cost then
-                return false
-            end
+        if MaxDps:IsCataWow() then
+           if type(costs) ~= 'table' and spellstring then return true end
+           for i,costtable in pairs(costs) do
+               if UnitPower('player', costtable.type) < costtable.cost then
+                   return false
+               end
+           end
         end
     end
+
+    local spellFound = false
+    if MaxDps:IsClassicWow() then
+        -- Loop through all the spells in the player's spellbook
+        local lspellName = C_Spell.GetSpellName(spell)
+        for i = 1, GetNumSpellTabs() do
+            local name, _, offset, numSpells = GetSpellTabInfo(i)
+            -- Loop through each spell in the tab
+            for j = offset + 1, offset + numSpells do
+                local spellType, spellID = GetSpellBookItemInfo(j,"player")
+                local spellData = C_Spell.GetSpellInfo(spellID)
+                local spellName = spellData and spellData.name
+                -- Check if the spell ID matches the one you're looking for
+                if lspellName == spellName then
+                    spellFound = true
+                    break
+                end
+            end
+        end
+        if not spellFound then return false end
+    end
+
     return true
 end
 
