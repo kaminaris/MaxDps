@@ -8011,12 +8011,12 @@ function MaxDps:LOADING_SCREEN_ENABLED()
     end
 end
 
-function MaxDps:ButtonFetch()
+function MaxDps:ButtonFetch(event)
     if self.rotationEnabled then
         if self.fetchTimer then
             self:CancelTimer(self.fetchTimer)
         end
-        self.fetchTimer = self:ScheduleTimer('Fetch', 0.5)
+        self.fetchTimer = self:ScheduleTimer('Fetch', 0.5, event)
     end
 end
 

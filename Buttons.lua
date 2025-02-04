@@ -304,14 +304,16 @@ function MaxDps:AddStandardButton(button)
     end
 end
 
-function MaxDps:Fetch()
+function MaxDps:Fetch(event)
     if self.rotationEnabled then
         self:DisableRotationTimer()
     end
     self.Spell = nil
 
     self:GlowClear()
-    self.Spells = {}
+    if not event == "SPELLS_CHANGED" then
+        self.Spells = {}
+    end
     self.ItemSpells = {}
     self.Flags = {}
     self.SpellsGlowing = {}
