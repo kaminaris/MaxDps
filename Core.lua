@@ -7910,7 +7910,7 @@ function MaxDps:UpdateSpellsAndTalents()
             end
         end
     end
-    if MaxDps:IsCataWow() and MaxDpsSpellTable and id and idtoclass and idtoclass[classId] then
+    if MaxDps:IsCataWow() and MaxDpsSpellTable and idtoclass and idtoclass[classId] then
         -- Insert Racials
         --MaxDpsSpellTable[idtoclass[classId]][name]["Berserking"] = 26297
         --MaxDpsSpellTable[idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
