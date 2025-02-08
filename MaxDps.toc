@@ -39,3 +39,7 @@ TimeToDie.lua
 Modules/Custom.lua
 Modules/Window.lua
 Modules/Profiler.lua
+
+#@non-retail@
+SwingTimer.lua
+#@end-non-retail@
