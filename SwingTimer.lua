@@ -2,6 +2,10 @@
 local MaxDps = _G.MaxDps
 
 MaxDps.swingtimer = {}
+MaxDps.swingtimer.mainhand = math.huge
+MaxDps.swingtimer.offhand = math.huge
+MaxDps.swingtimer.melee = math.huge
+MaxDps.swingtimer.ranged = math.huge
 
 -- Event handler for combat log events
 local function OnEvent(self, event)
@@ -10,6 +14,7 @@ local function OnEvent(self, event)
     -- Check if the source is the player's character
     MaxDps.swingtimer.mainhand = MaxDps.swingtimer.mainhand or math.huge
     MaxDps.swingtimer.offhand = MaxDps.swingtimer.offhand or math.huge
+    MaxDps.swingtimer.melee = math.min(MaxDps.swingtimer.mainhand, MaxDps.swingtimer.offhand)
     MaxDps.swingtimer.ranged = MaxDps.swingtimer.ranged or math.huge
     if sourceGUID == UnitGUID("player") then
         if eventType == "SWING_DAMAGE" or eventType == "SWING_MISSED" then
@@ -29,6 +34,7 @@ local function OnEvent(self, event)
             MaxDps.swingtimer.ranged = timestamp + rangedAttackSpeed
         end
     end
+    MaxDps.swingtimer.melee = math.min(MaxDps.swingtimer.mainhand, MaxDps.swingtimer.offhand)
     MaxDps.swingtimer.any = math.min(MaxDps.swingtimer.mainhand, MaxDps.swingtimer.offhand, MaxDps.swingtimer.ranged)
 end
 
