@@ -2304,26 +2304,23 @@ function MaxDps:FindBuffAuraData(spellID)
     }
     local lname = C_Spell.GetSpellName(spellID)
     if not lname then return end
-    for guid,AuraIDTable in pairs(MaxDps.PlayerAuras) do
-        --print(guid,AuraIDTable)
-        for iD, Data in pairs(AuraIDTable) do
-            if lname == Data.name then
-                local remains = 0
-                if Data.expirationTime == nil then
-                    remains = 0
-                elseif (Data.expirationTime - GetTime()) > 1 then
-                    remains = Data.expirationTime - GetTime() - 1
-                elseif Data.expirationTime == 0 then
-                    remains = 99999
-                end
-                aura.name = Data.name
-                aura.up = true
-                aura.Math = 1
-                aura.count = Data.applications
-                aura.expirationTime = Data.expirationTime
-                aura.remains = remains
-                aura.refreshable = remains < 0.3 * Data.duration
+    for _,Data in pairs(MaxDps.PlayerAuras) do
+        if lname == Data.name then
+            local remains = 0
+            if Data.expirationTime == nil then
+                remains = 0
+            elseif (Data.expirationTime - GetTime()) > 1 then
+                remains = Data.expirationTime - GetTime() - 1
+            elseif Data.expirationTime == 0 then
+                remains = 99999
             end
+            aura.name = Data.name
+            aura.up = true
+            aura.Math = 1
+            aura.count = Data.applications
+            aura.expirationTime = Data.expirationTime
+            aura.remains = remains
+            aura.refreshable = remains < 0.3 * Data.duration
         end
     end
     return aura
@@ -2342,26 +2339,23 @@ function MaxDps:FindDeBuffAuraData(spellID)
     }
     local lname = C_Spell.GetSpellName(spellID)
     if not lname then return end
-    for guid,AuraIDTable in pairs(MaxDps.TargetAuras) do
-        --print(guid,AuraIDTable)
-        for iD, Data in pairs(AuraIDTable) do
-            if lname == Data.name then
-                local remains = 0
-                if Data.expirationTime == nil then
-                    remains = 0
-                elseif (Data.expirationTime - GetTime()) > 1 then
-                    remains = Data.expirationTime - GetTime() - 1
-                elseif Data.expirationTime == 0 then
-                    remains = 99999
-                end
-                aura.name = Data.name
-                aura.up = true
-                aura.Math = 1
-                aura.count = Data.applications
-                aura.expirationTime = Data.expirationTime
-                aura.remains = remains
-                aura.refreshable = remains < 0.3 * Data.duration
+    for _,Data in pairs(MaxDps.TargetAuras) do
+        if lname == Data.name then
+            local remains = 0
+            if Data.expirationTime == nil then
+                remains = 0
+            elseif (Data.expirationTime - GetTime()) > 1 then
+                remains = Data.expirationTime - GetTime() - 1
+            elseif Data.expirationTime == 0 then
+                remains = 99999
             end
+            aura.name = Data.name
+            aura.up = true
+            aura.Math = 1
+            aura.count = Data.applications
+            aura.expirationTime = Data.expirationTime
+            aura.remains = remains
+            aura.refreshable = remains < 0.3 * Data.duration
         end
     end
     return aura
