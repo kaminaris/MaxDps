@@ -267,6 +267,32 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     end,
                 true)
             end
+        else
+            for i = 0, 40 do
+                if guid == playerGUID then
+                    local auraData = C_UnitAuras.GetAuraDataByIndex(unitTarget, i, "HELPFUL")
+                    if auraData then
+                        playerUnitauraInfo[auraData.auraInstanceID] = auraData
+                    end
+                end
+            end
+            for i = 0, 40 do
+                local auraData = C_UnitAuras.GetAuraDataByIndex(unitTarget, i, "PLAYER|HARMFUL")
+                if auraData then
+                    if guid == targetGUID then
+                        targetUnitauraInfo[auraData.auraInstanceID] = auraData
+                    end
+                    unitauraInfo[auraData.auraInstanceID] = auraData
+                end
+            end
+            for i = 0, 40 do
+                if guid == targetGUID and UnitIsEnemy('player',unitTarget) then
+                    local auraData = C_UnitAuras.GetAuraDataByIndex(unitTarget, i, "HELPFUL")
+                    if auraData then
+                        targetDispelUnitAuraInfo[auraData.auraInstanceID] = auraData
+                    end
+                end
+            end
         end
         if guid == playerGUID then
             for id, aura in pairs(self.PlayerAuras) do
