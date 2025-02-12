@@ -329,6 +329,10 @@ function MaxDps:Fetch(event)
     self:FetchBlizzard()
 
     -- It does not alter original button frames so it needs to be fetched too
+    if IsAddOnLoaded('Bartender4') then
+        self:Bartender4()
+    end
+
     if IsAddOnLoaded('ButtonForge') then
         self:FetchButtonForge()
     end
@@ -368,6 +372,16 @@ function MaxDps:Fetch(event)
     if self.rotationEnabled then
         self:EnableRotationTimer()
         self:InvokeNextSpell()
+    end
+end
+
+function MaxDps:Bartender4()
+    -- Uses LibActionButton but for some reason at least in cata classic not for stance bar
+    for i = 1, 10 do
+        local button = _G["BT4Stance" .. 'Button' .. i] and _G["BT4Stance" .. 'Button' .. i] or nil
+        if button then
+            self:AddStandardButton(button)
+        end
     end
 end
 
