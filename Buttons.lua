@@ -318,9 +318,8 @@ function MaxDps:Fetch(event)
     self.Spell = nil
 
     self:GlowClear()
-    if not event == "SPELLS_CHANGED" then
-        self.Spells = {}
-    end
+
+    self.Spells = {}
     self.ItemSpells = {}
     self.Flags = {}
     self.SpellsGlowing = {}

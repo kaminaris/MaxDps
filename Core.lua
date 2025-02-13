@@ -1,6 +1,6 @@
 local addonName, MaxDps = ...
 
-LibStub('AceAddon-3.0'):NewAddon(MaxDps, 'MaxDps', 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
+LibStub('AceAddon-3.0'):NewAddon(MaxDps, 'MaxDps','AceBucket-3.0' , 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
 
 --- @class MaxDps
 _G[addonName] = MaxDps
@@ -238,11 +238,12 @@ function MaxDps:OnEnable()
         self:RegisterEvent(event, 'TalentsUpdated')
     end
 
-    self:RegisterEvent('ACTIONBAR_SLOT_CHANGED', 'ButtonFetch')
+    self:RegisterBucketEvent('ACTIONBAR_SLOT_CHANGED', 1.5, 'ButtonFetch')
     self:RegisterEvent('ACTIONBAR_HIDEGRID', 'ButtonFetch')
     self:RegisterEvent('ACTIONBAR_PAGE_CHANGED', 'ButtonFetch')
-    self:RegisterEvent('ACTIONBAR_UPDATE_STATE', 'ButtonFetch')
+    --self:RegisterBucketEvent('ACTIONBAR_UPDATE_STATE', 1, 'ButtonFetch')
     self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'ButtonFetch')
+    self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', 'ButtonFetch')
     self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch')
     self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch')
     self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch')
@@ -251,7 +252,7 @@ function MaxDps:OnEnable()
     self:RegisterEvent('VEHICLE_UPDATE', 'ButtonFetch')
     self:RegisterEvent('UPDATE_STEALTH', 'ButtonFetch')
     self:RegisterEvent('SPELLS_CHANGED', 'ButtonFetch')
-    self:RegisterEvent('SPELL_UPDATE_USABLE', 'ButtonFetch')
+    --self:RegisterBucketEvent('SPELL_UPDATE_USABLE', 1, 'ButtonFetch')
 
     self:RegisterEvent('UNIT_ENTERED_VEHICLE')
     self:RegisterEvent('UNIT_EXITED_VEHICLE')
@@ -8013,10 +8014,15 @@ end
 
 function MaxDps:ButtonFetch(event)
     if self.rotationEnabled then
+        if event ~= "SPELLS_CHANGED" or event ~= "UPDATE_SHAPESHIFT_FORM" or event ~= "UPDATE_BONUS_ACTIONBAR" or event ~= "UPDATE_STEALTH" then
         if self.fetchTimer then
             self:CancelTimer(self.fetchTimer)
         end
         self.fetchTimer = self:ScheduleTimer('Fetch', 0.5, event)
+        end
+        if event == "SPELLS_CHANGED" or event == "UPDATE_SHAPESHIFT_FORM" or event == "UPDATE_BONUS_ACTIONBAR" or event == "UPDATE_STEALTH" then
+            MaxDps.Fetch(self, event)
+        end
     end
 end
 
