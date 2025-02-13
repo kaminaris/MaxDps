@@ -2261,8 +2261,10 @@ function MaxDps:FindADAuraData(spellID)
         count          = 0,
         expirationTime = 0,
         remains        = 0,
+        duration       = 0,
         refreshable    = true, -- well if it doesn't exist, then it is refreshable
         maxStacks      = 0,
+        value          = 0,
     }
     local lname = C_Spell.GetSpellName(spellID)
     if not lname then return end
@@ -2280,11 +2282,14 @@ function MaxDps:FindADAuraData(spellID)
                 end
                 aura.name = Data.name
                 aura.up = true
-                aura.Math = 1
-                aura.count = Data.applications
-                aura.expirationTime = Data.expirationTime
+                aura.upMath = 1
+                aura.count = Data.applications > 0 and Data.applications or 1
+                aura.expirationTime = Data.expirationTime > 0 and Data.expirationTime or math.huge
                 aura.remains = remains
+                aura.duration = Data.duration >0 and Data.duration or math.huge
                 aura.refreshable = remains < 0.3 * Data.duration
+                aura.maxStacks = Data.maxCharges and Data.maxCharges > 0 and Data.maxCharges or 1
+                aura.value = Data.points and Data.points[1] or 0
             end
         end
     end
@@ -2299,8 +2304,10 @@ function MaxDps:FindBuffAuraData(spellID)
         count          = 0,
         expirationTime = 0,
         remains        = 0,
+        duration       = 0,
         refreshable    = true, -- well if it doesn't exist, then it is refreshable
         maxStacks      = 0,
+        value          = 0,
     }
     local lname = C_Spell.GetSpellName(spellID)
     if not lname then return end
@@ -2316,11 +2323,14 @@ function MaxDps:FindBuffAuraData(spellID)
             end
             aura.name = Data.name
             aura.up = true
-            aura.Math = 1
-            aura.count = Data.applications
-            aura.expirationTime = Data.expirationTime
+            aura.upMath = 1
+            aura.count = Data.applications > 0 and Data.applications or 1
+            aura.expirationTime = Data.expirationTime > 0 and Data.expirationTime or math.huge
             aura.remains = remains
+            aura.duration = Data.duration >0 and Data.duration or math.huge
             aura.refreshable = remains < 0.3 * Data.duration
+            aura.maxStacks = Data.maxCharges and Data.maxCharges > 0 and Data.maxCharges or 1
+            aura.value = Data.points and Data.points[1] or 0
         end
     end
     return aura
@@ -2334,8 +2344,10 @@ function MaxDps:FindDeBuffAuraData(spellID)
         count          = 0,
         expirationTime = 0,
         remains        = 0,
+        duration       = 0,
         refreshable    = true, -- well if it doesn't exist, then it is refreshable
         maxStacks      = 0,
+        value          = 0,
     }
     local lname = C_Spell.GetSpellName(spellID)
     if not lname then return end
@@ -2351,11 +2363,14 @@ function MaxDps:FindDeBuffAuraData(spellID)
             end
             aura.name = Data.name
             aura.up = true
-            aura.Math = 1
-            aura.count = Data.applications
-            aura.expirationTime = Data.expirationTime
+            aura.upMath = 1
+            aura.count = Data.applications > 0 and Data.applications or 1
+            aura.expirationTime = Data.expirationTime > 0 and Data.expirationTime or math.huge
             aura.remains = remains
+            aura.duration = Data.duration >0 and Data.duration or math.huge
             aura.refreshable = remains < 0.3 * Data.duration
+            aura.maxStacks = Data.maxCharges and Data.maxCharges > 0 and Data.maxCharges or 1
+            aura.value = Data.points and Data.points[1] or 0
         end
     end
     return aura
