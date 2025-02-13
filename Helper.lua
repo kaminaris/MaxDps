@@ -317,7 +317,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 self.PlayerAuras[aura.spellId] = {
                     name           = aura.name,
                     up             = true,
-                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    upMath         = 1,
                     count          = aura.applications > 0 and aura.applications or 1,
                     expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                     remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -334,7 +334,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 self.TargetAuras[aura.spellId] = {
                     name           = aura.name,
                     up             = true,
-                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge)- GetTime() > 0 and 1 or 0,
+                    upMath         = 1,
                     count          = aura.applications > 0 and aura.applications or 1,
                     expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                     remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -353,7 +353,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
             self.ActiveDots[guid][aura.auraInstanceID] = {
                 name           = aura.name,
                 up             = true,
-                upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                upMath         = 1,
                 count          = aura.applications > 0 and aura.applications or 1,
                 expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                 remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -370,7 +370,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 self.TargetDispels[aura.spellId] = {
                     name           = aura.name,
                     up             = true,
-                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    upMath         = 1,
                     count          = aura.applications > 0 and aura.applications or 1,
                     expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                     remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -390,7 +390,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 self.PlayerAuras[aura.spellId] = {
                     name           = aura.name,
                     up             = true,
-                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    upMath         = 1,
                     count          = aura.applications > 0 and aura.applications or 1,
                     expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                     remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -405,7 +405,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 self.TargetAuras[aura.spellId] = {
                     name           = aura.name,
                     up             = true,
-                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    upMath         = 1,
                     count          = aura.applications > 0 and aura.applications or 1,
                     expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                     remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -424,7 +424,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     self.ActiveDots[guid][aura.auraInstanceID] = {
                         name           = aura.name,
                         up             = true,
-                        upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                        upMath         = 1,
                         count          = aura.applications > 0 and aura.applications or 1,
                         expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                         remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -441,7 +441,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 self.TargetDispels[aura.spellId] = {
                     name           = aura.name,
                     up             = true,
-                    upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                    upMath         = 1,
                     count          = aura.applications > 0 and aura.applications or 1,
                     expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                     remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -463,7 +463,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     self.PlayerAuras[aura.spellId] = {
                         name           = aura.name,
                         up             = true,
-                        upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                        upMath         = 1,
                         count          = aura.applications > 0 and aura.applications or 1,
                         expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                         remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -478,7 +478,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     self.TargetAuras[aura.spellId] = {
                         name           = aura.name,
                         up             = true,
-                        upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                        upMath         = 1,
                         count          = aura.applications > 0 and aura.applications or 1,
                         expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                         remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -497,7 +497,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         self.ActiveDots[guid][aura.auraInstanceID] = {
                             name           = aura.name,
                             up             = true,
-                            upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                            upMath         = 1,
                             count          = aura.applications > 0 and aura.applications or 1,
                             expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                             remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -514,7 +514,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     self.TargetDispels[aura.spellId] = {
                         name           = aura.name,
                         up             = true,
-                        upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0,
+                        upMath         = 1,
                         count          = aura.applications > 0 and aura.applications or 1,
                         expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
                         remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
@@ -609,14 +609,12 @@ collectAurasframe:RegisterEvent("LOADING_SCREEN_DISABLED")
 function MaxDps:UpdateAuraData()
     if MaxDps.PlayerAuras then
         for id, aura in pairs(MaxDps.PlayerAuras) do
-            MaxDps.PlayerAuras[id].upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0
             MaxDps.PlayerAuras[id].remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime()
             MaxDps.PlayerAuras[id].refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration
         end
     end
     if MaxDps.TargetAuras then
         for id, aura in pairs(MaxDps.TargetAuras) do
-            MaxDps.TargetAuras[id].upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0
             MaxDps.TargetAuras[id].remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime()
             MaxDps.TargetAuras[id].refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration
         end
@@ -625,7 +623,6 @@ function MaxDps:UpdateAuraData()
         for MobID, auraID in pairs(MaxDps.ActiveDots) do
             --print(MobID,auraID)
             for aid,info in pairs(auraID) do
-                MaxDps.ActiveDots[MobID][aid].upMath         = (info.expirationTime >0 and info.expirationTime or math.huge) - GetTime() > 0 and 1 or 0
                 MaxDps.ActiveDots[MobID][aid].remains        = (info.expirationTime >0 and info.expirationTime or math.huge) - GetTime()
                 MaxDps.ActiveDots[MobID][aid].refreshable    = (info.expirationTime >0 and info.expirationTime or math.huge) - GetTime() < 0.3 * info.duration
             end
@@ -633,7 +630,6 @@ function MaxDps:UpdateAuraData()
     end
     if MaxDps.TargetDispels then
         for id, aura in pairs(MaxDps.TargetDispels) do
-            MaxDps.TargetAuras[id].upMath         = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() > 0 and 1 or 0
             MaxDps.TargetAuras[id].remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime()
             MaxDps.TargetAuras[id].refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration
         end
