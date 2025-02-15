@@ -328,8 +328,10 @@ function MaxDps:Fetch(event)
     self:FetchBlizzard()
 
     -- It does not alter original button frames so it needs to be fetched too
-    if IsAddOnLoaded('Bartender4') then
-        self:Bartender4()
+    if MaxDps:IsClassicWow() or MaxDps:IsCataWow() then
+        if IsAddOnLoaded('Bartender4') then
+            self:Bartender4()
+        end
     end
 
     if IsAddOnLoaded('ButtonForge') then
