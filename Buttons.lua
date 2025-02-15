@@ -304,9 +304,11 @@ function MaxDps:AddStandardButton(button)
     end
     if not type and button and not button.HasAction and button.GetID then
         local id = button:GetID()
-        local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
-        if hasAction and spellID then
-            self:AddButton(spellID, button)
+        if id then
+            local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
+            if hasAction and spellID then
+                self:AddButton(spellID, button)
+            end
         end
     end
 end
