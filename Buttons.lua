@@ -246,12 +246,12 @@ function MaxDps:AddItemButton(button)
 end
 
 function MaxDps:AddStandardButton(button)
-    local type = button:GetAttribute('type')
-    if type then
-        local actionType = button:GetAttribute(type)
+    local btype = button:GetAttribute('type')
+    if btype then
+        local actionType = button:GetAttribute(btype)
         local spellId = nil
 
-        if type == 'action' then
+        if btype == 'action' then
             local slot = button:GetAttribute('action')
             if not slot or slot == 0 then
                 slot = button.GetPagedID and button:GetPagedID() or button.action
@@ -261,13 +261,13 @@ function MaxDps:AddStandardButton(button)
             end
 
             if HasAction(slot) then
-                type, actionType = GetActionInfo(slot)
+                btype, actionType = GetActionInfo(slot)
             else
                 return
             end
         end
 
-        if type == 'macro' then
+        if btype == 'macro' then
             spellId = actionType and GetMacroSpell(actionType)
             if spellId == nil then
                 if button and not button.GetPagedID and button.id then
@@ -278,10 +278,10 @@ function MaxDps:AddStandardButton(button)
                 local macroslot = button.GetPagedID and button:GetPagedID() or button.action
                 spellId = macroslot and select(2,GetActionInfo(macroslot))
             end
-        elseif type == 'item' then
+        elseif btype == 'item' then
             self:AddItemButton(button)
             return
-        elseif type == 'spell' then
+        elseif btype == 'spell' then
             --if MaxDps:IsRetailWow() then
                 local spellInfo = GetSpellInfo(actionType)
                 spellId = spellInfo and spellInfo.spellID
@@ -296,18 +296,20 @@ function MaxDps:AddStandardButton(button)
             --MaxDps:Print(self.Colors.Error .. "Erorr Adding Standard Button", "error", spellId)
         end
     end
-    if not type and button and button.HasAction then
+    if not btype and button and button.HasAction then
         local id, _, hasAction, spellID = button:HasAction()
         if spellID then
             self:AddButton(spellID, button)
         end
     end
-    if not type and button and not button.HasAction and button.GetID then
+    if not btype and button and not button.HasAction and button.GetID then
         local id = button:GetID()
         if id then
-            local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
-            if hasAction and spellID then
-                self:AddButton(spellID, button)
+            if id >=1 and id <= GetNumShapeshiftForms() then
+                local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
+                if hasAction and spellID then
+                    self:AddButton(spellID, button)
+                end
             end
         end
     end
