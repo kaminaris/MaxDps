@@ -8131,7 +8131,7 @@ function MaxDps:LoadModule()
         return
     end
 
-    if reason == 'MISSING' or reason == 'DISABLED' or not loadable then
+    if reason == 'MISSING' or reason == 'DISABLED' or (not loadable and reason ~= "DEMAND_LOADED") then
         self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason, "error")
         if not loadable and reason == 'DEMAND_LOADED' then
             self:Print(self.Colors.Error .. 'Addon was not loadable, this usually means it is not enabled please check for all characters or this one that it is enabled!')
