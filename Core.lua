@@ -8124,15 +8124,18 @@ function MaxDps:LoadModule()
 
     local className = self.Classes[self.ClassId]
     local module = 'MaxDps_' .. className
-    local _, _, _, _, reason = GetAddOnInfo(module)
+    local _, _, _, loadable, reason = GetAddOnInfo(module)
 
     if IsAddOnLoaded(module) then
         self:EnableRotationModule(className)
         return
     end
 
-    if reason == 'MISSING' or reason == 'DISABLED' then
+    if reason == 'MISSING' or reason == 'DISABLED' or not loadable then
         self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason, "error")
+        if not loadable and reason == 'DEMAND_LOADED' then
+            self:Print(self.Colors.Error .. 'Addon was not loadable, this usually means it is not enabled please check for all characters or this one that it is enabled!')
+        end
         self:Print(self.Colors.Error .. 'Make sure to install class module or create custom rotation', "error")
         self:Print(self.Colors.Error .. 'Missing addon: ' .. module, "error")
         return
