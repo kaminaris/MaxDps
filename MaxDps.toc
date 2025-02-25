@@ -2,12 +2,12 @@
 ## Notes: Rotation helper framework.
 ## Version: @project-version@
 ## Author: Kaminaris
-## Interface: 110007
-## Interface-Retail: 110007
-## Interface-Classic: 11505
+## Interface: 110100
+## Interface-Retail: 110100
+## Interface-Classic: 11506
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30403
-## Interface-Cata: 40401
+## Interface-Cata: 40402
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI, Neuron, LibRangeCheck-3.0
 ## X-Curse-Project-ID: 91970
