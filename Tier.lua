@@ -194,6 +194,60 @@ function MaxDps:CountTier()
                     match = string.match(itemName,"Warsculptor's")
                 end
             end
+            if tier == 33 then
+                -- DK
+                if classIndex == 6 then
+                    match = string.match(itemName,"Cauldron Champion's")
+                end
+                -- DH
+                if classIndex == 12 then
+                    match = string.match(itemName,"Fel-Dealer's")
+                end
+                -- Druid
+                if classIndex == 11 then
+                    match = string.match(itemName,"of Reclaiming Blight")
+                end
+                -- Evoker
+                if classIndex == 13 then
+                    match = string.match(itemName,"Opulent Treasurescale's")
+                end
+                -- Hunter
+                if classIndex == 3 then
+                    match = string.match(itemName,"Tireless Collector's")
+                end
+                -- Mage
+                if classIndex == 8 then
+                    match = string.match(itemName,"Aspectral Emissary's")
+                end
+                -- Monk
+                if classIndex == 10 then
+                    match = string.match(itemName,"Ageless Serpent's")
+                end
+                -- Paladin
+                if classIndex == 2 then
+                    match = string.match(itemName,"Aureate Sentry's")
+                end
+                -- Priest
+                if classIndex == 5 then
+                    match = string.match(itemName,"Confessor's Unshakable")
+                end
+                -- Rogue
+                if classIndex == 4 then
+                    match = string.match(itemName,"Spectral Gambler's")
+                end
+                -- Shaman
+                if classIndex == 7 then
+                    match = string.match(itemName,"Gale Sovereign's")
+                end
+                -- Warlock
+                if classIndex == 9 then
+                    match = string.match(itemName,"Spliced Fiendtrader's")
+                end
+                -- Warrior
+                if classIndex == 1 then
+                    match = string.match(itemName,"Enforcer's Backalley")
+                end
+            end
             if match then count = count + 1 end
         end
         if count > 0 then
