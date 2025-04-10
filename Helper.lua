@@ -750,7 +750,7 @@ function MaxDps:CheckTalents()
                 local _, spellID = tip:GetSpell()
                 local talentName, talentIcon, row , column , rank, maxrank = GetTalentInfo(tab, num_talent)
                 --local talentId = (tab - 1) * MAX_NUM_TALENTS + num_talent
-                if (talentName and talentIcon and spellID) then
+                if (talentName and talentIcon and spellID and rank > 0) then
                     if spellID then
                         self.PlayerTalents[spellID] = rank
                     end
