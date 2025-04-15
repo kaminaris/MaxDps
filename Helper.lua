@@ -2275,6 +2275,7 @@ incomingDamageFrame:RegisterEvent("PLAYER_REGEN_ENABLED")  -- Event for leaving 
 incomingDamageFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         incoming_damage_5(...)
+        incoming_damage_3(...)
     elseif event == "PLAYER_REGEN_ENABLED" then
         damageEvents = {}
     end
