@@ -2245,13 +2245,6 @@ local function incoming_damage_3()
         if eventType == "SPELL_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SWING_DAMAGE" then
             -- Store the damage and the timestamp
             table.insert(damageEvents, {timestamp = timestamp, damage = damage})
-
-            -- Remove events that are older than 3 seconds
-            for i = #damageEvents, 1, -1 do
-                if damageEvents[i].timestamp < timestamp - 3 then
-                    table.remove(damageEvents, i)
-                end
-            end
         end
 
         -- Calculate total damage taken in the last 3 seconds
