@@ -148,6 +148,7 @@ function MaxDps:EnableRotation()
 
     -- Set for Default
     MaxDps.incoming_damage_5 = 0
+    MaxDps.incoming_damage_3 = 0
 
     -- Track if error message was displayed to not spam
     self.Error = false
