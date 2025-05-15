@@ -46,6 +46,19 @@ function MaxDps:CreateOverlay(parent, id, texture, overlayType, color)
     frame:SetPoint('CENTER', 0, 0)
     frame:SetWidth(parent:GetWidth() * sizeMult)
     frame:SetHeight(parent:GetHeight() * sizeMult)
+    local f = frame.Maxtext
+    if not f then
+        f = frame:CreateFontString('nil', "OVERLAY", "GameFontNormal")
+        f:SetPoint("CENTER", frame, "CENTER") -- Position the text in the center of the frame
+        local font, _, flags = f:GetFont()
+        f:SetFont(font, 30, flags) -- Set the font with a new size (20 in this case)
+        f:SetText("") -- Set the text
+        f:SetTextColor(1, 1, 1, 1) -- Red color with full opacity
+        frame.Maxtext = f
+    end
+    --local myText = frame:CreateFontString('MaxDps_Overlay_Text_' .. id, "OVERLAY", "GameFontNormal")
+    --myText:SetPoint("CENTER", frame, "CENTER") -- Position the text in the center of the frame
+    --myText:SetText("") -- Set the text
 
     local t = frame.texture
     if not t then
@@ -193,6 +206,12 @@ function MaxDps:Glow(button, id, texture, type, color)
 
     if button.MaxDpsOverlays and button.MaxDpsOverlays[id] then
         button.MaxDpsOverlays[id]:Show()
+        if id and ( (MaxDps.empowerLevel and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[id]) ) then
+            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.empowerLevel[id])
+        end
+        if id and ( (MaxDps.Spell and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[MaxDps.Spell]) ) then
+            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.FrameData.empowerLevel[MaxDps.Spell])
+        end
     else
         if not button.MaxDpsOverlays then
             button.MaxDpsOverlays = {}
@@ -200,6 +219,12 @@ function MaxDps:Glow(button, id, texture, type, color)
 
         button.MaxDpsOverlays[id] = self:CreateOverlay(button, id, texture, type, color)
         button.MaxDpsOverlays[id]:Show()
+        if id and ( (MaxDps.empowerLevel and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[id]) ) then
+            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.empowerLevel[id])
+        end
+        if id and ( (MaxDps.Spell and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[MaxDps.Spell]) ) then
+            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.FrameData.empowerLevel[MaxDps.Spell])
+        end
     end
 end
 
