@@ -1952,9 +1952,13 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         local ORID = FindSpellOverrideByID(spell)
         -- Check that the Override ID is active
         if ORID and ORID ~= spell and MaxDps.Spells[ORID] then
-            local spellCooldownInfo = C_Spell.GetSpellCooldown(ORID)
-            -- If the spell is currently over written and its on cooldown return false
-            if spellCooldownInfo and spellCooldownInfo.duration > 0 then
+            --local spellCooldownInfo = C_Spell.GetSpellCooldown(ORID)
+            ---- If the spell is currently over written and its on cooldown return false
+            --if spellCooldownInfo and spellCooldownInfo.duration > 0 then
+            --    return false
+            --end
+            local spellCooldownInfo = MaxDps:CooldownConsolidated(ORID)
+            if spellCooldownInfo and spellCooldownInfo.remains > 0 then
                 return false
             end
             local isPassiveORID = C_Spell.IsSpellPassive(ORID)
