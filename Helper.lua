@@ -1489,12 +1489,6 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
             GCDstart, GCDduration, GCDenabled = GetSpellCooldown(spellId)
         end
 
-        if not start then
-            remains = 100000
-            start = GetTime()
-            duration = 10000
-        end
-
         if start > 0 then
             remains = duration - (GetTime() - start)
         else
