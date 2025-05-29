@@ -141,6 +141,37 @@ function MaxDps:ProfilerToggle()
 end
 
 function MaxDps:EnableRotation()
+    if self.NextSpell == nil then
+        local className = self.Classes[self.ClassId]
+        local module = 'MaxDps_' .. className
+        local _, _, _, loadable, reason = GetAddOnInfo(module)
+
+        if reason == 'MISSING' or reason == 'DISABLED' or (not loadable and reason ~= "DEMAND_LOADED") then
+            self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason, "error")
+            if not loadable and reason == 'DEMAND_LOADED' then
+                self:Print(self.Colors.Error .. 'Addon was not loadable, this usually means it is not enabled please check for all characters or this one that it is enabled!')
+            end
+            self:Print(self.Colors.Error .. 'Make sure to install class module or create custom rotation', "error")
+            self:Print(self.Colors.Error .. 'Missing addon: ' .. module, "error")
+        elseif loadable then
+            self:Print(self.Colors.Error .. 'Class Function is nil please report to author on discord. Along with ' .. UnitLevel("player") .. module, "error")
+            if MaxDps:IsClassicWow() then
+                self:Print(self.Colors.Error .. 'Classic WoW Client: True', "error")
+            end
+            if MaxDps:IsTBCWow() then
+                self:Print(self.Colors.Error .. 'TBC WoW Client: True', "error")
+            end
+            if MaxDps:IsWrathWow() then
+                self:Print(self.Colors.Error .. 'Wrath WoW Client: True', "error")
+            end
+            if MaxDps:IsCataWow() then
+                self:Print(self.Colors.Error .. 'Cata WoW Client: True', "error")
+            end
+            if MaxDps:IsRetailWow() then
+                self:Print(self.Colors.Error .. 'Retail WoW Client: True', "error")
+            end
+        end
+    end
     if self.NextSpell == nil or self.rotationEnabled then
         self:Print(self.Colors.Error .. 'Failed to enable addon!', "error")
         return
