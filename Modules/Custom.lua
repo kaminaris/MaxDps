@@ -106,6 +106,7 @@ function Custom:LoadCustomRotations()
     end
 
     for _, rotation in pairs(MaxDps.db.global.customRotations) do
+        MaxDps:Print(MaxDps.Colors.Info .. 'Loaded Custom Rotation: ' .. (rotation and rotation.name or "Unknown") )
         if rotation.enabled and rotation.class ~= nil and rotation.spec ~= nil then
             local fn = Custom.LoadFunction(rotation.fn)
             if not self.CustomRotations[rotation.class] then
@@ -118,8 +119,6 @@ function Custom:LoadCustomRotations()
             }
         end
     end
-
-    MaxDps:Print(MaxDps.Colors.Info .. 'Custom Rotations Loaded!')
 end
 
 function Custom:GetCustomRotation(classId, spec)
@@ -179,7 +178,7 @@ local blockedFunctions = {
 }
 
 local function forbidden()
-    print('|cffffff00A MaxDps just tried to use a forbidden function but has been blocked from doing so.|r')
+    print('|cffffff00A A MaxDps custom rotation just tried to use a forbidden function but has been blocked from doing so.|r')
 end
 
 local env_getglobal
