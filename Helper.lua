@@ -1455,14 +1455,14 @@ function MaxDps:ItemCooldown(itemId, timeShift)
 end
 
 function MaxDps:CooldownConsolidated(spellId, timeShift)
-    timeShift = timeShift or 0
-    local remains = 100000
+    -- timeShift = timeShift or 0
+    -- local remains = 100000
     local t = GetTime()
 
-    local enabled
-    local charges, maxCharges, start, duration
+    local chargeInfo, charges, maxCharges, start, duration, enabled, fullRecharge, partialRecharge, spellCooldownInfo, remains
+    local GCDspellCooldownInfo, GCDstart, GCDduration, GCDenabled
     if MaxDps:IsRetailWow() then
-        local chargeInfo  = spellId and C_Spell.GetSpellCharges(spellId)
+        chargeInfo  = spellId and C_Spell.GetSpellCharges(spellId)
         charges = chargeInfo and chargeInfo.currentCharges
         maxCharges = chargeInfo and chargeInfo.maxCharges
         start = chargeInfo and chargeInfo.cooldownStartTime
@@ -1470,64 +1470,80 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
     else
         charges, maxCharges, start, duration = GetSpellCharges(spellId)
     end
-    local fullRecharge, partialRecharge
+    if MaxDps:IsRetailWow() then
+        GCDspellCooldownInfo = spellId and C_Spell.GetSpellCooldown(61304)
+        GCDstart = GCDspellCooldownInfo and GCDspellCooldownInfo.startTime
+        GCDduration = GCDspellCooldownInfo and GCDspellCooldownInfo.duration
+        GCDenabled = GCDspellCooldownInfo and GCDspellCooldownInfo.isEnabled
+    else
+        GCDstart, GCDduration, GCDenabled = GetSpellCooldown(61304)
+    end
 
-    if charges == nil then
+    if not chargeInfo then
         if MaxDps:IsRetailWow() then
-            local spellCooldownInfo = spellId and C_Spell.GetSpellCooldown(spellId)
+            spellCooldownInfo = spellId and C_Spell.GetSpellCooldown(spellId)
             start = spellCooldownInfo and spellCooldownInfo.startTime
             duration = spellCooldownInfo and spellCooldownInfo.duration
             enabled = spellCooldownInfo and spellCooldownInfo.isEnabled
         else
             start, duration, enabled = GetSpellCooldown(spellId)
         end
-        maxCharges = 1
 
-        if enabled and duration == 0 and start == 0 then
-            remains = 0
-        elseif enabled then
-            remains = duration - (t - start) - timeShift
+        if not start then
+            remains = 100000
+            start = GetTime()
+            duration = 10000
+        end
+
+        if start > 0 then
+            remains = duration - (GetTime() - start)
+        else
+            remains = start
+        end
+        if GCDduration > 0 then
+            if remains <= GCDduration + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
+                remains = 0
+            end
         end
 
         fullRecharge = remains
         partialRecharge = remains
     else
-        remains = duration - (t - start) - timeShift
-
-        if remains > duration then
+        if start > 0 then
+            remains = duration - (GetTime() - start)
+        else
+            remains = start
+        end
+        if GCDduration > 0 then
+            if remains <= GCDduration + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
+                remains = 0
+            end
+        end
+        if charges >= maxCharges then
             remains = 0
+            fullRecharge = remains
+            partialRecharge = remains
+        else
+            fullRecharge = (maxCharges - charges > 1 and (duration * (maxCharges - charges - 1)) + remains) or remains
+            partialRecharge = remains
+            if partialRecharge < 0 then
+                partialRecharge = 0
+            end
         end
-
-        if remains > 0 then
-            charges = charges + (1 - (remains / duration))
-        end
-
-        fullRecharge = (maxCharges - charges) * duration
-        partialRecharge = remains
 
         if charges >= 1 then
             remains = 0
         end
     end
 
-    if charges == nil and spellId and C_Spell and C_Spell.GetSpellCharges then
-        charges = C_Spell.GetSpellCharges(spellId) or 0
-    end
-
-
-    local cooldownMS, gcdMS
-    if spellId then
-        cooldownMS, gcdMS = GetSpellBaseCooldown(spellId)
-    end
-
     return {
-        duration        = ((cooldownMS and cooldownMS) or (gcdMS and gcdMS) or 500) / 1000,
+        duration        = (duration and duration / 1000) or 0,
         ready           = remains <= 0,
         remains         = remains,
         fullRecharge    = fullRecharge,
         partialRecharge = partialRecharge,
-        charges         = charges,
-        maxCharges      = maxCharges
+        charges         = charges or 1,
+        maxCharges      = maxCharges or 1
     }
 end
 
@@ -1942,9 +1958,13 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         local ORID = FindSpellOverrideByID(spell)
         -- Check that the Override ID is active
         if ORID and ORID ~= spell and MaxDps.Spells[ORID] then
-            local spellCooldownInfo = C_Spell.GetSpellCooldown(ORID)
-            -- If the spell is currently over written and its on cooldown return false
-            if spellCooldownInfo and spellCooldownInfo.duration > 0 then
+            --local spellCooldownInfo = C_Spell.GetSpellCooldown(ORID)
+            ---- If the spell is currently over written and its on cooldown return false
+            --if spellCooldownInfo and spellCooldownInfo.duration > 0 then
+            --    return false
+            --end
+            local spellCooldownInfo = MaxDps:CooldownConsolidated(ORID)
+            if spellCooldownInfo and spellCooldownInfo.remains > 0 then
                 return false
             end
             local isPassiveORID = C_Spell.IsSpellPassive(ORID)
@@ -1956,7 +1976,14 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         if type(costs) ~= 'table' and spellstring then return true end
         for i,costtable in pairs(costs) do
             if UnitPower('player', costtable.type) < costtable.cost then
-                return false
+                if GetPowerRegenForPowerType(costtable.type) > 0 then
+                    if UnitPower('player', costtable.type) + GetPowerRegenForPowerType(costtable.type) < costtable.cost then
+                        return false
+                    end
+                else
+                    return false
+                end
+                --return false
             end
         end
     end
