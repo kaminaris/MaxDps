@@ -17,6 +17,7 @@ local CreateFrame = CreateFrame
 local GetAddOnInfo = C_AddOns.GetAddOnInfo
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local LoadAddOn = C_AddOns.LoadAddOn
+local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 
 local WOW_PROJECT_ID = WOW_PROJECT_ID
 local WOW_PROJECT_CLASSIC = WOW_PROJECT_CLASSIC
@@ -641,7 +642,8 @@ function MaxDps:InvokeNextSpell()
 end
 
 function MaxDps:InitRotations()
-    self:Print(self.Colors.Info .. 'Initializing rotations', "info")
+    local version = GetAddOnMetadata("MaxDps", "Version") or ""
+    self:Print(self.Colors.Info .. version .. ' Initializing rotations', "info")
     self:CountTier()
 
     local _, _, classId = UnitClass('player')
@@ -703,6 +705,7 @@ function MaxDps:EnableRotationModule(className)
     if not loaded then
         self:Print(self.Colors.Error .. 'Could not find load module ' .. className .. ', reason: OUTDATED', "error")
     else
-        self:Print(self.Colors.Info .. 'Finished Loading class module', "info")
+        local version = GetAddOnMetadata("MaxDps_" .. className, "Version") or ""
+        self:Print(self.Colors.Info .. 'Finished Loading class module ' .. version, "info")
     end
 end
