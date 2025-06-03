@@ -1471,7 +1471,7 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         charges, maxCharges, start, duration = GetSpellCharges(spellId)
     end
     if MaxDps:IsRetailWow() then
-        GCDspellCooldownInfo = spellId and C_Spell.GetSpellCooldown(61304)
+        GCDspellCooldownInfo = C_Spell.GetSpellCooldown(61304)
         GCDstart = GCDspellCooldownInfo and GCDspellCooldownInfo.startTime
         GCDduration = GCDspellCooldownInfo and GCDspellCooldownInfo.duration
         GCDenabled = GCDspellCooldownInfo and GCDspellCooldownInfo.isEnabled
