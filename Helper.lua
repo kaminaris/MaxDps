@@ -1500,7 +1500,7 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         else
             remains = start
         end
-        if GCDduration > 0 then
+        if GCDduration and GCDduration > 0 then
             if remains <= GCDduration + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
                 remains = 0
             end
@@ -1514,7 +1514,7 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         else
             remains = start
         end
-        if GCDduration > 0 then
+        if GCDduration and GCDduration > 0 then
             if remains <= GCDduration + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
                 remains = 0
             end
