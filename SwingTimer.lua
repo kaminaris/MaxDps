@@ -7,6 +7,19 @@ MaxDps.swingtimer.offhand = math.huge
 MaxDps.swingtimer.melee = math.huge
 MaxDps.swingtimer.ranged = math.huge
 
+-- Function to calculate remaining time for swings
+local function UpdateSwingTimers()
+    local currentTime = GetTime()
+    --print(MaxDps.swingtimer.mainhand, currentTime)
+    MaxDps.swingtimer.remainingMainhand = math.max(0, MaxDps.swingtimer.mainhand - currentTime)
+    MaxDps.swingtimer.remainingOffhand = math.max(0, MaxDps.swingtimer.offhand - currentTime)
+    MaxDps.swingtimer.remainingRanged = math.max(0, MaxDps.swingtimer.ranged - currentTime)
+    MaxDps.swingtimer.remainingMelee = math.min(MaxDps.swingtimer.remainingMainhand, MaxDps.swingtimer.remainingOffhand)
+    MaxDps.swingtimer.remainingAny = math.min(MaxDps.swingtimer.remainingMainhand, MaxDps.swingtimer.remainingOffhand, MaxDps.swingtimer.remainingRanged)
+    --print(MaxDps.swingtimer.remainingMainhand)
+    --print(MaxDps.swingtimer.remainingMelee)
+end
+
 -- Event handler for combat log events
 local function OnEvent(self, event)
     local timestamp, eventType, _, sourceGUID, _, _, _, _, _, _, _, _, arg13, arg14, _, _, _, _, _, _, _, _, _, _, _, _, _, _ = CombatLogGetCurrentEventInfo()
@@ -23,20 +36,26 @@ local function OnEvent(self, event)
             -- Check if it's a mainhand or offhand swing
             if mainSpeed and arg14 == 1 then  -- Mainhand swing
                 -- Update the next swing time for the mainhand
-                MaxDps.swingtimer.mainhand = timestamp + mainSpeed
+                MaxDps.swingtimer.mainhand = GetTime() + mainSpeed
             elseif offSpeed and arg14 == 2 then  -- Offhand swing
                 -- Update the next swing time for the offhand
-                MaxDps.swingtimer.offhand = timestamp + offSpeed
+                MaxDps.swingtimer.offhand = GetTime() + offSpeed
             end
         elseif eventType == "RANGE_DAMAGE" or eventType == "RANGE_MISSED" then
             -- Update the next swing time for ranged attacks
             local rangedAttackSpeed = UnitRangedDamage("player") -- First return value is attack speed
-            MaxDps.swingtimer.ranged = timestamp + rangedAttackSpeed
+            MaxDps.swingtimer.ranged = GetTime() + rangedAttackSpeed
         end
     end
     MaxDps.swingtimer.melee = math.min(MaxDps.swingtimer.mainhand, MaxDps.swingtimer.offhand)
     MaxDps.swingtimer.any = math.min(MaxDps.swingtimer.mainhand, MaxDps.swingtimer.offhand, MaxDps.swingtimer.ranged)
+
+    -- Update remaining time for swings
+    UpdateSwingTimers()
 end
+
+-- Run MyFunction every 1 second
+C_Timer.NewTicker(0.25, UpdateSwingTimers)
 
 -- Create a frame to handle events
 local frame = CreateFrame("Frame")
