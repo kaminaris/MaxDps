@@ -24,11 +24,13 @@ local WOW_PROJECT_CLASSIC = WOW_PROJECT_CLASSIC
 local WOW_PROJECT_BURNING_CRUSADE_CLASSIC = WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 local WOW_PROJECT_WRATH_CLASSIC = WOW_PROJECT_WRATH_CLASSIC
 local WOW_PROJECT_CATACLYSM_CLASSIC = WOW_PROJECT_CATACLYSM_CLASSIC
+local WOW_PROJECT_MISTS_CLASSIC = WOW_PROJECT_MISTS_CLASSIC
 local WOW_PROJECT_MAINLINE = WOW_PROJECT_MAINLINE
 local LE_EXPANSION_LEVEL_CURRENT = LE_EXPANSION_LEVEL_CURRENT
 local LE_EXPANSION_BURNING_CRUSADE =  LE_EXPANSION_BURNING_CRUSADE
 local LE_EXPANSION_WRATH_OF_THE_LICH_KING = LE_EXPANSION_WRATH_OF_THE_LICH_KING
 local LE_EXPANSION_CATACLYSM = LE_EXPANSION_CATACLYSM
+local LE_EXPANSION_MISTS_OF_PANDARIA = LE_EXPANSION_MISTS_OF_PANDARIA
 
 local spellHistoryBlacklist = {
     [75] = true -- Auto shot
@@ -62,16 +64,20 @@ function MaxDps:IsCataWow()
     return WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_CATACLYSM
 end
 
+function MaxDps:IsMistsWow()
+    return WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_MISTS_OF_PANDARIA
+end
+
 function MaxDps:IsRetailWow()
     return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 end
 
 local LCS
-local GetSpecialization = LCS and LCS.GetSpecialization or GetSpecialization
-if MaxDps:IsRetailWow() then
+local GetSpecialization = LCS and LCS.GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
+if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
     GetSpecialization = GetSpecialization
 end
-if not MaxDps:IsRetailWow() then
+if not MaxDps:IsRetailWow() and not MaxDps:IsMistsWow() then
     LCS = LibStub("LibClassicSpecs-Doadin")
     GetSpecialization = LCS and LCS.GetSpecialization
 end
@@ -563,7 +569,9 @@ function MaxDps:LOADING_SCREEN_ENABLED()
     end
 end
 
+--ButtenFetchTable = {}
 function MaxDps:ButtonFetch(event)
+    --ButtenFetchTable[event] = ButtenFetchTable[event] and ButtenFetchTable[event] + 1 or 1
     if self.rotationEnabled then
         if event ~= "SPELLS_CHANGED" or event ~= "UPDATE_SHAPESHIFT_FORM" or event ~= "UPDATE_BONUS_ACTIONBAR" or event ~= "UPDATE_STEALTH" then
             if self.fetchTimer then

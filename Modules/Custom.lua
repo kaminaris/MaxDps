@@ -20,11 +20,11 @@ local GetClassInfo = GetClassInfo
 
 local LCS
 
-if not MaxDps:IsRetailWow() then
+if not MaxDps:IsRetailWow() and not MaxDps:IsMistsWow() then
     LCS = LibStub("LibClassicSpecs-Doadin")
 end
 
-local GetNumSpecializationsForClassID =  LCS and LCS.GetNumSpecializationsForClassID or GetNumSpecializationsForClassID
+local GetNumSpecializationsForClassID =  LCS and LCS.GetNumSpecializationsForClassID or C_SpecializationInfo and C_SpecializationInfo.GetNumSpecializationsForClassID or GetNumSpecializationsForClassID
 local GetSpecializationInfoForClassID =  LCS and LCS.GetSpecializationInfoForClassID or GetSpecializationInfoForClassID
 
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS

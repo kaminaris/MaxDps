@@ -55,11 +55,11 @@ local GetActiveSoulbindID = C_Soulbinds and C_Soulbinds.GetActiveSoulbindID
 local GetSoulbindData = C_Soulbinds and C_Soulbinds.GetSoulbindData
 
 local LCS
-local GetSpecialization = LCS and LCS.GetSpecialization or GetSpecialization
-if MaxDps:IsRetailWow() then
+local GetSpecialization = LCS and LCS.GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
+if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
     GetSpecialization = GetSpecialization
 end
-if not MaxDps:IsRetailWow() then
+if not MaxDps:IsRetailWow() and not MaxDps:IsMistsWow() then
     LCS = LibStub("LibClassicSpecs-Doadin")
     GetSpecialization = LCS and LCS.GetSpecialization
 end
@@ -1500,10 +1500,13 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         else
             remains = start
         end
-        if GCDduration and GCDduration > 0 then
-            if remains <= GCDduration + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
+        if (GCDduration and GCDduration > 0) then
+            if remains <= GCDduration then -- + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
                 remains = 0
             end
+        end
+        if (remains <= 0.5) then
+            remains = 0
         end
 
         fullRecharge = remains
@@ -1514,11 +1517,15 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         else
             remains = start
         end
-        if GCDduration and GCDduration > 0 then
-            if remains <= GCDduration + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
+        if (GCDduration and GCDduration > 0) then
+            if remains <= GCDduration then -- + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
                 remains = 0
             end
         end
+        if (remains <= 0.5) then
+            remains = 0
+        end
+
         if charges >= maxCharges then
             remains = 0
             fullRecharge = remains
