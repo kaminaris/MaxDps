@@ -8,6 +8,7 @@
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30403
 ## Interface-Cata: 40402
+## Interface-Mists: 50501
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI, Neuron, LibRangeCheck-3.0
 ## X-Curse-Project-ID: 91970
@@ -27,9 +28,12 @@ Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.lua
 Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
 Libs\LibRangeCheck-3.0\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
-#@non-retail@
+#@version-classic@
 Libs\LibClassicSpecs\LibClassicSpecs.lua
-#@end-non-retail@
+#@end-version-classic@
+#@version-cata@
+Libs\LibClassicSpecs\LibClassicSpecs.lua
+#@end-version-cata@
 
 SpellData.lua
 Core.lua
@@ -42,6 +46,6 @@ Modules/Custom.lua
 Modules/Window.lua
 Modules/Profiler.lua
 
-#@non-retail@
+#@version-classic@
 SwingTimer.lua
-#@end-non-retail@
+#@end-version-classic@

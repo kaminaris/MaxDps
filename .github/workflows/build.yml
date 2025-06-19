@@ -48,3 +48,8 @@ jobs:
         uses: BigWigsMods/packager@master
         with:
           args: -g cata -m .pkgmeta-classic
+
+      - name: Package MoP Classic
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g mists
