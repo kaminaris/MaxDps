@@ -524,6 +524,7 @@ function MaxDps:UpdateSpellsAndTalents()
                 end
             end
         end
+        MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]
     end
     --MaxDps.SpellInfoTable = {}
 end

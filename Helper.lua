@@ -1975,7 +1975,7 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
     if isPassive then
         return false
     end
-    if MaxDps:IsRetailWow() then
+    if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
         if not IsSpellKnownOrOverridesKnown(spell) then return false end
         if not C_Spell.IsSpellUsable(spell) then return false end
         local ORID = FindSpellOverrideByID(spell)

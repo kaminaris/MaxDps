@@ -6,12 +6,23 @@ local CustomGlow = LibStub('LibCustomGlow-1.0')
 local TableInsert = tinsert
 local TableRemove = tremove
 local GetItemSpell = C_Item.GetItemSpell
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
 local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo or _G.GetSpellInfo
 local GetSpellName = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName
 local pairs = pairs
 local select = select
 
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+
+local LCS
+local GetSpecialization = LCS and LCS.GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
+if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
+    GetSpecialization = GetSpecialization
+end
+if not MaxDps:IsRetailWow() and not MaxDps:IsMistsWow() then
+    LCS = LibStub("LibClassicSpecs-Doadin")
+    GetSpecialization = LCS and LCS.GetSpecialization
+end
 
 MaxDps.Spells = {}
 MaxDps.ItemSpells = {} -- hash map of itemId -> itemSpellId
@@ -716,7 +727,7 @@ function MaxDps:GlowCooldown(spellId, condition, color)
 	    [72] = "Fury",
 	    [73] = "Protection",
     }
-    if MaxDps:IsRetailWow() then
+    if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
         local id = GetSpecializationInfo(GetSpecialization())
         if spellId == nil then
             self:Print(
