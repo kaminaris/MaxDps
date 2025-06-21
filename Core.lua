@@ -15,6 +15,7 @@ local IsPlayerSpell = IsPlayerSpell
 local UnitClass = UnitClass
 local CreateFrame = CreateFrame
 local GetAddOnInfo = C_AddOns.GetAddOnInfo
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local LoadAddOn = C_AddOns.LoadAddOn
 local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
@@ -433,7 +434,7 @@ function MaxDps:UpdateSpellsAndTalents()
     local className, classFilename, classId = UnitClass("player")
     local currentSpec = GetSpecialization()
     local id, name, description, icon, background, role
-    if MaxDps:IsRetailWow() then
+    if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
         id, name, description, icon, background, role = GetSpecializationInfo(currentSpec)
     else
         --id, name, description, icon, background, role = GetSpecializationInfoForSpecID(currentSpec)
@@ -510,6 +511,19 @@ function MaxDps:UpdateSpellsAndTalents()
         --
 
         MaxDps.SpellTable = {}
+    end
+    if MaxDps:IsMistsWow() then
+        MaxDps.SpellTable = {}
+        for tabIndex = 1, GetNumSpellTabs() do
+            local name, texture, offset, numSpells = GetSpellTabInfo(tabIndex)
+            for spellIndex = offset + 1, offset + numSpells do
+                local spellName, spellSubName = GetSpellBookItemName(spellIndex, "spell")
+                local spellType, spellID = GetSpellBookItemInfo(spellIndex, "spell")
+                if spellType == "SPELL" then
+                    MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][spellName] = spellID
+                end
+            end
+        end
     end
     --MaxDps.SpellInfoTable = {}
 end
