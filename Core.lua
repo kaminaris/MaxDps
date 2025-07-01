@@ -648,17 +648,19 @@ function MaxDps:InvokeNextSpell()
         self.Error = true
     end
 
-    if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil and self.Spell ~= "" then
-        self:GlowNextSpell(self.Spell)
-        if WeakAuras then
-            WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', self.Spell)
+    if not self.db.global.cdOnlyMode then
+        if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil and self.Spell ~= "" then
+            self:GlowNextSpell(self.Spell)
+            if WeakAuras then
+                WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', self.Spell)
+            end
         end
-    end
 
-    if (self.Spell == nil or self.Spell == "") and oldSkill ~= nil then
-        self:GlowClear()
-        if WeakAuras then
-            WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', nil)
+        if (self.Spell == nil or self.Spell == "") and oldSkill ~= nil then
+            self:GlowClear()
+            if WeakAuras then
+                WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', nil)
+            end
         end
     end
 end

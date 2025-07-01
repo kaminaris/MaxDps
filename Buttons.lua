@@ -727,6 +727,22 @@ function MaxDps:GlowCooldown(spellId, condition, color)
 	    [72] = "Fury",
 	    [73] = "Protection",
     }
+    if MaxDps:IsRetailWow() and self.db.global.cdOnlyMode then
+        if (C_AssistedCombat and C_AssistedCombat.GetRotationSpells()) or (AssistedCombatManager and AssistedCombatManager.rotationSpells) then
+            local spells = AssistedCombatManager and AssistedCombatManager.rotationSpells or C_AssistedCombat.GetRotationSpells()
+            if AssistedCombatManager and AssistedCombatManager.rotationSpells then
+                if spells and spells[spellId] then
+                    return
+                end
+            elseif C_AssistedCombat and C_AssistedCombat.GetRotationSpells() then
+                for _, ACspellid in pairs(spells) do
+                    if ACspellid == spellId then
+                        return
+                    end
+                end
+            end
+        end
+    end
     if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
         local id = GetSpecializationInfo(GetSpecialization())
         if spellId == nil then

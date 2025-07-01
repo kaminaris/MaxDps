@@ -274,20 +274,29 @@ function Window:GetWindowConfig()
 				enabled       = {
 					type   = 'checkbox',
 					label  = 'Enable addon',
-					column = 4,
+					column = 6,
 					order  = 1
 				},
+				cdOnlyMode       = {
+					type   = 'checkbox',
+					label  = 'Enable CD Only Mode',
+					column = 6,
+					order  = 2
+				},
+
+			},
+			{
 				onCombatEnter = {
 					type   = 'checkbox',
 					label  = 'Enable on combat enter',
-					column = 4,
-					order  = 2
+					column = 6,
+					order  = 3
 				},
 				disableConsumables = {
 					type   = 'checkbox',
 					label  = 'Disable consumables',
-					column = 4,
-					order  = 3
+					column = 6,
+					order  = 4
 				},
 			},
 			{

@@ -44,6 +44,7 @@ MaxDps.Classes = {
 MaxDps.defaultOptions = {
 	global = {
 		enabled = true,
+		cdOnlyMode = false,
 		disabledInfo = 'errorinfo',
 		debugMode = false,
 		forceSingle = false,
@@ -135,6 +136,10 @@ function MaxDps:AddToBlizzardOptions()
 	local enabled = StdUi:Checkbox(optionsFrame, 'Enable addon', 200, 24)
 	enabled:SetChecked(MaxDps.db.global.enabled)
 	enabled.OnValueChanged = function(_, flag) MaxDps.db.global.enabled = flag end
+
+	local cdOnlyMode = StdUi:Checkbox(optionsFrame, 'Enable CD Only Mode', 200, 24)
+	cdOnlyMode:SetChecked(MaxDps.db.global.cdOnlyMode)
+	cdOnlyMode.OnValueChanged = function(_, flag) MaxDps.db.global.cdOnlyMode = flag end
 
 	local onCombatEnter = StdUi:Checkbox(optionsFrame, 'Enable upon entering combat', 200, 24)
 	onCombatEnter:SetChecked(MaxDps.db.global.onCombatEnter)
@@ -249,12 +254,12 @@ function MaxDps:AddToBlizzardOptions()
 	end
 
 	optionsFrame:AddRow():AddElement(general)
-	optionsFrame:AddRow():AddElements(enabled, onCombatEnter, { column = 'even' })
+	optionsFrame:AddRow():AddElements(enabled, cdOnlyMode, { column = 'even' })
+	optionsFrame:AddRow():AddElements(onCombatEnter, disableConsumables, { column = 'even' })
 	optionsFrame:AddRow():AddElements(disableButtonGlow, forceSingle, { column = 'even' })
-	optionsFrame:AddRow():AddElements(forceSingle, forceTargetAmount, { column = 'even' })
-	optionsFrame:AddRow():AddElements(forceTargetAmount, forceTargetAmountCount, { column = 'even' })
-	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, {column = 'even'})
-	optionsFrame:AddRow():AddElements(disableConsumables, debug, {column = 'even'})
+	optionsFrame:AddRow():AddElements(forceTargetAmount,forceTargetAmountCount, { column = 'even' })
+	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, { column = 'even' })
+	optionsFrame:AddRow():AddElement(debug)
 	optionsFrame:AddRow():AddElements(debugMode, disabledInfo, { column = 'even' })
 	optionsFrame:AddRow():AddElement(overlay)
 	local rowOverlay = optionsFrame:AddRow({ margin = { top = 20} })
