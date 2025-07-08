@@ -2141,17 +2141,22 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         end
     end
 
-    if MaxDps:IsCataWow() then
+    if MaxDps:IsCataWow() or MaxDps:IsMistsWow() then
         if not IsSpellKnownOrOverridesKnown(spell) then return false end
         if not C_Spell.IsSpellUsable(spell) then return false end
         local costs = C_Spell.GetSpellPowerCost(spell)
-        if MaxDps:IsCataWow() then
-           if type(costs) ~= 'table' and spellstring then return true end
-           for i,costtable in pairs(costs) do
-               if UnitPower('player', costtable.type) < costtable.cost then
-                   return false
-               end
-           end
+        if type(costs) ~= 'table' and spellstring then return true end
+        for i,costtable in pairs(costs) do
+            if UnitPower('player', costtable.type) < costtable.cost then
+                if GetPowerRegenForPowerType(costtable.type) > 0 then
+                    if UnitPower('player', costtable.type) + GetPowerRegenForPowerType(costtable.type) < costtable.cost then
+                        return false
+                    end
+                else
+                    return false
+                end
+                --return false
+            end
         end
     end
 
