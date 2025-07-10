@@ -882,7 +882,7 @@ function MaxDps:CheckTalents()
                 talentInfoQuery.isInspect = false
                 talentInfoQuery.target = nil
                 local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery)
-                if talentInfo and talentInfo.name and talentInfo.selected and talentInfo.spellID then
+                if talentInfo and talentInfo.name and talentInfo.known and talentInfo.spellID then
                     self.PlayerTalents[talentInfo.spellID] = 1
                 end
             end
