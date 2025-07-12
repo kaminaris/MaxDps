@@ -53,6 +53,10 @@ function MaxDps:IsClassicWow()
     return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 end
 
+function MaxDps:IsSoDWow()
+    return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and C_Seasons and C_Seasons.HasActiveSeason()
+end
+
 function MaxDps:IsTBCWow()
     return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_BURNING_CRUSADE
 end
