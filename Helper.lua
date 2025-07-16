@@ -1987,6 +1987,8 @@ encounterIDframe:RegisterEvent("ENCOUNTER_END")
 --format is encounter id = number of targets
 --that are a part of that encounter
 local singleTargetEncounters = {
+    -- Ascendant Lord Obsidius - Blackrock Caverns
+    [1036] = 4,
     -- WM Triad
     [2113] = 3
 }
