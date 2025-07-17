@@ -177,12 +177,12 @@ function MaxDps:EnableRotation()
             end
         end
     end
-    local currentSpec = GetSpecialization()
-    if currentSpec == 5 then
-        self:Print(self.Colors.Error .. 'You are not in a spec, this is required for MaxDps to work!', "error")
-        return
-    end
+
     if self.NextSpell == nil or self.rotationEnabled then
+        local currentSpec = GetSpecialization()
+        if currentSpec and currentSpec == 5 then
+            self:Print(self.Colors.Error .. 'You are not in a spec, this is required for MaxDps to work!', "error")
+        end
         self:Print(self.Colors.Error .. 'Failed to enable addon!', "error")
         return
     end
