@@ -77,15 +77,8 @@ function MaxDps:IsRetailWow()
     return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 end
 
-local LCS
+local LCS = LibStub("LibClassicSpecs-Doadin", true)
 local GetSpecialization = LCS and LCS.GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
-if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
-    GetSpecialization = GetSpecialization
-end
-if not MaxDps:IsRetailWow() and not MaxDps:IsMistsWow() then
-    LCS = LibStub("LibClassicSpecs-Doadin")
-    GetSpecialization = LCS and LCS.GetSpecialization
-end
 
 function MaxDps:ShowMainWindow()
     if not self.Window then
