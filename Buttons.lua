@@ -333,8 +333,11 @@ function MaxDps:AddStandardButton(button)
             --MaxDps:Print(self.Colors.Error .. "Erorr Adding Standard Button", "error", spellId)
         end
     end
+    -- Following code is for stance bars
     if not IsAddOnLoaded('Bartender4') or (IsAddOnLoaded('Bartender4') and not MaxDps:IsRetailWow()) then
         if not btype and button and button.HasAction then
+            -- With some bartender stance buttons this code erors on retail only
+            -- so we add bartender stance bars with separate code below
             local id, _, hasAction, spellID = button:HasAction()
             if spellID then
                 self:AddButton(spellID, button)
@@ -371,6 +374,8 @@ function MaxDps:AddStandardButton(button)
     --        end
     --    end
     --end
+    -- This code is needed with bartender 4 on retail because the above code gives an error
+    -- without it the stance bar buttons are not added
     if IsAddOnLoaded('Bartender4') and MaxDps:IsRetailWow() then
         if button and button.Name and button.Name.GetName then
             --():match('^BT4Stance')
@@ -388,6 +393,7 @@ function MaxDps:AddStandardButton(button)
             end
         end
     end
+    -- End stance bar code
 end
 
 function MaxDps:Fetch(event)
