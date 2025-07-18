@@ -333,19 +333,57 @@ function MaxDps:AddStandardButton(button)
             --MaxDps:Print(self.Colors.Error .. "Erorr Adding Standard Button", "error", spellId)
         end
     end
-    if not btype and button and button.HasAction then
-        local id, _, hasAction, spellID = button:HasAction()
-        if spellID then
-            self:AddButton(spellID, button)
+    if not IsAddOnLoaded('Bartender4') or (IsAddOnLoaded('Bartender4') and not MaxDps:IsRetailWow()) then
+        if not btype and button and button.HasAction then
+            local id, _, hasAction, spellID = button:HasAction()
+            if spellID then
+                self:AddButton(spellID, button)
+            end
+        end
+        if not btype and button and not button.HasAction and button.GetID then
+            local id = button:GetID()
+            if id then
+                if id >=1 and id <= GetNumShapeshiftForms() then
+                    local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
+                    if hasAction and spellID then
+                        self:AddButton(spellID, button)
+                    end
+                end
+            end
         end
     end
-    if not btype and button and not button.HasAction and button.GetID then
-        local id = button:GetID()
-        if id then
-            if id >=1 and id <= GetNumShapeshiftForms() then
-                local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
-                if hasAction and spellID then
-                    self:AddButton(spellID, button)
+    --if IsAddOnLoaded('Bartender4') and not MaxDps:IsRetailWow() then
+    --    if not btype and button and button.HasAction then
+    --        local id, _, hasAction, spellID = button:HasAction()
+    --        if spellID then
+    --            self:AddButton(spellID, button)
+    --        end
+    --    end
+    --    if not btype and button and not button.HasAction and button.GetID then
+    --        local id = button:GetID()
+    --        if id then
+    --            if id >=1 and id <= GetNumShapeshiftForms() then
+    --                local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
+    --                if hasAction and spellID then
+    --                    self:AddButton(spellID, button)
+    --                end
+    --            end
+    --        end
+    --    end
+    --end
+    if IsAddOnLoaded('Bartender4') and MaxDps:IsRetailWow() then
+        if button and button.Name and button.Name.GetName then
+            --():match('^BT4Stance')
+            if button.Name.GetName(button):match('^BT4Stance') then
+                if button.GetActionName then
+                    local actionName = button:GetActionName()
+                    local nameReduced = actionName:match("%((.*)%)")
+                    if nameReduced then
+                        local spellInfo = GetSpellInfo(nameReduced)
+                        if spellInfo.spellID then
+                            self:AddButton(spellInfo.spellID, button)
+                        end
+                    end
                 end
             end
         end
@@ -369,10 +407,8 @@ function MaxDps:Fetch(event)
     self:FetchBlizzard()
 
     -- It does not alter original button frames so it needs to be fetched too
-    if MaxDps:IsClassicWow() or MaxDps:IsCataWow() or MaxDps:IsMistsWow() then
-        if IsAddOnLoaded('Bartender4') then
-            self:Bartender4()
-        end
+    if IsAddOnLoaded('Bartender4') then
+        self:Bartender4()
     end
 
     if IsAddOnLoaded('ButtonForge') then
