@@ -493,6 +493,7 @@ function MaxDps:FetchDiabolic()
 end
 
 function MaxDps:FetchDominos()
+    local Dominos = LibStub("AceAddon-3.0"):GetAddon('Dominos',true)
     local _,dominosButtons = Dominos.ActionButtons:GetAll()
     for button in pairs(dominosButtons) do
         if button and not button.GetPagedID and button.id then
