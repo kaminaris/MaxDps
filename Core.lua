@@ -154,7 +154,7 @@ function MaxDps:EnableRotation()
         if reason == 'MISSING' or reason == 'DISABLED' or (not loadable and reason ~= "DEMAND_LOADED") then
             self:Print(self.Colors.Error .. 'Could not find class module ' .. module .. ', reason: ' .. reason, "error")
             if not loadable and reason == 'DEMAND_LOADED' then
-                self:Print(self.Colors.Error .. 'Addon was not loadable, this usually means it is not enabled please check for all characters or this one that it is enabled!')
+                self:Print(self.Colors.Error .. 'Addon was not loadable, this usually means it is not enabled please check for all characters or this one, that it is enabled!', "error")
             end
             self:Print(self.Colors.Error .. 'Make sure to install class module or create custom rotation', "error")
             self:Print(self.Colors.Error .. 'Missing addon: ' .. module, "error")
@@ -183,7 +183,7 @@ function MaxDps:EnableRotation()
         if currentSpec and currentSpec == 5 then
             self:Print(self.Colors.Error .. 'You are not in a spec, this is required for MaxDps to work!', "error")
         end
-        self:Print(self.Colors.Error .. 'Failed to enable addon!', "error")
+        self:Print(self.Colors.Error .. 'Failed to enable addon, either spec not supported or an error occured. If you have a spec please report on Discord, thanks!', "error")
         return
     end
 
@@ -621,6 +621,14 @@ function MaxDps:PrepareFrameData()
     self.FrameData.timeToDie = self:GetTimeToDie()
 end
 
+function MaxDps:err(s)
+    if not self.Error then
+	    self:Print(self.Colors.Error .. s, "error")
+        self.Error = true
+    end
+    geterrorhandler()(s)
+end
+
 function MaxDps:InvokeNextSpell()
     -- invoke spell check
     local oldSkill = self.Spell
@@ -638,13 +646,13 @@ function MaxDps:InvokeNextSpell()
     else
         if not self.Error then
             if GetCVar('ScriptErrors')=='1' then
-                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord. Thanks!")
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "error")
             else
-                self:Print(self.Colors.Error .. "MaxDps Encountered an error, displaying errors is not enabled please enable then report on Discord. Thanks!")
-                self:Print(self.Colors.Error .. "Can Enable Errors By Typing /run SetCVar(“ScriptErrors”,“1”)")
-                if res then
-                    self:Print(self.Colors.Error .. res)
-                end
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error, displaying errors is not enabled please enable then report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "error")
+                self:Print(self.Colors.Error .. "Can enable the game displaying errors by typing /run SetCVar(“ScriptErrors”,“1”), the same but change 1 to 0 to disable displaying errors.", "error")
+            end
+            if res then
+                self:Print(self.Colors.Error .. res, "error")
             end
         end
         self.Error = true
