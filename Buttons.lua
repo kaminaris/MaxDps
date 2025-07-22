@@ -355,25 +355,6 @@ function MaxDps:AddStandardButton(button)
             end
         end
     end
-    --if IsAddOnLoaded('Bartender4') and not MaxDps:IsRetailWow() then
-    --    if not btype and button and button.HasAction then
-    --        local id, _, hasAction, spellID = button:HasAction()
-    --        if spellID then
-    --            self:AddButton(spellID, button)
-    --        end
-    --    end
-    --    if not btype and button and not button.HasAction and button.GetID then
-    --        local id = button:GetID()
-    --        if id then
-    --            if id >=1 and id <= GetNumShapeshiftForms() then
-    --                local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
-    --                if hasAction and spellID then
-    --                    self:AddButton(spellID, button)
-    --                end
-    --            end
-    --        end
-    --    end
-    --end
     -- This code is needed with bartender 4 on retail because the above code gives an error
     -- without it the stance bar buttons are not added
     if IsAddOnLoaded('Bartender4') and MaxDps:IsRetailWow() then
@@ -394,6 +375,19 @@ function MaxDps:AddStandardButton(button)
         end
     end
     -- End stance bar code
+    -- Start pet bar code
+    if button and button.Name and button.Name.GetName then
+        if button.Name.GetName(button):match('^PetActionButton') then
+            local id = button:GetID()
+            if id then
+                local _, _, _, _, _, _, spellId = GetPetActionInfo(id)
+                if spellId then
+                    self:AddButton(spellId, button)
+                end
+            end
+        end
+    end
+    -- End pet bar code
 end
 
 function MaxDps:Fetch(event)
@@ -603,9 +597,21 @@ function MaxDps:FetchBlizzard()
             local button = _G[barName .. 'Button' .. i]
             self:AddStandardButton(button)
         end
-
-        for i = 1, 10 do
-            local button = _G["Stance" .. 'Button' .. i]
+    end
+    for i = 1, 10 do
+        local button = _G["Stance" .. 'Button' .. i]
+        if button then
+            self:AddStandardButton(button)
+        end
+    end
+    for i = 1, 10 do
+        local button = _G["PetActionButton" .. i]
+        if button then
+            if not button.GetPagedID and button.id then
+                button.GetPagedID = function ()
+                    return button.id
+                end
+            end
             self:AddStandardButton(button)
         end
     end
