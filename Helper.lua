@@ -2101,6 +2101,12 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         return false
     end
     if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
+        for i = 1, NUM_PET_ACTION_SLOTS do
+            local _, _, _, _, _, _, spellID = GetPetActionInfo(i)
+            if spellID == spell and C_Spell.IsSpellUsable(spell) and MaxDps:CooldownConsolidated(spell).ready then
+                return true
+            end
+        end
         if not IsSpellKnownOrOverridesKnown(spell) then return false end
         if not C_Spell.IsSpellUsable(spell) then return false end
         local ORID = FindSpellOverrideByID(spell)
@@ -2136,7 +2142,14 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         end
     end
 
-    if MaxDps:IsCataWow() or MaxDps:IsMistsWow() then
+    if MaxDps:IsCataWow() then
+        for i = 1, NUM_PET_ACTION_SLOTS do
+            local _, _, _, _, _, _, spellID = GetPetActionInfo(i)
+            if spellID == spell and C_Spell.IsSpellUsable(spell) and MaxDps:CooldownConsolidated(spell).ready then
+                return true
+            end
+        end
+
         if not IsSpellKnownOrOverridesKnown(spell) then return false end
         if not C_Spell.IsSpellUsable(spell) then return false end
         local costs = C_Spell.GetSpellPowerCost(spell)
