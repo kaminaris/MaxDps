@@ -525,6 +525,12 @@ function MaxDps:UpdateSpellsAndTalents()
                 end
             end
         end
+
+        -- Insert Potions
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["VirmensBite"] = 105697
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["PotionoftheJadeSerpent"] = 105702
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["PotionofMoguPower"] = 105706
+
         MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]
     end
     --MaxDps.SpellInfoTable = {}
