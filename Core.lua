@@ -521,7 +521,7 @@ function MaxDps:UpdateSpellsAndTalents()
                 local spellName, spellSubName = GetSpellBookItemName(spellIndex, "spell")
                 local spellType, spellID = GetSpellBookItemInfo(spellIndex, "spell")
                 if spellType == "SPELL" and (classId and id and idtoclass[classId] and idtospec[id]) then
-                    MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][spellName] = spellID
+                    MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] = spellID
                 end
             end
         end
