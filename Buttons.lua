@@ -387,6 +387,19 @@ function MaxDps:AddStandardButton(button)
             end
         end
     end
+    if IsAddOnLoaded('Bartender4') then
+        if button.Name.GetName(button):match('^BT4PetButton') then
+            if button and button.id then
+                local id = button.id
+                if id then
+                    local _, _, _, _, _, _, spellId = GetPetActionInfo(id)
+                    if spellId then
+                        self:AddButton(spellId, button)
+                    end
+                end
+            end
+        end
+    end
     -- End pet bar code
 end
 
@@ -457,6 +470,12 @@ function MaxDps:Bartender4()
     -- Uses LibActionButton but for some reason at least in cata classic not for stance bar
     for i = 1, 10 do
         local button = _G["BT4Stance" .. 'Button' .. i] and _G["BT4Stance" .. 'Button' .. i] or nil
+        if button then
+            self:AddStandardButton(button)
+        end
+    end
+    for i = 1, 10 do
+        local button = _G["BT4Pet" .. 'Button' .. i] and _G["BT4Pet" .. 'Button' .. i] or nil
         if button then
             self:AddStandardButton(button)
         end
