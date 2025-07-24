@@ -2297,6 +2297,44 @@ function MaxDps:HasOnUseEffect(itemSlot)
     end
 end
 
+function MaxDps:HasBuffEffect(slotId, searchWord)
+    local tooltip = CreateFrame("GameTooltip", "MaxDpsScanTooltip", nil, "GameTooltipTemplate")
+    tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+
+    -- Clear previous lines
+    tooltip:ClearLines()
+    tooltip:SetInventoryItem("player", slotId)
+
+    if searchWord:lower() == "any" then
+        for i = 1, tooltip:NumLines() do
+            local line = _G["MaxDpsScanTooltipTextLeft" .. i]
+            if line then
+                local text = line:GetText()
+                if text and ( text:lower():find("agility")
+                or text:lower():find("crit")
+                or text:lower():find("haste")
+                or text:lower():find("intellect")
+                or text:lower():find("mastery")
+                or text:lower():find("strength")
+                or text:lower():find("versatility") ) then
+                    return true
+                end
+            end
+        end
+    end
+
+    for i = 1, tooltip:NumLines() do
+        local line = _G["MaxDpsScanTooltipTextLeft" .. i]
+        if line then
+            local text = line:GetText()
+            if text and text:lower():find(searchWord:lower()) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 function MaxDps:CheckPrevSpell(spell,number)
     if MaxDps and MaxDps.spellHistory and not number then
         if MaxDps.spellHistory[1] then
