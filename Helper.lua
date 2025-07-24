@@ -2282,6 +2282,21 @@ function MaxDps:CheckTrinketReady(slot)
     return false
 end
 
+function MaxDps:CheckTrinketItemLevel(slot)
+    local itemLevel = 0
+    if slot == 1 then
+        slot = 13
+    end
+    if slot == 2 then
+        slot = 14
+    end
+    if slot == 13 or slot == 14 then
+        local itemID = GetInventoryItemID('player', slot)
+        itemLevel = C_Item.GetDetailedItemLevelInfo(itemID)
+    end
+    return itemLevel
+end
+
 function MaxDps:HasOnUseEffect(itemSlot)
     -- Get the item ID of the trinket in the given slot
     local itemID = GetInventoryItemID("player", itemSlot)
