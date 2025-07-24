@@ -454,7 +454,38 @@ function MaxDps:UpdateSpellsAndTalents()
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["RictusoftheLaughingSkull"] = 274739
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["AncestralCall"] = 274738
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ArcanePulse"] = 260369
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["Fireblood "] = 273104
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["Fireblood"] = 273104
+        -- TWW Trinkets
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["house_of_cards"] = 466681
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["tome_of_lights_devotion"] = 443535
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["bestinslots"] = 473402
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["treacherous_transmitter"] = 449954
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["mad_queens_mandate"] = 443124
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["skardyns_grace"] = 92099
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["signet_of_the_priory"] = 443531
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["junkmaestros_mega_magnet"] = 1219661
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["geargrinders_spare_keys"] = 471059
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["grim_codex"] = 345739
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ravenous_honey_buzzer"] = 448904
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["spymasters_web"] = 444959
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["imperfect_ascendancy_serum"] = 455482
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["neural_synapse_enhancer"] = 300612
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["aberrant_spellforge"] = 445619
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["nymues_unraveling_spindle"] = 422956
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["flarendos_pilot_light"] = 471142
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["algethar_puzzle_box"] = 383781
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ingenious_mana_battery"] = 300968
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["high_speakers_accretion"] = 443415
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["gladiators_badge"] = 277185
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["hyperthread_wristwraps"] = 300142
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["burst_of_knowledge"] = 469925
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ratfang_toxin"] = 1216604
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["funhouse_lens"] = 1213432
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["elementium_pocket_anvil"] = 401306
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["beacon_to_the_beyond"] = 402583
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["manic_grieftorch"] = 377463
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["time_thiefs_gambit"] = 417534
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["mirror_of_fractured_tomorrows"] = 418527
         --
         MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]
         for spellName,spellID in pairs(MaxDps.SpellTable) do
