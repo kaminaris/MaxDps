@@ -544,7 +544,7 @@ function MaxDps:UpdateSpellsAndTalents()
 
         MaxDps.SpellTable = {}
     end
-    if MaxDps:IsMistsWow() then
+    if MaxDps:IsMistsWow() and MaxDps.classSpellData and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
         MaxDps.SpellTable = {}
         for tabIndex = 1, GetNumSpellTabs() do
             local name, texture, offset, numSpells = GetSpellTabInfo(tabIndex)
