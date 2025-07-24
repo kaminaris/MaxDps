@@ -719,6 +719,9 @@ function MaxDps:ClearGlowIndependent(spellId, id)
 end
 
 function MaxDps:GlowCooldown(spellId, condition, color)
+    if spellId == 0 then
+        return
+    end
     local idtoclass = {
         [1] = "Warrior",
         [2] = "Paladin",
