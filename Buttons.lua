@@ -428,6 +428,11 @@ function MaxDps:Fetch(event)
         self:FetchButtonForge()
     end
 
+    -- ElvUI uses LibActionButton but not for stance bar
+    if IsAddOnLoaded('ElvUI') then
+        self:FetchElvUI()
+    end
+
     if IsAddOnLoaded('G15Buttons') then
         self:FetchG15Buttons()
     end
@@ -586,6 +591,16 @@ function MaxDps:RegisterLibActionButton(name)
     end
 
     LABs[name] = true
+end
+
+-- ElvUI Uses FetchLibActionButton but not for stance bar
+function MaxDps:FetchElvUI()
+    for i = 1, 10 do
+        local button = _G["ElvUI_StanceBarButton" .. i]
+        if button then
+            self:AddStandardButton(button)
+        end
+    end
 end
 
 function MaxDps:FetchLibActionButton()
