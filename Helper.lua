@@ -2297,7 +2297,9 @@ function MaxDps:HasOnUseEffect(itemSlot)
     end
 end
 
+local TooltipCache = {}
 function MaxDps:HasBuffEffect(slotId, searchWord)
+    TooltipCache = TooltipCache or {}
     local tooltip = CreateFrame("GameTooltip", "MaxDpsScanTooltip", nil, "GameTooltipTemplate")
     tooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
@@ -2305,18 +2307,30 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
     tooltip:ClearLines()
     tooltip:SetInventoryItem("player", slotId)
 
+    if type(slotId) ~= "string" then return false end
+    if type(searchWord) ~= "string" then return false end
+    local key = searchWord and searchWord:lower() or nil
+    if not key then
+        return false
+    end
+
+    if TooltipCache[slotId] and TooltipCache[slotId][searchWord] then
+        return TooltipCache[slotId][key]
+    end
     if searchWord:lower() == "any" then
         for i = 1, tooltip:NumLines() do
             local line = _G["MaxDpsScanTooltipTextLeft" .. i]
+            line = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
             if line then
-                local text = line:GetText()
-                if text and ( text:lower():find("agility")
-                or text:lower():find("crit")
-                or text:lower():find("haste")
-                or text:lower():find("intellect")
-                or text:lower():find("mastery")
-                or text:lower():find("strength")
-                or text:lower():find("versatility") ) then
+                if line and ( line:lower():find("agility")
+                or line:lower():find("crit")
+                or line:lower():find("haste")
+                or line:lower():find("intellect")
+                or line:lower():find("mastery")
+                or line:lower():find("strength")
+                or line:lower():find("versatility") ) then
+                    TooltipCache[slotId] = TooltipCache[slotId] or {}
+                    TooltipCache[slotId][key] = true
                     return true
                 end
             end
@@ -2325,15 +2339,29 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
 
     for i = 1, tooltip:NumLines() do
         local line = _G["MaxDpsScanTooltipTextLeft" .. i]
+        line = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
         if line then
-            local text = line:GetText()
-            if text and text:lower():find(searchWord:lower()) then
+            if line and line:lower():find(searchWord:lower()) then
+                TooltipCache[slotId] = TooltipCache[slotId] or {}
+                TooltipCache[slotId][key] = true
                 return true
             end
         end
     end
+    TooltipCache[slotId] = TooltipCache[slotId] or {}
+    TooltipCache[slotId][key] = false
+    tooltip:Hide()
     return false
 end
+local f = CreateFrame("Frame")
+f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+
+f:SetScript("OnEvent", function()
+    if TooltipCache then
+        wipe(TooltipCache) -- Clear the cache when equipment changes
+    end
+end)
+
 
 function MaxDps:CheckPrevSpell(spell,number)
     if MaxDps and MaxDps.spellHistory and not number then
