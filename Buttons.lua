@@ -334,42 +334,15 @@ function MaxDps:AddStandardButton(button)
         end
     end
     -- Following code is for stance bars
-    if not IsAddOnLoaded('Bartender4') or (IsAddOnLoaded('Bartender4') and not MaxDps:IsRetailWow()) then
-        if not btype and button and button.HasAction then
-            -- With some bartender stance buttons this code erors on retail only
-            -- so we add bartender stance bars with separate code below
-            local id, _, hasAction, spellID = button:HasAction()
-            if spellID then
-                self:AddButton(spellID, button)
-            end
-        end
-        if not btype and button and not button.HasAction and button.GetID then
-            local id = button:GetID()
-            if id then
-                if id >=1 and id <= GetNumShapeshiftForms() then
-                    local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
-                    if hasAction and spellID then
-                        self:AddButton(spellID, button)
-                    end
-                end
-            end
-        end
-    end
-    -- This code is needed with bartender 4 on retail because the above code gives an error
-    -- without it the stance bar buttons are not added
-    if IsAddOnLoaded('Bartender4') and MaxDps:IsRetailWow() then
-        if button and button.Name and button.Name.GetName then
-            --():match('^BT4Stance')
-            if button.Name.GetName(button):match('^BT4Stance') then
-                if button.GetActionName then
-                    local actionName = button:GetActionName()
-                    local nameReduced = actionName:match("%((.*)%)")
-                    if nameReduced then
-                        local spellInfo = GetSpellInfo(nameReduced)
-                        if spellInfo.spellID then
-                            self:AddButton(spellInfo.spellID, button)
-                        end
-                    end
+    -- local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
+    -- Above code will cause error in retail with some buttons and non-blizzard action bars
+    if button and button.Name and button.Name.GetName and button.Name.GetName(button):find('Stance') then
+        local id = button:GetID()
+        if id then
+            if id >=1 and id <= GetNumShapeshiftForms() then
+                local _, _, hasAction, spellID = GetShapeshiftFormInfo(id)
+                if hasAction and spellID then
+                    self:AddButton(spellID, button)
                 end
             end
         end
@@ -523,6 +496,12 @@ function MaxDps:FetchDominos()
             self:AddStandardButton(button)
         end
     end
+    for i = 1, 10 do
+        local button = _G["DominosStanceButton" .. i]
+        if button then
+            self:AddStandardButton(button)
+        end
+    end
 end
 
 function MaxDps:FetchAzeriteUI()
@@ -543,6 +522,17 @@ function MaxDps:FetchAzeriteUI()
             if button then
                 self:AddStandardButton(button)
             end
+        end
+    end
+    for b = 1, 10 do
+        local button = _G['AzeriteStanceBar' .. 'Button' .. b]
+        if button and not button.GetPagedID and button.id then
+            button.GetPagedID = function ()
+                return button.id
+            end
+        end
+        if button then
+            self:AddStandardButton(button)
         end
     end
 end
@@ -604,9 +594,10 @@ function MaxDps:FetchElvUI()
 end
 
 function MaxDps:FetchLibActionButton()
-    for LAB in pairs(LABs) do
-        local lib = LibStub(LAB, true)
-        if lib then
+    local _, libs  = LibStub:IterateLibraries()
+    for libname in pairs(libs) do
+        if libname:match('^LibActionButton%-1%.0') then
+            local lib = LibStub(libname, true)
             for button in pairs(lib:GetAllButtons()) do
                 local spellId = button:GetSpellId()
                 if spellId then
@@ -617,6 +608,19 @@ function MaxDps:FetchLibActionButton()
             end
         end
     end
+    --for LAB in pairs(LABs) do
+    --    local lib = LibStub(LAB, true)
+    --    if lib then
+    --        for button in pairs(lib:GetAllButtons()) do
+    --            local spellId = button:GetSpellId()
+    --            if spellId then
+    --                self:AddButton(spellId, button)
+    --            end
+--
+    --            self:AddItemButton(button)
+    --        end
+    --    end
+    --end
 end
 
 function MaxDps:FetchBlizzard()
