@@ -546,16 +546,22 @@ function MaxDps:UpdateSpellsAndTalents()
     end
     if MaxDps:IsMistsWow() and MaxDps.classSpellData and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
         MaxDps.SpellTable = {}
-        for tabIndex = 1, GetNumSpellTabs() do
-            local name, texture, offset, numSpells = GetSpellTabInfo(tabIndex)
-            for spellIndex = offset + 1, offset + numSpells do
-                local spellName, spellSubName = GetSpellBookItemName(spellIndex, "spell")
-                local spellType, spellID = GetSpellBookItemInfo(spellIndex, "spell")
-                if spellType == "SPELL" and (classId and id and idtoclass[classId] and idtospec[id]) then
-                    MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] = spellID
-                end
-            end
-        end
+        --for tabIndex = 1, GetNumSpellTabs() do
+        --    local _, texture, offset, numSpells = GetSpellTabInfo(tabIndex)
+        --    for spellIndex = offset + 1, offset + numSpells do
+        --        local spellName, spellSubName = GetSpellBookItemName(spellIndex, "spell")
+        --        local spellType, spellID = GetSpellBookItemInfo(spellIndex, "spell")
+        --        if spellType == "SPELL" and (classId and id and idtoclass[classId] and idtospec[id]) then
+        --            if not MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] then
+        --                MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] = spellID
+        --            end
+        --            if MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)]
+        --            and MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] ~= spellID then
+        --                MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] = spellID
+        --            end
+        --        end
+        --    end
+        --end
 
         -- Insert Potions
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["VirmensBite"] = 105697
