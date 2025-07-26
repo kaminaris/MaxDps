@@ -2091,7 +2091,43 @@ function MaxDps:FormatItemorSpell(str)
     return str:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", "")
 end
 
+local twwitems = {
+    ["house_of_cards"] = 466681,
+    ["tome_of_lights_devotion"] = 443535,
+    ["bestinslots"] = 473402,
+    ["treacherous_transmitter"] = 449954,
+    ["mad_queens_mandate"] = 443124,
+    ["skardyns_grace"] = 92099,
+    ["signet_of_the_priory"] = 443531,
+    ["junkmaestros_mega_magnet"] = 1219661,
+    ["geargrinders_spare_keys"] = 471059,
+    ["grim_codex"] = 345739,
+    ["ravenous_honey_buzzer"] = 448904,
+    ["spymasters_web"] = 444959,
+    ["imperfect_ascendancy_serum"] = 455482,
+    ["neural_synapse_enhancer"] = 300612,
+    ["aberrant_spellforge"] = 445619,
+    ["nymues_unraveling_spindle"] = 422956,
+    ["flarendos_pilot_light"] = 471142,
+    ["algethar_puzzle_box"] = 383781,
+    ["ingenious_mana_battery"] = 300968,
+    ["high_speakers_accretion"] = 443415,
+    ["gladiators_badge"] = 277185,
+    ["hyperthread_wristwraps"] = 300142,
+    ["burst_of_knowledge"] = 469925,
+    ["ratfang_toxin"] = 1216604,
+    ["funhouse_lens"] = 1213432,
+    ["elementium_pocket_anvil"] = 401306,
+    ["beacon_to_the_beyond"] = 402583,
+    ["manic_grieftorch"] = 377463,
+    ["time_thiefs_gambit"] = 417534,
+    ["mirror_of_fractured_tomorrows"] = 418527,
+}
+
 function MaxDps:CheckSpellUsable(spell,spellstring)
+    if spell == 0 then
+        return false
+    end
     if (not spell) and spellstring then
         MaxDps:Print(self.Colors.Error .. "Error No Spell Data For " .. spellstring, "error")
         return false
@@ -2107,7 +2143,12 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
                 return true
             end
         end
-        if not IsSpellKnownOrOverridesKnown(spell) then return false end
+        if not IsSpellKnownOrOverridesKnown(spell) and
+            spellstring ~= "trinket1" and
+            spellstring ~= "trinket2" and
+            not twwitems[spellstring] then
+                return false
+        end
         if not C_Spell.IsSpellUsable(spell) then return false end
         local ORID = FindSpellOverrideByID(spell)
         -- Check that the Override ID is active
