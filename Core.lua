@@ -145,7 +145,7 @@ function MaxDps:ProfilerToggle()
     end
 end
 
-function MaxDps:EnableRotation()
+function MaxDps:EnableRotation(skipPrint)
     if self.NextSpell == nil then
         local className = self.Classes[self.ClassId]
         local module = 'MaxDps_' .. className
@@ -214,7 +214,7 @@ function MaxDps:EnableRotationTimer()
     self.RotationTimer = self:ScheduleRepeatingTimer('InvokeNextSpell', self.db.global.interval)
 end
 
-function MaxDps:DisableRotation()
+function MaxDps:DisableRotation(skipPrint)
     if not self.rotationEnabled then
         return
     end
@@ -222,7 +222,9 @@ function MaxDps:DisableRotation()
     self:DisableRotationTimer()
 
     self:DestroyAllOverlays()
-    self:Print(self.Colors.Info .. 'Disabling', "info")
+    if not skipPrint then
+        self:Print(self.Colors.Info .. 'Disabling', "info")
+    end
 
     self.Spell = nil
     self.rotationEnabled = false
@@ -357,7 +359,7 @@ function MaxDps:TalentsUpdated()
     if MaxDps.IsMistsWow() then
         self:Print(self.Colors.Error .. 'Rotation Disabled due to TalentsUpdated', "error")
     end
-    self:DisableRotation()
+    self:DisableRotation(true)
     self:UpdateSpellsAndTalents()
     -- Changing from "not self.db.global.onCombatEnter and not self.rotationEnabled"
     -- Regardles of onCombatEnter setting if the rotation was active keep it active
@@ -367,8 +369,8 @@ function MaxDps:TalentsUpdated()
     -- We need to track the original state though as disableRotation will set self.rotationEnabled false
     -- this is needed for situation like when a player levels up mid combat which triggers talent update
     if currentState then
-        self:InitRotations()
-        self:EnableRotation()
+        self:InitRotations(true)
+        self:EnableRotation(true)
     end
 end
 
@@ -745,9 +747,11 @@ function MaxDps:InvokeNextSpell()
     end
 end
 
-function MaxDps:InitRotations()
+function MaxDps:InitRotations(skipPrint)
     local version = GetAddOnMetadata("MaxDps", "Version") or ""
-    self:Print(self.Colors.Info .. version .. ' Initializing rotations', "info")
+    if not skipPrint then
+        self:Print(self.Colors.Info .. version .. ' Initializing rotations', "info")
+    end
     self:CountTier()
 
     local _, _, classId = UnitClass('player')
@@ -766,13 +770,15 @@ function MaxDps:InitRotations()
     if customRotation then
         self.NextSpell = customRotation.fn
 
-        self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name, "info")
+        if not skipPrint then
+            self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name, "info")
+        end
     else
-        self:LoadModule()
+        self:LoadModule(skipPrint)
     end
 end
 
-function MaxDps:LoadModule()
+function MaxDps:LoadModule(skipPrint)
     if self.Classes[self.ClassId] == nil then
         self:Print(self.Colors.Error .. 'Invalid player class, please contact author of addon.', "error")
         return
@@ -786,7 +792,7 @@ function MaxDps:LoadModule()
 
     if loaded then
         self:InitTTD()
-        self:EnableRotationModule(className)
+        self:EnableRotationModule(className, skipPrint)
         return
     else
         local sucess, value = LoadAddOn(module)
@@ -805,13 +811,15 @@ function MaxDps:LoadModule()
 
 end
 
-function MaxDps:EnableRotationModule(className)
+function MaxDps:EnableRotationModule(className, skipPrint)
     local loaded = self:EnableModule(className)
 
     if not loaded then
         self:Print(self.Colors.Error .. 'Could not find load module ' .. className .. ', reason: OUTDATED', "error")
     else
-        local version = GetAddOnMetadata("MaxDps_" .. className, "Version") or ""
-        self:Print(self.Colors.Info .. 'Finished Loading class module ' .. version, "info")
+        if not skipPrint then
+            local version = GetAddOnMetadata("MaxDps_" .. className, "Version") or ""
+            self:Print(self.Colors.Info .. 'Finished Loading class module ' .. version, "info")
+        end
     end
 end
