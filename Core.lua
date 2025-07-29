@@ -800,6 +800,7 @@ function MaxDps:LoadModule(skipPrint)
 end
 
 function MaxDps:EnableRotationModule(className, skipPrint)
+    MaxDps.skipPrint = skipPrint
     local loaded = self:EnableModule(className)
 
     if not loaded then
@@ -810,4 +811,5 @@ function MaxDps:EnableRotationModule(className, skipPrint)
             self:Print(self.Colors.Info .. 'Finished Loading class module ' .. version, "info")
         end
     end
+    MaxDps.skipPrint = false
 end
