@@ -356,9 +356,6 @@ end
 
 function MaxDps:TalentsUpdated()
     local currentState = self.rotationEnabled
-    if MaxDps.IsMistsWow() then
-        self:Print(self.Colors.Error .. 'Rotation Disabled due to TalentsUpdated', "error")
-    end
     self:DisableRotation(true)
     self:UpdateSpellsAndTalents()
     -- Changing from "not self.db.global.onCombatEnter and not self.rotationEnabled"
@@ -588,9 +585,6 @@ end
 
 function MaxDps:UNIT_ENTERED_VEHICLE(_, unit)
     if unit == 'player' and self.rotationEnabled then
-        if MaxDps.IsMistsWow() then
-            self:Print(self.Colors.Error .. 'Rotation Disabled due to UNIT_ENTERED_VEHICLE', "error")
-        end
         self:DisableRotation()
     end
 end
@@ -624,9 +618,6 @@ end
 
 function MaxDps:PLAYER_REGEN_ENABLED()
     if self.db.global.onCombatEnter and self.rotationEnabled then
-        if MaxDps.IsMistsWow() then
-            self:Print(self.Colors.Error .. 'Rotation Disabled due to PLAYER_REGEN_ENABLED', "error")
-        end
         self:DisableRotation()
     end
 end
@@ -642,9 +633,6 @@ end
 
 function MaxDps:LOADING_SCREEN_ENABLED()
     if not self.db.global.onCombatEnter and self.rotationEnabled then
-        if MaxDps.IsMistsWow() then
-            self:Print(self.Colors.Error .. 'Rotation Disabled due to LOADING_SCREEN_ENABLED', "error")
-        end
         self:Print(self.Colors.Success .. 'Rotation Disabled!', "info")
         self:DisableRotation()
     end
