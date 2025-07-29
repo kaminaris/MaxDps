@@ -353,12 +353,20 @@ function MaxDps:NAME_PLATE_UNIT_REMOVED(_, nameplateUnit)
 end
 
 function MaxDps:TalentsUpdated()
+    local currentState = self.rotationEnabled
     if MaxDps.IsMistsWow() then
         self:Print(self.Colors.Error .. 'Rotation Disabled due to TalentsUpdated', "error")
     end
     self:DisableRotation()
     self:UpdateSpellsAndTalents()
-    if not self.db.global.onCombatEnter and not self.rotationEnabled then
+    -- Changing from "not self.db.global.onCombatEnter and not self.rotationEnabled"
+    -- Regardles of onCombatEnter setting if the rotation was active keep it active
+    -- Or in this case since we are modifiying spells temp disable then reenable
+    -- so the user doesnt get missing spell errors, this should
+    -- happen within a unnoticeable amount of time and be seamless to the user
+    -- We need to track the original state though as disableRotation will set self.rotationEnabled false
+    -- this is needed for situation like when a player levels up mid combat which triggers talent update
+    if currentState then
         self:InitRotations()
         self:EnableRotation()
     end
