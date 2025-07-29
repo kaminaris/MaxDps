@@ -232,14 +232,14 @@ function Window:GetWindowConfig()
 			--	forum = {
 			--		type         = 'editBox',
 			--		label        = 'Forum',
-			--		initialValue = 'http://maxdps.net/',
+			--		initialValue = 'http://',
 			--		column       = 6,
 			--		order        = 1,
 			--	},
 			--	faq   = {
 			--		type         = 'editBox',
 			--		label        = 'FAQ',
-			--		initialValue = 'http://maxdps.net/viewtopic.php?f=5&t=2',
+			--		initialValue = 'http://',
 			--		column       = 6,
 			--		order        = 2,
 			--	}
