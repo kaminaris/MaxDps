@@ -1629,7 +1629,7 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
         end
 
         if not start then
-            remains = 100000
+            remains = 100000 --luacheck: ignore
             start = GetTime()
             duration = 10000
         end
@@ -2505,7 +2505,7 @@ function MaxDps:HasGlyphEnabled(spellID)
                 if ( link ~= "") and spellID == glyphSpellID then
                     return true
                    --DEFAULT_CHAT_FRAME:AddMessage("Glyph Socket "..i.." contains "..link)
-                else
+                --else
                 --   DEFAULT_CHAT_FRAME:AddMessage("Glyph Socket "..i.." is unlocked and empty!")
                 end
             --else
