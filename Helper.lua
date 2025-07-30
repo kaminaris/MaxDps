@@ -2502,7 +2502,7 @@ function MaxDps:HasGlyphEnabled(spellID)
         for i = 1, GetNumGlyphSockets() do
             local enabled, glyphType, glyphTooltipIndex, glyphSpellID, icon, glyphID = GetGlyphSocketInfo(i)
             if ( enabled ) then
-                local link = GetGlyphLink(i, glyphID)-- Retrieves the Glyph's link ("" if no glyph in Socket)
+                local link = glyphID and GetGlyphLink(i, glyphID) or ""-- Retrieves the Glyph's link ("" if no glyph in Socket)
                 if ( link ~= "") and spellID == glyphSpellID then
                     return true
                    --DEFAULT_CHAT_FRAME:AddMessage("Glyph Socket "..i.." contains "..link)
