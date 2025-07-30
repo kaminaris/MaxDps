@@ -674,12 +674,11 @@ function MaxDps:PrepareFrameData()
     self.FrameData.timeToDie = self:GetTimeToDie()
 end
 
-function MaxDps:err(s)
-    if not self.Error then
-	    self:Print(self.Colors.Error .. s, "error")
-        self.Error = true
+local function err(s)
+    if not MaxDps.Error then
+	    MaxDps:Print(MaxDps.Colors.Error .. s, "info")
     end
-    geterrorhandler()(s)
+    geterrorhandler()(s) --luacheck: ignore
 end
 
 function MaxDps:InvokeNextSpell()
@@ -693,20 +692,12 @@ function MaxDps:InvokeNextSpell()
 
     -- Removed backward compatibility
     --self.Spell = self.NextSpell()
-    local ok, res = xpcall(self.NextSpell, geterrorhandler(),self)
+    local ok, res = xpcall(self.NextSpell, err, self)
     if ok then
         self.Spell = res
     else
         if not self.Error then
-            if GetCVar('ScriptErrors')=='1' then
-                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "error")
-            else
-                self:Print(self.Colors.Error .. "MaxDps Encountered an error, displaying errors is not enabled please enable then report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "error")
-                self:Print(self.Colors.Error .. "Can enable the game displaying errors by typing /run SetCVar(“ScriptErrors”,“1”), the same but change 1 to 0 to disable displaying errors.", "error")
-            end
-            if res then
-                self:Print(self.Colors.Error .. res, "error")
-            end
+            self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "info")
         end
         self.Error = true
     end
