@@ -47,6 +47,7 @@ local GetManaRegen = GetManaRegen
 local GetSpellTabInfo = C_SpellBook and C_SpellBook.GetSpellBookSkillLineInfo or GetSpellTabInfo
 local GetSpellBookItemInfo = C_SpellBook and C_SpellBook.GetSpellBookItemInfo or GetSpellBookItemInfo
 local GetSpellBookItemName = C_SpellBook and C_SpellBook.GetSpellBookItemName or GetSpellBookItemName
+local GetGlyphLink = C_GlyphInfo and C_GlyphInfo.GetGlyphLink or GetGlyphLink
 local IsInInstance = IsInInstance
 local IsItemInRange = C_Item.IsItemInRange
 local UnitThreatSituation = UnitThreatSituation
