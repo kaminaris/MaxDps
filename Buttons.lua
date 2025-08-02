@@ -717,6 +717,19 @@ function MaxDps:Dump()
     end
 end
 
+function MaxDps:DumpTalents()
+    for spellID, Rank in pairs(self.FrameData.talents) do
+        local name
+        if MaxDps:IsRetailWow() then
+            local spellInfo = GetSpellInfo(spellID)
+            name = spellInfo and spellInfo.name
+        else
+            GetSpellInfo(spellID)
+        end
+        print(spellID, name)
+    end
+end
+
 function MaxDps:FindSpell(spellId)
     return self.Spells[spellId]
 end
