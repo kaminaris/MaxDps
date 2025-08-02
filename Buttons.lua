@@ -711,7 +711,7 @@ function MaxDps:Dump()
             local spellInfo = GetSpellInfo(k)
             name = spellInfo and spellInfo.name
         else
-            GetSpellInfo(k)
+            name = GetSpellInfo(k)
         end
         print(k, name)
     end
@@ -724,7 +724,7 @@ function MaxDps:DumpTalents()
             local spellInfo = GetSpellInfo(spellID)
             name = spellInfo and spellInfo.name
         else
-            GetSpellInfo(spellID)
+            name = GetSpellInfo(spellID)
         end
         print(spellID, name)
     end
