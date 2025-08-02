@@ -707,7 +707,7 @@ end
 function MaxDps:Dump()
     for k, _ in pairs(self.Spells) do
         local name
-        if MaxDps:IsRetailWow() then
+        if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
             local spellInfo = GetSpellInfo(k)
             name = spellInfo and spellInfo.name
         else
@@ -720,7 +720,7 @@ end
 function MaxDps:DumpTalents()
     for spellID, Rank in pairs(self.FrameData.talents) do
         local name
-        if MaxDps:IsRetailWow() then
+        if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
             local spellInfo = GetSpellInfo(spellID)
             name = spellInfo and spellInfo.name
         else
