@@ -950,15 +950,14 @@ function MaxDps:GlowSpell(spellId)
         local spellName = spellInfo and spellInfo.name
 
         self:Print(
-            self.Colors.Error ..
+            (self.Colors and self.Colors.Error or '') .. -- protect nil if self.Colors or self.Colors.Error not set
             'Spell not found on action bars: ' ..
-            (spellName and spellName or 'Unknown') ..
-            '(' .. spellId .. ')',
+            (spellName or 'Unknown') .. --if GetSpellInfo does not return Value, now still String returns
+            '(' .. tostring(spellId) .. ')', -- no typo while Chaining
             "error"
         )
     end
 end
-
 function MaxDps:GlowNextSpell(spellId)
     self:GlowClear()
     self:GlowSpell(spellId)
