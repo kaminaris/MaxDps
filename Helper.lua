@@ -2296,6 +2296,20 @@ function MaxDps:CheckTrinketCooldown(slot)
     return math.huge
 end
 
+function MaxDps:CheckTrinketCooldownDuration(slot)
+    if slot == 1 then
+        slot = 13
+    end
+    if slot == 2 then
+        slot = 14
+    end
+    local itemID = GetInventoryItemID('player', slot)
+    local itemSpellID = (itemID and select(2,GetItemSpell(itemID)) ) or 0
+    local spellCooldownInfo = C_Spell.GetSpellCooldown(itemSpellID)
+    local duration = spellCooldownInfo and C_Spell.GetSpellCooldown(itemSpellID).duration or math.huge
+    return duration
+end
+
 function MaxDps:CheckTrinketReady(slot)
     if slot == 1 then
         slot = 13
