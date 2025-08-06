@@ -2377,7 +2377,10 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
     if searchWord:lower() == "any" then
         for i = 1, tooltip:NumLines() do
             local line = _G["MaxDpsScanTooltipTextLeft" .. i]
-            line = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
+            if line and line:GetText() then
+                line = line:GetText()
+                line = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
+            end
             if line then
                 if line and ( line:lower():find("agility")
                 or line:lower():find("crit")
@@ -2396,7 +2399,10 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
 
     for i = 1, tooltip:NumLines() do
         local line = _G["MaxDpsScanTooltipTextLeft" .. i]
-        line = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
+        if line and line:GetText() then
+            line = line:GetText()
+            line = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
+        end
         if line then
             if line and line:lower():find(searchWord:lower()) then
                 TooltipCache[slotId] = TooltipCache[slotId] or {}
