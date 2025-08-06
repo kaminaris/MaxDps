@@ -1589,14 +1589,24 @@ function MaxDps:ItemCooldown(itemId, timeShift)
     end
 
     return {
-        ready   = remains <= 0,
-        remains = remains,
+        duration        = (duration and duration / 1000) or 0,
+        ready           = remains <= 0,
+        remains         = remains,
+        fullRecharge    = remains,
+        partialRecharge = remains,
+        charges         = 1,
+        maxCharges      = 1
     }
 end
 
 function MaxDps:CooldownConsolidated(spellId, timeShift)
     -- timeShift = timeShift or 0
     -- local remains = 100000
+    for itemID,itemSpellID in pairs(MaxDps.ItemSpells) do
+        if spellId == itemSpellID then
+            return MaxDps:ItemCooldown(itemID, 0)
+        end
+    end
     local t = GetTime()
 
     local chargeInfo, charges, maxCharges, start, duration, enabled, fullRecharge, partialRecharge, spellCooldownInfo, remains
