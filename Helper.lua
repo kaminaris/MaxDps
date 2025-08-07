@@ -2363,6 +2363,20 @@ function MaxDps:CheckTrinketItemLevel(slot)
     return itemLevel
 end
 
+function MaxDps:CheckTrinketCastTime(slot)
+    if slot == 1 then
+        slot = 13
+    end
+    if slot == 2 then
+        slot = 14
+    end
+    local itemID = GetInventoryItemID('player', slot)
+    local itemSpellID = (itemID and select(2,GetItemSpell(itemID)) ) or 0
+    local spellCooldownInfo = C_Spell.GetSpellInfo(itemSpellID)
+    local castTime = spellCooldownInfo and spellCooldownInfo.castTime or 0
+    return castTime
+end
+
 function MaxDps:HasOnUseEffect(itemSlot)
     -- Get the item ID of the trinket in the given slot
     local itemID = GetInventoryItemID("player", itemSlot)
