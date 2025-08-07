@@ -465,6 +465,8 @@ function MaxDps:UpdateSpellsAndTalents()
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["AncestralCall"] = 274738
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ArcanePulse"] = 260369
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["Fireblood"] = 273104
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["Haymaker"] = 287712
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["RocketBarrage"] = 69041
         -- TWW Trinkets
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["house_of_cards"] = 466681
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["tome_of_lights_devotion"] = 443535
