@@ -949,13 +949,15 @@ function MaxDps:GlowSpell(spellId)
         local spellInfo = GetSpellInfo(spellId)
         local spellName = spellInfo and spellInfo.name
 
-        self:Print(
-            self.Colors.Error ..
-            'Spell not found on action bars: ' ..
-            (spellName and spellName or 'Unknown') ..
-            '(' .. spellId .. ')',
-            "error"
-        )
+        if not IsMounted() then
+            self:Print(
+                self.Colors.Error ..
+                'Spell not found on action bars: ' ..
+                (spellName and spellName or 'Unknown') ..
+                '(' .. spellId .. ')',
+                "error"
+            )
+        end
     end
 end
 
