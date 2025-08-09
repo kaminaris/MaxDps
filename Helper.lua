@@ -2400,13 +2400,6 @@ end
 local TooltipCache = {}
 function MaxDps:HasBuffEffect(slotId, searchWord)
     TooltipCache = TooltipCache or {}
-    local tooltip = CreateFrame("GameTooltip", "MaxDpsScanTooltip", nil, "GameTooltipTemplate")
-    tooltip:SetOwner(UIParent, "ANCHOR_NONE")
-
-    -- Clear previous lines
-    tooltip:ClearLines()
-    tooltip:SetInventoryItem("player", slotId)
-
     if type(slotId) ~= "string" then return false end
     if type(searchWord) ~= "string" then return false end
     local key = searchWord and searchWord:lower() or nil
@@ -2417,8 +2410,17 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
     if TooltipCache[slotId] and TooltipCache[slotId][searchWord] then
         return TooltipCache[slotId][key]
     end
+    if not MaxDpsScanTooltip then --luacheck: ignore 113
+        local tooltip = CreateFrame("GameTooltip", "MaxDpsScanTooltip", nil, "GameTooltipTemplate")
+        tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+    end
+
+    -- Clear previous lines
+    MaxDpsScanTooltip:ClearLines() --luacheck: ignore 113
+    MaxDpsScanTooltip:SetInventoryItem("player", slotId) --luacheck: ignore 113
+
     if searchWord:lower() == "any" then
-        for i = 1, tooltip:NumLines() do
+        for i = 1, MaxDpsScanTooltip:NumLines() do --luacheck: ignore 113
             local line = _G["MaxDpsScanTooltipTextLeft" .. i]
             if line and line:GetText() then
                 line = line:GetText()
@@ -2440,7 +2442,7 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
         end
     end
 
-    for i = 1, tooltip:NumLines() do
+    for i = 1, MaxDpsScanTooltip:NumLines() do --luacheck: ignore 113
         local line = _G["MaxDpsScanTooltipTextLeft" .. i]
         if line and line:GetText() then
             line = line:GetText()
@@ -2456,7 +2458,7 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
     end
     TooltipCache[slotId] = TooltipCache[slotId] or {}
     TooltipCache[slotId][key] = false
-    tooltip:Hide()
+    MaxDpsScanTooltip:Hide() --luacheck: ignore 113
     return false
 end
 local f = CreateFrame("Frame")
@@ -2464,7 +2466,7 @@ f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
 f:SetScript("OnEvent", function()
     if TooltipCache then
-        wipe(TooltipCache) -- Clear the cache when equipment changes
+        wipe(TooltipCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
     end
 end)
 
