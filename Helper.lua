@@ -883,12 +883,14 @@ function MaxDps:CheckTalents()
             end
         end
     else
-        local tip = CreateFrame( "GameTooltip", "MyScanningTooltip", nil, "GameTooltipTemplate" )
-		tip:SetOwner(WorldFrame, "ANCHOR_NONE")
+        if not MaxDpsTalentsSpellTooltip then
+            local tip = CreateFrame( "GameTooltip", "MaxDpsTalentsSpellTooltip", nil, "GameTooltipTemplate" )
+		    MaxDpsTalentsSpellTooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
+        end
         for tab = 1, GetNumTalentTabs() do
             for num_talent = 1, GetNumTalents(tab) do
-                tip:SetTalent(tab, num_talent)
-                local _, spellID = tip:GetSpell()
+                MaxDpsTalentsSpellTooltip:SetTalent(tab, num_talent)
+                local _, spellID = MaxDpsTalentsSpellTooltip:GetSpell()
                 local talentName, talentIcon, row , column , rank, maxrank = GetTalentInfo(tab, num_talent)
                 --local talentId = (tab - 1) * MAX_NUM_TALENTS + num_talent
                 if (talentName and talentIcon and spellID and rank > 0) then
@@ -898,6 +900,7 @@ function MaxDps:CheckTalents()
                 end
             end
         end
+        MaxDpsTalentsSpellTooltip:Hide()
     end
 end
 
