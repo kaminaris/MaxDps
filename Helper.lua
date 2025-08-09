@@ -34,6 +34,7 @@ local GetTime = GetTime
 local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown and C_Spell.GetSpellCooldown or GetSpellCooldown
 local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
 local UnitGUID = UnitGUID
+local UnitExists = UnitExists
 local GetSpellBaseCooldown = GetSpellBaseCooldown
 local IsSpellInRange = IsSpellInRange
 local UnitSpellHaste = UnitSpellHaste
@@ -2133,6 +2134,8 @@ local twwitems = {
     ["manic_grieftorch"] = 377463,
     ["time_thiefs_gambit"] = 417534,
     ["mirror_of_fractured_tomorrows"] = 418527,
+    ["unyielding_netherprism"] = 1233556,
+    ["spellstrike_warplance"] = 1243411,
 }
 
 function MaxDps:CheckSpellUsable(spell,spellstring)
@@ -2148,10 +2151,12 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         return false
     end
     if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
-        for i = 1, NUM_PET_ACTION_SLOTS do
-            local _, _, _, _, _, _, spellID = GetPetActionInfo(i)
-            if spellID == spell and C_Spell.IsSpellUsable(spell) and MaxDps:CooldownConsolidated(spell).ready then
-                return true
+        if UnitExists("pet") then
+            for i = 1, NUM_PET_ACTION_SLOTS do
+                local _, _, _, _, _, _, spellID = GetPetActionInfo(i)
+                if spellID == spell and C_Spell.IsSpellUsable(spell) and MaxDps:CooldownConsolidated(spell).ready then
+                    return true
+                end
             end
         end
         if not IsSpellKnownOrOverridesKnown(spell) and
