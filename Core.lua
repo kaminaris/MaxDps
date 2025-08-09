@@ -499,6 +499,7 @@ function MaxDps:UpdateSpellsAndTalents()
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["time_thiefs_gambit"] = 417534
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["mirror_of_fractured_tomorrows"] = 418527
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["unyielding_netherprism"] = 1233556
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["spellstrike_warplance"] = 1243411
         --
         MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]
         for spellName,spellID in pairs(MaxDps.SpellTable) do
