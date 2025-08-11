@@ -2470,11 +2470,11 @@ end
 local TrinketDurationCache = {}
 function MaxDps:CheckTrinketBuffDuration(slotId, searchWord)
     TrinketDurationCache = TrinketDurationCache or {}
-    if type(slotId) ~= "string" then return false end
-    if type(searchWord) ~= "string" then return false end
+    if type(slotId) ~= "string" then return 0 end
+    if type(searchWord) ~= "string" then return 0 end
     local key = searchWord and searchWord:lower() or nil
     if not key then
-        return false
+        return 0
     end
 
     local linebuff
