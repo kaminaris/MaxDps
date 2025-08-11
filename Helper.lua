@@ -2439,7 +2439,7 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
                 or line:lower():find("versatility") ) then
                     TrinketBuffCache[slotId] = TrinketBuffCache[slotId] or {}
                     TrinketBuffCache[slotId][key] = true
-                    return true
+                    break
                 end
             end
         end
@@ -2455,14 +2455,16 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
             if line and line:lower():find(searchWord:lower()) then
                 TrinketBuffCache[slotId] = TrinketBuffCache[slotId] or {}
                 TrinketBuffCache[slotId][key] = true
-                return true
+                break
             end
         end
     end
-    TrinketBuffCache[slotId] = TrinketBuffCache[slotId] or {}
-    TrinketBuffCache[slotId][key] = false
+    if not TrinketBuffCache and not TrinketBuffCache[slotId] and not TrinketBuffCache[slotId][key] then
+        TrinketBuffCache[slotId] = TrinketDurationCache[slotId] or {}
+        TrinketBuffCache[slotId][key] = false
+    end
     MaxDpsTrinketBuffToolTip:Hide() --luacheck: ignore 113
-    return false
+    return (TrinketBuffCache and TrinketBuffCache[slotId] and TrinketBuffCache[slotId][key]) or false
 end
 
 local TrinketDurationCache = {}
