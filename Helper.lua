@@ -2464,6 +2464,79 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
     MaxDpsTrinketBuffToolTip:Hide() --luacheck: ignore 113
     return false
 end
+
+local TrinketDurationCache = {}
+function MaxDps:CheckTrinketBuffDuration(slotId, searchWord)
+    TrinketDurationCache = TrinketDurationCache or {}
+    if type(slotId) ~= "string" then return false end
+    if type(searchWord) ~= "string" then return false end
+    local key = searchWord and searchWord:lower() or nil
+    if not key then
+        return false
+    end
+
+    local linebuff
+    local lineduration
+    if TrinketDurationCache[slotId] and TrinketDurationCache[slotId][searchWord] then
+        return TrinketDurationCache[slotId][key]
+    end
+    if not MaxDpsTrinketDurationToolTip then --luacheck: ignore 113
+        local tooltip = CreateFrame("GameTooltip", "MaxDpsTrinketDurationToolTip", nil, "GameTooltipTemplate")
+        tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+    end
+
+    -- Clear previous lines
+    MaxDpsTrinketDurationToolTip:ClearLines() --luacheck: ignore 113
+    MaxDpsTrinketDurationToolTip:SetInventoryItem("player", slotId) --luacheck: ignore 113
+
+    if searchWord:lower() == "any" then
+        for i = 1, MaxDpsTrinketDurationToolTip:NumLines() do --luacheck: ignore 113
+            local line = _G["MaxDpsTrinketDurationToolTipTextLeft" .. i]
+            if line and line:GetText() then
+                line = line:GetText()
+                lineduration = line.match(line, "for%s+(%d+)")
+                linebuff = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
+            end
+            if lineduration then
+                if linebuff and ( linebuff:lower():find("agility")
+                or linebuff:lower():find("crit")
+                or linebuff:lower():find("haste")
+                or linebuff:lower():find("intellect")
+                or linebuff:lower():find("mastery")
+                or linebuff:lower():find("strength")
+                or linebuff:lower():find("versatility") ) then
+                    TrinketDurationCache[slotId] = TrinketDurationCache[slotId] or {}
+                    TrinketDurationCache[slotId][key] = lineduration
+                    break
+                end
+            end
+        end
+    end
+
+    for i = 1, MaxDpsTrinketDurationToolTip:NumLines() do --luacheck: ignore 113
+        local line = _G["MaxDpsTrinketDurationToolTipTextLeft" .. i]
+        if line and line:GetText() then
+            line = line:GetText()
+            line = line.match(line, "for%s+(%d+)")
+            lineduration = line.match(line, "for%s+(%d+)")
+            linebuff = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
+        end
+        if lineduration then
+            if linebuff and linebuff:lower():find(searchWord:lower()) then
+                TrinketDurationCache[slotId] = TrinketDurationCache[slotId] or {}
+                TrinketDurationCache[slotId][key] = lineduration
+                break
+            end
+        end
+    end
+    if not TrinketBuffCache and not TrinketBuffCache[slotId] and not TrinketBuffCache[slotId][key] then
+        TrinketDurationCache[slotId] = TrinketDurationCache[slotId] or {}
+        TrinketDurationCache[slotId][key] = 0
+    end
+    MaxDpsTrinketDurationToolTip:Hide() --luacheck: ignore 113
+    return (TrinketDurationCache and TrinketDurationCache[slotId] and TrinketDurationCache[slotId][key]) or 0
+end
+
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
@@ -2471,6 +2544,8 @@ f:SetScript("OnEvent", function()
     if TrinketBuffCache then
         wipe(TrinketBuffCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
     end
+    if TrinketDurationCache then
+        wipe(TrinketDurationCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
     end
 end)
 
