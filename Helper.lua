@@ -2400,9 +2400,9 @@ function MaxDps:HasOnUseEffect(itemSlot)
     end
 end
 
-local TooltipCache = {}
+local TrinketBuffCache = {}
 function MaxDps:HasBuffEffect(slotId, searchWord)
-    TooltipCache = TooltipCache or {}
+    TrinketBuffCache = TrinketBuffCache or {}
     if type(slotId) ~= "string" then return false end
     if type(searchWord) ~= "string" then return false end
     local key = searchWord and searchWord:lower() or nil
@@ -2410,21 +2410,21 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
         return false
     end
 
-    if TooltipCache[slotId] and TooltipCache[slotId][searchWord] then
-        return TooltipCache[slotId][key]
+    if TrinketBuffCache[slotId] and TrinketBuffCache[slotId][searchWord] then
+        return TrinketBuffCache[slotId][key]
     end
-    if not MaxDpsScanTooltip then --luacheck: ignore 113
-        local tooltip = CreateFrame("GameTooltip", "MaxDpsScanTooltip", nil, "GameTooltipTemplate")
+    if not MaxDpsTrinketBuffToolTip then --luacheck: ignore 113
+        local tooltip = CreateFrame("GameTooltip", "MaxDpsTrinketBuffToolTip", nil, "GameTooltipTemplate")
         tooltip:SetOwner(UIParent, "ANCHOR_NONE")
     end
 
     -- Clear previous lines
-    MaxDpsScanTooltip:ClearLines() --luacheck: ignore 113
-    MaxDpsScanTooltip:SetInventoryItem("player", slotId) --luacheck: ignore 113
+    MaxDpsTrinketBuffToolTip:ClearLines() --luacheck: ignore 113
+    MaxDpsTrinketBuffToolTip:SetInventoryItem("player", slotId) --luacheck: ignore 113
 
     if searchWord:lower() == "any" then
-        for i = 1, MaxDpsScanTooltip:NumLines() do --luacheck: ignore 113
-            local line = _G["MaxDpsScanTooltipTextLeft" .. i]
+        for i = 1, MaxDpsTrinketBuffToolTip:NumLines() do --luacheck: ignore 113
+            local line = _G["MaxDpsTrinketBuffToolTipTextLeft" .. i]
             if line and line:GetText() then
                 line = line:GetText()
                 line = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
@@ -2437,39 +2437,40 @@ function MaxDps:HasBuffEffect(slotId, searchWord)
                 or line:lower():find("mastery")
                 or line:lower():find("strength")
                 or line:lower():find("versatility") ) then
-                    TooltipCache[slotId] = TooltipCache[slotId] or {}
-                    TooltipCache[slotId][key] = true
+                    TrinketBuffCache[slotId] = TrinketBuffCache[slotId] or {}
+                    TrinketBuffCache[slotId][key] = true
                     return true
                 end
             end
         end
     end
 
-    for i = 1, MaxDpsScanTooltip:NumLines() do --luacheck: ignore 113
-        local line = _G["MaxDpsScanTooltipTextLeft" .. i]
+    for i = 1, MaxDpsTrinketBuffToolTip:NumLines() do --luacheck: ignore 113
+        local line = _G["MaxDpsTrinketBuffToolTipTextLeft" .. i]
         if line and line:GetText() then
             line = line:GetText()
             line = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
         end
         if line then
             if line and line:lower():find(searchWord:lower()) then
-                TooltipCache[slotId] = TooltipCache[slotId] or {}
-                TooltipCache[slotId][key] = true
+                TrinketBuffCache[slotId] = TrinketBuffCache[slotId] or {}
+                TrinketBuffCache[slotId][key] = true
                 return true
             end
         end
     end
-    TooltipCache[slotId] = TooltipCache[slotId] or {}
-    TooltipCache[slotId][key] = false
-    MaxDpsScanTooltip:Hide() --luacheck: ignore 113
+    TrinketBuffCache[slotId] = TrinketBuffCache[slotId] or {}
+    TrinketBuffCache[slotId][key] = false
+    MaxDpsTrinketBuffToolTip:Hide() --luacheck: ignore 113
     return false
 end
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
 f:SetScript("OnEvent", function()
-    if TooltipCache then
-        wipe(TooltipCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
+    if TrinketBuffCache then
+        wipe(TrinketBuffCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
+    end
     end
 end)
 
