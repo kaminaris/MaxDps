@@ -2519,7 +2519,6 @@ function MaxDps:CheckTrinketBuffDuration(slotId, searchWord)
         local line = _G["MaxDpsTrinketDurationToolTipTextLeft" .. i]
         if line and line:GetText() then
             line = line:GetText()
-            line = line.match(line, "for%s+(%d+)")
             lineduration = line.match(line, "for%s+(%d+)")
             linebuff = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
         end
