@@ -2496,7 +2496,7 @@ function MaxDps:CheckTrinketBuffDuration(slotId, searchWord)
             local line = _G["MaxDpsTrinketDurationToolTipTextLeft" .. i]
             if line and line:GetText() then
                 line = line:GetText()
-                lineduration = line.match(line, "for%s+(%d+)")
+                lineduration = tonumber(line:match("for%s+(%d+)"))
                 linebuff = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
             end
             if lineduration then
@@ -2519,7 +2519,7 @@ function MaxDps:CheckTrinketBuffDuration(slotId, searchWord)
         local line = _G["MaxDpsTrinketDurationToolTipTextLeft" .. i]
         if line and line:GetText() then
             line = line:GetText()
-            lineduration = line.match(line, "for%s+(%d+)")
+            lineduration = tonumber(line:match("for%s+(%d+)"))
             linebuff = line:match("^Equip:%s*(.+)") or line:match("^Use:%s*(.+)")
         end
         if lineduration then
@@ -2535,7 +2535,7 @@ function MaxDps:CheckTrinketBuffDuration(slotId, searchWord)
         TrinketDurationCache[slotId][key] = 0
     end
     MaxDpsTrinketDurationToolTip:Hide() --luacheck: ignore 113
-    return (TrinketDurationCache and TrinketDurationCache[slotId] and TrinketDurationCache[slotId][key]) or 0
+    return tonumber(TrinketDurationCache and TrinketDurationCache[slotId] and TrinketDurationCache[slotId][key]) or 0
 end
 
 local f = CreateFrame("Frame")
