@@ -18,37 +18,8 @@ local pcall = pcall
 local GetNumClasses = GetNumClasses
 local GetClassInfo = GetClassInfo
 
-local LCS = LibStub("LibClassicSpecs-Doadin", true)
-
 local GetNumSpecializationsForClassID =  C_SpecializationInfo and C_SpecializationInfo.GetNumSpecializationsForClassID or GetNumSpecializationsForClassID
-local GetSpecializationInfoForClassID
-do
-    if C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfoForClassID then
-        GetSpecializationInfoForClassID = C_SpecializationInfo.GetSpecializationInfoForClassID
-    else -- Mists shim (credit: MrBuds Weakauras)
-        local specsByClassID = {
-            [0] = { 74, 81, 79 },
-            [1] = { 71, 72, 73, 1446 },
-            [2] = { 65, 66, 70, 1451 },
-            [3] = { 253, 254, 255, 1448 },
-            [4] = { 259, 260, 261, 1453 },
-            [5] = { 256, 257, 258, 1452 },
-            [6] = { 250, 251, 252, 1455 },
-            [7] = { 262, 263, 264, 1444 },
-            [8] = { 62, 63, 64, 1449 },
-            [9] = { 265, 266, 267, 1454 },
-            [10] = { 268, 270, 269, 1450 },
-            [11] = { 102, 103, 104, 105, 1447 },
-        }
-        GetSpecializationInfoForClassID = function(classID, specIndex)
-            local specID = specsByClassID[classID][specIndex]
-            if not specID then
-                return nil
-            end
-            return GetSpecializationInfoByID(specID)
-        end
-    end
-end
+local GetSpecializationInfoForClassID =  GetSpecializationInfoForClassID
 
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 
@@ -71,28 +42,30 @@ function Custom:OnEnable()
     self.classList = {}
     self.specList = {}
 
-    for i = 1, GetNumClasses() do
+    for i = 1, MaxDps.IsClassicWow() and 11 or GetNumClasses() do -- Classic only returns 9 but Druid is 11
         local classDisplayName, classTag, classId = GetClassInfo(i)
-        TableInsert(self.classList, {
-            text  = self:GetClassIcon(classTag) .. ' ' .. classDisplayName,
-            value = classId
-        })
+        if not ((i==6 or i==10) and MaxDps.IsClassicWow()) then -- Skip DK 6 and Monk 10 in Classic but continue to Druid 11
+            TableInsert(self.classList, {
+                text  = self:GetClassIcon(classTag) .. ' ' .. classDisplayName,
+                value = classId
+            })
 
-        local specNum = GetNumSpecializationsForClassID(classId)
-        for sI = 0, specNum do
-            local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI)
-            if specName then
-                specName = '|T' .. specIcon .. ':0|t ' .. specName
-                if not self.Specs[classId] then
-                    self.Specs[classId] = {}
+            local specNum = GetNumSpecializationsForClassID(classId)
+            for sI = 0, specNum do
+                local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI)
+                if specName then
+                    specName = '|T' .. specIcon .. ':0|t ' .. specName
+                    if not self.Specs[classId] then
+                        self.Specs[classId] = {}
+                    end
+
+                    self.Specs[classId][sI] = specName
+
+                    if not self.specList[classId] then
+                        self.specList[classId] = {}
+                    end
+                    TableInsert(self.specList[classId], { text = specName, value = sI })
                 end
-
-                self.Specs[classId][sI] = specName
-
-                if not self.specList[classId] then
-                    self.specList[classId] = {}
-                end
-                TableInsert(self.specList[classId], { text = specName, value = sI })
             end
         end
     end
