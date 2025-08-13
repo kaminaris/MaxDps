@@ -146,6 +146,8 @@ function MaxDps:ProfilerToggle()
 end
 
 function MaxDps:EnableRotation(skipPrint)
+    if not self.db.global.enabled then return end
+
     if self.NextSpell == nil then
         local className = self.Classes[self.ClassId]
         local module = 'MaxDps_' .. className

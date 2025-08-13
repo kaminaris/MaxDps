@@ -135,7 +135,10 @@ function MaxDps:AddToBlizzardOptions()
 
 	local enabled = StdUi:Checkbox(optionsFrame, 'Enable addon', 200, 24)
 	enabled:SetChecked(MaxDps.db.global.enabled)
-	enabled.OnValueChanged = function(_, flag) MaxDps.db.global.enabled = flag end
+	enabled.OnValueChanged = function(_, flag)
+		MaxDps.db.global.enabled = flag
+		MaxDps[(MaxDps.db.global.enabled and "EnableRotation" or "DisableRotation")](MaxDps)
+	end
 
 	local cdOnlyMode = StdUi:Checkbox(optionsFrame, 'Enable CD Only Mode', 200, 24)
 	cdOnlyMode:SetChecked(MaxDps.db.global.cdOnlyMode)
@@ -276,7 +279,7 @@ function MaxDps:AddToBlizzardOptions()
 		optionsFrame:DoLayout()
 		-- Settings cannot know the registered panel changed size AFTER showing, so rather
 		-- than jump through hoops to force a redraw / show a scrollbar, this is a simple workaround
-		optionsFrame:SetScale(.9) 
+		optionsFrame:SetScale(.9)
 	end
 
 	if InterfaceOptions_AddCategory then
