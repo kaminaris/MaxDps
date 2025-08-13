@@ -35,7 +35,7 @@ function Window:ShowWindow()
 
 	window:Show()
 	self.window = window
-	self:ToggleCustomFields(false)
+	self:ToggleCustomFields(true,true)
 end
 
 local function updateRotationBtn(parent, btn, rotation)
@@ -306,7 +306,7 @@ function Window:GetWindowConfig()
 			{
 				disableButtonGlow = {
 					type     = 'checkbox',
-					label    = 'Dissable blizzard button glow',
+					label    = 'Disable blizzard button glow',
 					column   = 6,
 					order    = 1,
 					onChange = function(_, flag)
@@ -500,6 +500,9 @@ function Window:GetWindowConfig()
 						end
 
 						Custom.CurrentEditRotation.enabled = flag
+						MaxDps:DisableRotation(true) -- kill leftover overlays, if we had another rotation loaded
+						MaxDps:InitRotations()
+						MaxDps:EnableRotation()
 					end
 				},
 				rotationDelete  = {

@@ -88,10 +88,17 @@ function Custom:CreateCustomRotation()
 end
 
 function Custom:RemoveCustomRotation()
+    local needRefresh
     for k, rotation in pairs(MaxDps.db.global.customRotations) do
         if rotation == Custom.CurrentEditRotation then
             MaxDps.db.global.customRotations[k] = nil
+            needRefresh = true
         end
+    end
+    if needRefresh then
+        MaxDps:DisableRotation(true)
+        MaxDps:InitRotations()
+        MaxDps:EnableRotation()
     end
 
     self.CurrentEditRotation = nil
