@@ -271,11 +271,14 @@ function MaxDps:AddToBlizzardOptions()
 	optionsFrame:AddRow():AddElement(customGlowHeader)
 	optionsFrame:AddRow():AddElements(customGlow, customGlowType, { column = 'even' })
 
-	optionsFrame:SetScript('OnShow', function(of)
-		of:DoLayout()
-	end)
+	-- no need to :SetScript when we have a 'native' Settings API callback for Panel:Show
+	optionsFrame.OnRefresh = function()
+		optionsFrame:DoLayout()
+		-- Settings cannot know the registered panel changed size AFTER showing, so rather
+		-- than jump through hoops to force a redraw / show a scrollbar, this is a simple workaround
+		optionsFrame:SetScale(.9) 
+	end
 
-	--InterfaceOptions_AddCategory(optionsFrame)
 	if InterfaceOptions_AddCategory then
 		InterfaceOptions_AddCategory(optionsFrame)
 	else
@@ -379,12 +382,10 @@ function MaxDps:AddCustomGlowOptions()
 		of:DoLayout()
 	end)
 
-	--InterfaceOptions_AddCategory(customGlowOptionsFrame)
 	if InterfaceOptions_AddCategory then
 		InterfaceOptions_AddCategory(customGlowOptionsFrame)
 	else
-		local category, layout = Settings.RegisterCanvasLayoutCategory(customGlowOptionsFrame, customGlowOptionsFrame.parent);
-		Settings.RegisterAddOnCategory(category);
-		MaxDps.settingsCategory = category
+		-- make the custom glow options a subcategory as intended, do not override the main options category
+		local category, layout = Settings.RegisterCanvasLayoutSubcategory(MaxDps.settingsCategory, customGlowOptionsFrame, customGlowOptionsFrame.name);
 	end
 end
