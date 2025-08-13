@@ -275,7 +275,11 @@ function Window:GetWindowConfig()
 					type   = 'checkbox',
 					label  = 'Enable addon',
 					column = 6,
-					order  = 1
+					order  = 1,
+					onChange = function(_, flag)
+						MaxDps.db.global.enabled = flag
+						MaxDps[(MaxDps.db.global.enabled and "EnableRotation" or "DisableRotation")](MaxDps)
+					end
 				},
 				cdOnlyMode       = {
 					type   = 'checkbox',
