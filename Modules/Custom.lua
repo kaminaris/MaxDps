@@ -42,28 +42,30 @@ function Custom:OnEnable()
     self.classList = {}
     self.specList = {}
 
-    for i = 1, GetNumClasses() do
+    for i = 1, MaxDps.IsClassicWow() and 11 or GetNumClasses() do -- Classic only returns 9 but Druid is 11
         local classDisplayName, classTag, classId = GetClassInfo(i)
-        TableInsert(self.classList, {
-            text  = self:GetClassIcon(classTag) .. ' ' .. classDisplayName,
-            value = classId
-        })
+        if not ((i==6 or i==10) and MaxDps.IsClassicWow()) then -- Skip DK 6 and Monk 10 in Classic but continue to Druid 11
+            TableInsert(self.classList, {
+                text  = self:GetClassIcon(classTag) .. ' ' .. classDisplayName,
+                value = classId
+            })
 
-        local specNum = GetNumSpecializationsForClassID(classId)
-        for sI = 0, specNum do
-            local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI)
-            if specName then
-                specName = '|T' .. specIcon .. ':0|t ' .. specName
-                if not self.Specs[classId] then
-                    self.Specs[classId] = {}
+            local specNum = GetNumSpecializationsForClassID(classId)
+            for sI = 0, specNum do
+                local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI)
+                if specName then
+                    specName = '|T' .. specIcon .. ':0|t ' .. specName
+                    if not self.Specs[classId] then
+                        self.Specs[classId] = {}
+                    end
+
+                    self.Specs[classId][sI] = specName
+
+                    if not self.specList[classId] then
+                        self.specList[classId] = {}
+                    end
+                    TableInsert(self.specList[classId], { text = specName, value = sI })
                 end
-
-                self.Specs[classId][sI] = specName
-
-                if not self.specList[classId] then
-                    self.specList[classId] = {}
-                end
-                TableInsert(self.specList[classId], { text = specName, value = sI })
             end
         end
     end
