@@ -18,11 +18,8 @@ local pcall = pcall
 local GetNumClasses = GetNumClasses
 local GetClassInfo = GetClassInfo
 
-local LCS = LibStub("LibClassicSpecs-Doadin", true)
---local GetSpecialization = LCS and LCS.GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
-
-local GetNumSpecializationsForClassID =  LCS and LCS.GetNumSpecializationsForClassID or C_SpecializationInfo and C_SpecializationInfo.GetNumSpecializationsForClassID or GetNumSpecializationsForClassID
-local GetSpecializationInfoForClassID =  LCS and LCS.GetSpecializationInfoForClassID or GetSpecializationInfoForClassID
+local GetNumSpecializationsForClassID =  C_SpecializationInfo and C_SpecializationInfo.GetNumSpecializationsForClassID or GetNumSpecializationsForClassID
+local GetSpecializationInfoForClassID =  GetSpecializationInfoForClassID
 
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 
