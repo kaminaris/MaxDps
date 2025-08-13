@@ -40,7 +40,7 @@ do
             [10] = { 268, 270, 269, 1450 },
             [11] = { 102, 103, 104, 105, 1447 },
         }
-        GetSpecializationInfoForClassID = function(classId, specIndex)
+        GetSpecializationInfoForClassID = function(classID, specIndex)
             local specID = specsByClassID[classID][specIndex]
             if not specID then
                 return nil
