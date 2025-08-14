@@ -2139,6 +2139,7 @@ local twwitems = {
     ["mirror_of_fractured_tomorrows"] = 418527,
     ["unyielding_netherprism"] = 1233556,
     ["spellstrike_warplance"] = 1243411,
+    ["cursed_stone_idol"] = 1242326,
 }
 
 function MaxDps:CheckSpellUsable(spell,spellstring)
