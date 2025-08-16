@@ -2149,6 +2149,24 @@ function MaxDps:FormatSim(itemname)
     return itemname
 end
 
+MaxDps.equipedItems = {}
+function MaxDps:TrackGearItems()
+    wipe(MaxDps.equipedItems)
+    for i=1,19 do
+        local itemLink = GetInventoryItemLink("player", i)
+        local itemID = GetInventoryItemID('player', i)
+        local itemSpellID = (itemID and select(2,GetItemSpell(itemID)) ) or 0
+        local itemName = itemLink and GetItemInfo(itemLink)
+        if itemName and itemSpellID then
+            if not twwitems[MaxDps:FormatSim(itemName)] then
+                twwitems[MaxDps:FormatSim(itemName)] = itemSpellID
+            end
+        end
+        if itemName and itemID then
+            MaxDps.equipedItems[MaxDps:FormatSim(itemName)] = itemSpellID and itemSpellID > 0 and itemSpellID or itemID
+        end
+    end
+end
 
 function MaxDps:CheckSpellUsable(spell,spellstring)
     if spell == 0 then
@@ -2549,13 +2567,19 @@ end
 
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+f:RegisterEvent("LOADING_SCREEN_DISABLED")
 
-f:SetScript("OnEvent", function()
-    if TrinketBuffCache then
-        wipe(TrinketBuffCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
+f:SetScript("OnEvent", function(self, event)
+    if event == "PLAYER_EQUIPMENT_CHANGED" then
+        if TrinketBuffCache then
+            wipe(TrinketBuffCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
+        end
+        if TrinketDurationCache then
+            wipe(TrinketDurationCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
+        end
     end
-    if TrinketDurationCache then
-        wipe(TrinketDurationCache) --luacheck: ignore 113 -- Clear the cache when equipment changes
+    if event == "PLAYER_EQUIPMENT_CHANGED" or event == "LOADING_SCREEN_DISABLED" then
+        MaxDps:TrackGearItems() -- Track gear items when equipment changes
     end
 end)
 
