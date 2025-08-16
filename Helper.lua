@@ -2143,6 +2143,13 @@ local twwitems = {
     ['skarmorak_shard'] = 443407,
 }
 
+function MaxDps:FormatSim(itemname)
+    if not itemname then return "" end
+    itemname = itemname:lower():gsub("%s+", "_"):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", ""):gsub('"', '')
+    return itemname
+end
+
+
 function MaxDps:CheckSpellUsable(spell,spellstring)
     if spell == 0 then
         return false
