@@ -45,6 +45,7 @@ TimeToDie.lua
 Modules/Custom.lua
 Modules/Window.lua
 Modules/Profiler.lua
+Modules/SpellIDToolTip.lua
 
 #@version-classic@
 SwingTimer.lua
