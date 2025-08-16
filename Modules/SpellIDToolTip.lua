@@ -34,6 +34,9 @@ end
 --function MyAddon:Dummy()
 --end
 function MyAddon:GameTooltip_OnTooltipSetSpell(self)
+    if not self then
+        self = GameTooltip
+    end
     local spellId = self.GetSpell and self:GetSpell() or self.id and self.id ~= 0 and self.id
     if self.type and self.type == 25 then
         if self.lines and self.lines[1] and self.lines[1] and self.lines[1].tooltipType == 1 then
@@ -46,13 +49,23 @@ function MyAddon:GameTooltip_OnTooltipSetSpell(self)
     end
 end
 function MyAddon:GameTooltip_OnTooltipSetItem(self)
-    maxdpstest = self
-    local itemId = self.GetItem and self:GetItem() or self.id and self.id ~= 0 and self.id
+    if not self then
+        self = GameTooltip
+    end
+    local itemId
+    if MaxDps and MaxDps.IsRetailWow() then
+        itemId = self.GetItem and self:GetItem() or self.id and self.id ~= 0 and self.id
+    else
+        itemId = self.GetID and self:GetID() or self.id and self.id ~= 0 and self.id
+    end
     if itemId then
         GameTooltip:AddLine("ID: " .. itemId)
     end
 end
-function MyAddon:GameTooltip_OnTooltipSetUnit(self)
+function MyAddon:GameTooltip_OnTooltipSetUnit(self,one,two,three,four,five,six,seven,eight,nine,ten)
+    if not self then
+        self = GameTooltip
+    end
     local unit = self:GetUnit()
     if unit then
         local guid = UnitGUID(unit)
@@ -92,7 +105,7 @@ function MyAddon:OnEnable()
         MyAddon:SecureHookScript(GameTooltip, 'OnTooltipSetSpell', MyAddon.GameTooltip_OnTooltipSetSpell)
         MyAddon:SecureHookScript(GameTooltip, 'OnTooltipSetItem', MyAddon.GameTooltip_OnTooltipSetItem)
         MyAddon:SecureHookScript(GameTooltip, 'OnTooltipSetUnit', MyAddon.GameTooltip_OnTooltipSetUnit)
-        MyAddon:SecureHookScript(E.SpellBookTooltip, 'OnTooltipSetSpell', MyAddon.GameTooltip_OnTooltipSetSpell)
+        --MyAddon:SecureHookScript(E.SpellBookTooltip, 'OnTooltipSetSpell', MyAddon.GameTooltip_OnTooltipSetSpell)
         --if not MaxDps.IsClassicWow() then -- what's the replacement in DF
         --    MyAddon:SecureHook(GameTooltip, 'SetCurrencyTokenByID')
         --end
