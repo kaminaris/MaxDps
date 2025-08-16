@@ -2192,7 +2192,8 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         if not IsSpellKnownOrOverridesKnown(spell) and
             spellstring ~= "trinket1" and
             spellstring ~= "trinket2" and
-            not twwitems[spellstring] then
+            not twwitems[spellstring] or
+            (twwitems[spellstring] and not MaxDps.equipedItems[spellstring]) then
                 return false
         end
         if not C_Spell.IsSpellUsable(spell) then return false end
