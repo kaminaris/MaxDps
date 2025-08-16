@@ -13,6 +13,8 @@ externals:
         url: https://repos.curseforge.com/wow/ace3/trunk/AceDB-3.0
     Libs/AceEvent-3.0:
         url: https://repos.curseforge.com/wow/ace3/trunk/AceEvent-3.0
+    Libs/AceHook-3.0:
+        url: https://repos.curseforge.com/wow/ace3/trunk/AceHook-3.0
     Libs/AceTimer-3.0:
         url: https://repos.curseforge.com/wow/ace3/trunk/AceTimer-3.0
     Libs/CallbackHandler-1.0:
