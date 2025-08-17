@@ -3,6 +3,7 @@ local MyAddon = LibStub("AceAddon-3.0"):NewAddon("MaxDpsHookDemo", "AceHook-3.0"
 local UnitAura = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex or UnitAura -- use C_UnitAuras if available
 
 function MyAddon:SetUnitAura(self,unit,index,filter)
+    if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
     local _,id, source
     if unit then
         -- print(UnitAura(unit,index,filter))
@@ -34,6 +35,7 @@ end
 --function MyAddon:Dummy()
 --end
 function MyAddon:GameTooltip_OnTooltipSetSpell(self)
+    if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
     if not self then
         self = GameTooltip
     end
@@ -49,6 +51,7 @@ function MyAddon:GameTooltip_OnTooltipSetSpell(self)
     end
 end
 function MyAddon:GameTooltip_OnTooltipSetItem(self)
+    if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
     if not self then
         self = GameTooltip
     end
@@ -62,7 +65,8 @@ function MyAddon:GameTooltip_OnTooltipSetItem(self)
         GameTooltip:AddLine("ID: " .. itemId)
     end
 end
-function MyAddon:GameTooltip_OnTooltipSetUnit(self,one,two,three,four,five,six,seven,eight,nine,ten)
+function MyAddon:GameTooltip_OnTooltipSetUnit(self)
+    if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
     if not self then
         self = GameTooltip
     end
