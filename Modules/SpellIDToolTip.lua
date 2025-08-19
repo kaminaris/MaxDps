@@ -39,7 +39,7 @@ function MyAddon:GameTooltip_OnTooltipSetSpell(self)
     if not self then
         self = GameTooltip
     end
-    local spellId = self.GetSpell and self:GetSpell() or self.id and self.id ~= 0 and self.id
+    local spellId = ( self.GetSpell and select(2,self:GetSpell()) ) or (self.id and self.id ~= 0 and self.id)
     if self.type and self.type == 25 then
         if self.lines and self.lines[1] and self.lines[1] and self.lines[1].tooltipType == 1 then
             spellId = self.lines[1].tooltipID or nil
@@ -59,7 +59,7 @@ function MyAddon:GameTooltip_OnTooltipSetItem(self)
     if MaxDps and MaxDps.IsRetailWow() then
         itemId = self.GetItem and self:GetItem() or self.id and self.id ~= 0 and self.id
     else
-        itemId = self.GetID and self:GetID() or self.id and self.id ~= 0 and self.id
+        itemId = self.GetItem and self:GetItem() or self.id and self.id ~= 0 and self.id
     end
     if itemId then
         GameTooltip:AddLine("ID: " .. itemId)
@@ -99,7 +99,7 @@ function MyAddon:OnEnable()
     --MyAddon:SecureHookScript(GameTooltip, 'OnTooltipCleared', 'GameTooltip_OnTooltipCleared')
     --MyAddon:SecureHookScript(GameTooltip.StatusBar, 'OnValueChanged', 'GameTooltipStatusBar_OnValueChanged')
 
-    if TooltipDataProcessor.AddTooltipPostCall and not MaxDps.IsMistsWow() then -- exists but doesn't work atm on Cata
+    if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and not MaxDps.IsMistsWow() and not MaxDps.IsClassicWow() then -- exists but doesn't work atm on Cata
         TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, MyAddon.GameTooltip_OnTooltipSetSpell)
         TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Macro, MyAddon.GameTooltip_OnTooltipSetSpell)
         TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, MyAddon.GameTooltip_OnTooltipSetItem)
