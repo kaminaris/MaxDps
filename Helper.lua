@@ -231,6 +231,23 @@ local function calculateRefreshable(aura)
     return (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration
 end
 
+-- Function to calculate 'value' dynamically
+local function calculateValue(aura)
+    local value = aura.points[1]
+    if aura and aura.spellId and not value then
+        if aura.spellId == 257284 then
+            value = 5
+        end
+        if aura.spellId == 1490 then
+            value = 3
+        end
+    end
+    if not value then
+        value = 1
+    end
+    return value
+end
+
 function MaxDps:CollectAuras(unitTarget, updateInfo)
     if not unitTarget then
         return
@@ -329,7 +346,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     duration       = aura.duration >0 and aura.duration or math.huge,
                     --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    value          = aura.points[1],
+                    --value          = aura.points[1] or 1,
+                    spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
                 setmetatable(self.PlayerAuras[aura.spellId], {
@@ -339,6 +357,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "refreshable" then
                             return calculateRefreshable(self.PlayerAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                        end
+                        if key == "value" then
+                            return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -356,7 +377,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     duration       = aura.duration >0 and aura.duration or math.huge,
                     --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    value          = aura.points[1],
+                    --value          = aura.points[1] or 1,
+                    spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
                 setmetatable(self.TargetAuras[aura.spellId], {
@@ -366,6 +388,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "refreshable" then
                             return calculateRefreshable(self.TargetAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                        end
+                        if key == "value" then
+                            return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -385,7 +410,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 duration       = aura.duration >0 and aura.duration or math.huge,
                 --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                 maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                value          = aura.points[1],
+                --value          = aura.points[1] or 1,
                 spellId        = aura.spellId,
                 auraID         = aura.auraInstanceID
             }
@@ -396,6 +421,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     end
                     if key == "refreshable" then
                         return calculateRefreshable(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate refreshable for ID 123
+                    end
+                    if key == "value" then
+                        return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                     end
                 end
             })
@@ -412,7 +440,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     duration       = aura.duration >0 and aura.duration or math.huge,
                     --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    value          = aura.points[1],
+                    --value          = aura.points[1] or 1,
+                    spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
                 setmetatable(self.TargetDispels[aura.spellId], {
@@ -422,6 +451,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "refreshable" then
                             return calculateRefreshable(self.TargetDispels[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                        end
+                        if key == "value" then
+                            return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -442,7 +474,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     duration       = aura.duration >0 and aura.duration or math.huge,
                     --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    value          = aura.points[1],
+                    --value          = aura.points[1] or 1,
+                    spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
                 setmetatable(self.PlayerAuras[aura.spellId], {
@@ -452,6 +485,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "refreshable" then
                             return calculateRefreshable(self.PlayerAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                        end
+                        if key == "value" then
+                            return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -467,7 +503,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     duration       = aura.duration >0 and aura.duration or math.huge,
                     --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    value          = aura.points[1],
+                    --value          = aura.points[1] or 1,
+                    spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
                 setmetatable(self.TargetAuras[aura.spellId], {
@@ -477,6 +514,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "refreshable" then
                             return calculateRefreshable(self.TargetAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                        end
+                        if key == "value" then
+                            return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -496,7 +536,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         duration       = aura.duration >0 and aura.duration or math.huge,
                         --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                         maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                        value          = aura.points[1],
+                        --value          = aura.points[1] or 1,
                         spellId        = aura.spellId,
                         auraID         = aura.auraInstanceID
                     }
@@ -507,6 +547,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             end
                             if key == "refreshable" then
                                 return calculateRefreshable(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                             end
                         end
                     })
@@ -523,7 +566,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     duration       = aura.duration >0 and aura.duration or math.huge,
                     --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                     maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    value          = aura.points[1],
+                    --value          = aura.points[1] or 1,
+                    spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
                 setmetatable(self.TargetDispels[aura.spellId], {
@@ -533,6 +577,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "refreshable" then
                             return calculateRefreshable(self.TargetDispels[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                        end
+                        if key == "value" then
+                            return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -555,7 +602,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         duration       = aura.duration >0 and aura.duration or math.huge,
                         --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                         maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                        value          = aura.points[1],
+                        --value          = aura.points[1] or 1,
+                        spellId        = aura.spellId,
                         auraID         = aura.auraInstanceID
                     }
                     setmetatable(self.PlayerAuras[aura.spellId], {
@@ -565,6 +613,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             end
                             if key == "refreshable" then
                                 return calculateRefreshable(self.PlayerAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
                         end
                     })
@@ -580,7 +631,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         duration       = aura.duration >0 and aura.duration or math.huge,
                         --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                         maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                        value          = aura.points[1],
+                        --value          = aura.points[1] or 1,
+                        spellId        = aura.spellId,
                         auraID         = aura.auraInstanceID
                     }
                     setmetatable(self.TargetAuras[aura.spellId], {
@@ -590,6 +642,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             end
                             if key == "refreshable" then
                                 return calculateRefreshable(self.TargetAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
                         end
                     })
@@ -609,7 +664,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             duration       = aura.duration >0 and aura.duration or math.huge,
                             --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                             maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                            value          = aura.points[1],
+                            --value          = aura.points[1] or 1,
                             spellId        = aura.spellId,
                             auraID         = aura.auraInstanceID
                         }
@@ -620,6 +675,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                                 end
                                 if key == "refreshable" then
                                     return calculateRefreshable(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate refreshable for ID 123
+                                end
+                                if key == "value" then
+                                    return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                                 end
                             end
                         })
@@ -636,7 +694,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         duration       = aura.duration >0 and aura.duration or math.huge,
                         --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
                         maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                        value          = aura.points[1],
+                        --value          = aura.points[1] or 1,
+                        spellId        = aura.spellId,
                         auraID         = aura.auraInstanceID
                     }
                     setmetatable(self.TargetDispels[aura.spellId], {
@@ -646,6 +705,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             end
                             if key == "refreshable" then
                                 return calculateRefreshable(self.TargetDispels[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate value for ID 123
                             end
                         end
                     })
