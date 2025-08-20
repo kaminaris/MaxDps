@@ -16,9 +16,10 @@ end
 function MaxDps:CountTier()
     local _, _, classIndex = UnitClass("player")
 
-    local count = 0
+    local count
 
     for _,tier in pairs(tiernumbers) do
+        count = 0
         for _,slotName in pairs(slots) do
             local match = nil
             local slotID = GetInventorySlotInfo(slotName)
