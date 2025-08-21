@@ -181,14 +181,15 @@ function MaxDps:CollectAura(unit, timeShift, output, filter)
     end
 end
 
+local spellDurationCache = {}
 local auraMetaTable = {
-    __index = function()
+    __index = function(_, spellID)
         return {
             up          = false,
             upMath      = 0,
             count       = 0,
             remains     = 0,
-            duration    = 0,
+            duration    = spellDurationCache and spellDurationCache[spellID] or 1,
             refreshable = true,
             maxStacks   = 0,
             value       = 0,
@@ -350,6 +351,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
+                spellDurationCache[aura.spellId] = aura.duration
                 setmetatable(self.PlayerAuras[aura.spellId], {
                     __index = function(_, key)
                         if key == "remains" then
@@ -381,6 +383,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
+                spellDurationCache[aura.spellId] = aura.duration
                 setmetatable(self.TargetAuras[aura.spellId], {
                     __index = function(_, key)
                         if key == "remains" then
@@ -414,6 +417,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                 spellId        = aura.spellId,
                 auraID         = aura.auraInstanceID
             }
+            spellDurationCache[aura.spellId] = aura.duration
             setmetatable(self.ActiveDots[guid][aura.auraInstanceID], {
                 __index = function(_, key)
                     if key == "remains" then
@@ -444,6 +448,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
+                spellDurationCache[aura.spellId] = aura.duration
                 setmetatable(self.TargetDispels[aura.spellId], {
                     __index = function(_, key)
                         if key == "remains" then
@@ -478,6 +483,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
+                spellDurationCache[aura.spellId] = aura.duration
                 setmetatable(self.PlayerAuras[aura.spellId], {
                     __index = function(_, key)
                         if key == "remains" then
@@ -507,6 +513,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
+                spellDurationCache[aura.spellId] = aura.duration
                 setmetatable(self.TargetAuras[aura.spellId], {
                     __index = function(_, key)
                         if key == "remains" then
@@ -540,6 +547,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         spellId        = aura.spellId,
                         auraID         = aura.auraInstanceID
                     }
+                    spellDurationCache[aura.spellId] = aura.duration
                     setmetatable(self.ActiveDots[guid][aura.auraInstanceID], {
                         __index = function(_, key)
                             if key == "remains" then
@@ -570,6 +578,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     spellId        = aura.spellId,
                     auraID         = aura.auraInstanceID
                 }
+                spellDurationCache[aura.spellId] = aura.duration
                 setmetatable(self.TargetDispels[aura.spellId], {
                     __index = function(_, key)
                         if key == "remains" then
@@ -606,6 +615,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         spellId        = aura.spellId,
                         auraID         = aura.auraInstanceID
                     }
+                    spellDurationCache[aura.spellId] = aura.duration
                     setmetatable(self.PlayerAuras[aura.spellId], {
                         __index = function(_, key)
                             if key == "remains" then
@@ -635,6 +645,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         spellId        = aura.spellId,
                         auraID         = aura.auraInstanceID
                     }
+                    spellDurationCache[aura.spellId] = aura.duration
                     setmetatable(self.TargetAuras[aura.spellId], {
                         __index = function(_, key)
                             if key == "remains" then
@@ -668,6 +679,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             spellId        = aura.spellId,
                             auraID         = aura.auraInstanceID
                         }
+                        spellDurationCache[aura.spellId] = aura.duration
                         setmetatable(self.ActiveDots[guid][aura.auraInstanceID], {
                             __index = function(_, key)
                                 if key == "remains" then
@@ -698,6 +710,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         spellId        = aura.spellId,
                         auraID         = aura.auraInstanceID
                     }
+                    spellDurationCache[aura.spellId] = aura.duration
                     setmetatable(self.TargetDispels[aura.spellId], {
                         __index = function(_, key)
                             if key == "remains" then
