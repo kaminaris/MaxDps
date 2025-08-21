@@ -233,7 +233,7 @@ end
 
 -- Function to calculate 'value' dynamically
 local function calculateValue(aura)
-    local value = aura.points[1]
+    local value = aura and aura.points and aura.points[1]
     if aura and aura.spellId and not value then
         if aura.spellId == 257284 then
             value = 5
