@@ -37,6 +37,7 @@ Libs\LibClassicSpecs\LibClassicSpecs.lua
 #@end-version-cata@
 
 SpellData.lua
+spell_durations.lua
 Core.lua
 Tier.lua
 Options.lua
