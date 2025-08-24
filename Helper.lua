@@ -2398,19 +2398,19 @@ function MaxDps:CheckTrinketCooldown(slot)
     end
     if slot == 13 or slot == 14 then
         local itemID = GetInventoryItemID('player', slot)
-        local _, duration, _ = C_Item.GetItemCooldown(itemID)
+        local _, duration, _ = itemID and C_Item.GetItemCooldown(itemID)
         return duration
     else
         local tOneitemID = GetInventoryItemID('player', 13)
         local tTwoitemID = GetInventoryItemID('player', 14)
-        local tOneitemName = C_Item.GetItemInfo(tOneitemID)
-        local tTwoitemName = C_Item.GetItemInfo(tTwoitemID)
+        local tOneitemName = tOneitemID and C_Item.GetItemInfo(tOneitemID)
+        local tTwoitemName = tTwoitemID and C_Item.GetItemInfo(tTwoitemID)
         if tOneitemName == slot then
-            local _, duration, _ = C_Item.GetItemCooldown(tOneitemID)
+            local _, duration, _ = tOneitemID and C_Item.GetItemCooldown(tOneitemID)
             return duration
         end
         if tTwoitemName == slot then
-            local _, duration, _ = C_Item.GetItemCooldown(tTwoitemID)
+            local _, duration, _ = tTwoitemID and  C_Item.GetItemCooldown(tTwoitemID)
             return duration
         end
     end
