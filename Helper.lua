@@ -937,6 +937,45 @@ function MaxDps:CheckTalents()
                                 end
                             end
                         end
+                        if nodeInfo.type == 2 then
+                            for i,eID in pairs(nodeInfo.entryIDs) do
+                                local eEntryInfo = C_Traits.GetEntryInfo(configID, eID)
+                                local eDefinitionInfo = eEntryInfo and eEntryInfo.definitionID and C_Traits.GetDefinitionInfo(eEntryInfo.definitionID)
+                                if eDefinitionInfo then
+                                    if nodeInfo and nodeInfo.entryIDs and nodeInfo.entryIDsWithCommittedRanks then
+                                        local found = false
+                                        for _, committedID in pairs(nodeInfo.entryIDsWithCommittedRanks) do
+                                            if eID == committedID then
+                                                found = true
+                                            end
+                                        end
+                                        if found then
+                                            self.PlayerTalents[eDefinitionInfo.spellID] = nodeInfo.currentRank
+                                        else
+                                            self.PlayerTalents[eDefinitionInfo.spellID] = false
+                                        end
+                                    end
+                                    --self.PlayerTalents[eDefinitionInfo.spellID] = false
+                                end
+                            end
+                        end
+                    else
+                        local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID
+                        local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID)
+                        local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
+                        if entryID and entryInfo.definitionID then
+                            self.PlayerTalents[definitionInfo.spellID] = false
+                        else
+                            if nodeInfo.type == 2 then
+                                for i,eID in pairs(nodeInfo.entryIDs) do
+                                    local eEntryInfo = C_Traits.GetEntryInfo(configID, eID)
+                                    local eDefinitionInfo = eEntryInfo and eEntryInfo.definitionID and C_Traits.GetDefinitionInfo(eEntryInfo.definitionID)
+                                    if eDefinitionInfo then
+                                        self.PlayerTalents[eDefinitionInfo.spellID] = false
+                                    end
+                                end
+                            end
+                        end
                     end
                 end
             end
