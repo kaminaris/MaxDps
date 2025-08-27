@@ -2255,6 +2255,12 @@ local twwitems = {
     ["spellstrike_warplance"] = 1243411,
     ["cursed_stone_idol"] = 1242326,
     ['skarmorak_shard'] = 443407,
+    ['arazs_ritual_forge'] = 1232802,
+    ['sunblood_amethyst'] = 343393,
+    ['lily_of_the_eternal_weave'] = 1244029,
+    ['mereldars_toll'] = 450561,
+    ['soulletting_ruby'] = 345801,
+    ['quickwick_candlestick'] = 455451,
 }
 
 function MaxDps:FormatSim(itemname)
