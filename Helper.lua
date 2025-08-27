@@ -963,7 +963,7 @@ function MaxDps:CheckTalents()
                         local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID and nodeInfo.activeEntry.entryID
                         local entryInfo = entryID and C_Traits.GetEntryInfo(configID, entryID)
                         local definitionInfo = entryInfo and entryInfo.definitionID and C_Traits.GetDefinitionInfo(entryInfo.definitionID)
-                        if entryID and entryInfo.definitionID then
+                        if entryID and entryInfo.definitionID and definitionInfo and definitionInfo.spellID then
                             self.PlayerTalents[definitionInfo.spellID] = false
                         else
                             if nodeInfo.type == 2 then
