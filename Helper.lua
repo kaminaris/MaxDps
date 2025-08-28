@@ -2261,6 +2261,8 @@ local twwitems = {
     ['mereldars_toll'] = 450561,
     ['soulletting_ruby'] = 345801,
     ['quickwick_candlestick'] = 455451,
+    ["perfidious_projector"] = 1244636,
+    ["blastmaster3000"] = 1214941,
 }
 
 function MaxDps:FormatSim(itemname)

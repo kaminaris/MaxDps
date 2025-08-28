@@ -510,6 +510,8 @@ function MaxDps:UpdateSpellsAndTalents()
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["mereldars_toll"] = 450561
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["soulletting_ruby"] = 345801
         MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["quickwick_candlestick"] = 455451
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["perfidious_projector"] = 1244636
+        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["blastmaster3000"] = 1214941
         --
         MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]
         for spellName,spellID in pairs(MaxDps.SpellTable) do
