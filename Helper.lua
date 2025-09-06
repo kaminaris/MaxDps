@@ -1757,32 +1757,29 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
             start, duration, enabled = GetSpellCooldown(spellId)
         end
 
-        if start and duration then
-            if spellId and duration == 0 and GetSpellBaseCooldown and GetSpellBaseCooldown(spellId) > 0 then
-                duration = GetSpellBaseCooldown(spellId) / 1000
-            end
+        if not start then
+            remains = 100000 --luacheck: ignore
+            start = GetTime()
+            duration = 10000
+        end
 
-            if start > 0 then
-                remains = duration - (GetTime() - start)
-            else
-                remains = start
-            end
-            if (GCDduration and GCDduration > 0) then
-                if remains <= GCDduration then -- + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
-                    remains = 0
-                end
-            end
-            if (remains <= 0.5) then
+        if start > 0 then
+            remains = duration - (GetTime() - start)
+        else
+            remains = start
+        end
+        if (GCDduration and GCDduration > 0) then
+            if remains <= GCDduration then -- + (MaxDpsOptions and MaxDpsOptions.global and  MaxDpsOptions.global.interval or 0.2) then
                 remains = 0
             end
+        end
+        if (remains <= 0.5) then
+            remains = 0
+        end
 
-            fullRecharge = remains
-            partialRecharge = remains
-        end
+        fullRecharge = remains
+        partialRecharge = remains
     else
-        if spellId and duration == 0 and GetSpellBaseCooldown and GetSpellBaseCooldown(spellId) > 0 then
-            duration = GetSpellBaseCooldown(spellId) / 1000
-        end
         if start > 0 then
             remains = duration - (GetTime() - start)
         else
@@ -1815,11 +1812,11 @@ function MaxDps:CooldownConsolidated(spellId, timeShift)
     end
 
     return {
-        duration        = duration and duration or 0,
-        ready           = (remains or 0) <= 0,
-        remains         = remains and remains or 0,
-        fullRecharge    = fullRecharge or 0,
-        partialRecharge = partialRecharge or 0,
+        duration        = (duration and duration / 1000) or 0,
+        ready           = remains <= 0,
+        remains         = remains,
+        fullRecharge    = fullRecharge,
+        partialRecharge = partialRecharge,
         charges         = charges or 1,
         maxCharges      = maxCharges or 1
     }
