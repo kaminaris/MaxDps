@@ -2301,6 +2301,10 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         MaxDps:Print(self.Colors.Error .. "Error No Spell Data For " .. spellstring, "error")
         return false
     end
+    -- Looks crazy but work around spells ids being different based on talents and talent id being diffeent from spell id may work outside retail but needs testing.
+    if MaxDps:IsRetailWow() then
+        spell = C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).spellID or spell
+    end
     local isPassive = C_Spell.IsSpellPassive(spell)
     if isPassive then
         return false
