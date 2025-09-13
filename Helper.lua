@@ -2302,8 +2302,16 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         return false
     end
     -- Looks crazy but work around spells ids being different based on talents and talent id being diffeent from spell id may work outside retail but needs testing.
+    -- Need to compare spell name so it does not try to cast a base spell that has been overritten by a talent or proc. Could move to seperate funtion to be used elsewhere.
+    -- When quering spellinfo by name it will return the known spell id instead of just a base id or talent id.
+    -- Eg. Feral druid Primal Wrath Replaces Swipe without name Comparison it will try to cast Swipe when Primal Wrath is the known spell.
+    -- Eg. Warrior Thane Thunder Clap Procs and Turns into Thunder Blast, the talent id for TB is different from spell id so need to find the known spell id.
     if MaxDps:IsRetailWow() then
-        spell = C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).spellID or spell
+        local originalSpellName = C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(spell).name
+        local NewName = C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).name or ""
+        if NewName and NewName == originalSpellName then
+            spell = (C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).spellID) or spell
+        end
     end
     local isPassive = C_Spell.IsSpellPassive(spell)
     if isPassive then
