@@ -2021,6 +2021,25 @@ function MaxDps:TargetsInRange(spell)
     return count
 end
 
+local specialThreatUnits = {
+    -- Risen Soul, Tormented Soul, Lost Soul
+    [148716] = true,
+    [148893] = true,
+    [148894] = true,
+    -- Retail Manaforge Omega: Forgeweaver
+    [242586] = true, --Arcane Manifestation(242586)
+    [240905] = true, --Arcane Collector(240905)
+    -- Retail training dummies
+    [219250] = true, -- PvP training dummies(219250)
+    [225982] = true, -- Cleave Training Dummy(225982)
+    [225983] = true, -- Dungeoneer's Training Dummy(225982)
+    [225984] = true, -- Training Dummy(225982)
+    [225977] = true, -- Dungeoneer's Training Dummy(225977)
+    [225976] = true, -- Normal Tank Dummy(225976)
+    [225978] = true, -- Crystalmaw
+    [225985] = true, -- Kelpfist
+}
+
 function MaxDps:ThreatCounter()
     local count = 0
     local units = {}
@@ -2031,15 +2050,24 @@ function MaxDps:ThreatCounter()
             TableInsert(units, unit)
         else
             local npcId = Select(6, StringSplit('-', UnitGUID(unit)))
+            --if npcId then
+            --    print(UnitName(unit) .. " not included with id " .. npcId .. " " .. tostring(UnitAffectingCombat(unit)) .. " " .. tostring(UnitIsEnemy('player', unit)))
+            --end
             npcId = tonumber(npcId)
             -- Risen Soul, Tormented Soul, Lost Soul
-            if npcId == 148716 or npcId == 148893 or npcId == 148894 then
+            -- Retail Manaforge Omega: Forgeweaver: Arcane Manifestation(242586), Arcane Collector(240905)
+            -- Retail: pvp training dummies (219250)
+            -- Also add units that are enemys but don't show threat status
+            -- this still discludes friendly units and neutrals
+            if UnitIsEnemy('player', unit) or specialThreatUnits[npcId] then
+            -- (npcId == 148716 or npcId == 148893 or npcId == 148894 or npcId == 242586 or npcId == 240905 or npcId == 219250) then
                 count = count + 1
                 TableInsert(units, unit)
             end
         end
     end
 
+    --print("Units in combat: " .. count)
     return count, units
 end
 
