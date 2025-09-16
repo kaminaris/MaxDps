@@ -2312,6 +2312,10 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         if NewName and NewName == originalSpellName then
             spell = (C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).spellID) or spell
         end
+        local spellCooldownInfo = MaxDps:CooldownConsolidated(spell)
+        if spellCooldownInfo and not spellCooldownInfo.ready then
+            return false
+        end
     end
     local isPassive = C_Spell.IsSpellPassive(spell)
     if isPassive then
