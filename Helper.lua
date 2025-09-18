@@ -2040,29 +2040,39 @@ local specialThreatUnits = {
     [225985] = true, -- Kelpfist
 }
 
+local specialTargetsIgnore = {
+    -- Halls of Atonement
+    -- High Adjudicator Aleez
+    [165913] = true, -- Ghastly Parishioner
+}
+
 function MaxDps:ThreatCounter()
     local count = 0
     local units = {}
 
     for _, unit in ipairs(self.visibleNameplates) do
+        local npcId = Select(6, StringSplit('-', UnitGUID(unit)))
+        npcId = npcId and tonumber(npcId)
         if UnitThreatSituation('player', unit) ~= nil then
-            count = count + 1
-            TableInsert(units, unit)
+            if not npcId or (npcId and not specialTargetsIgnore[npcId]) then
+                count = count + 1
+                TableInsert(units, unit)
+            end
         else
-            local npcId = Select(6, StringSplit('-', UnitGUID(unit)))
             --if npcId then
             --    print(UnitName(unit) .. " not included with id " .. npcId .. " " .. tostring(UnitAffectingCombat(unit)) .. " " .. tostring(UnitIsEnemy('player', unit)))
             --end
-            npcId = tonumber(npcId)
             -- Risen Soul, Tormented Soul, Lost Soul
             -- Retail Manaforge Omega: Forgeweaver: Arcane Manifestation(242586), Arcane Collector(240905)
             -- Retail: pvp training dummies (219250)
             -- Also add units that are enemys but don't show threat status
             -- this still discludes friendly units and neutrals
-            if UnitIsEnemy('player', unit) or specialThreatUnits[npcId] then
+            if (UnitIsEnemy('player', unit) or specialThreatUnits[npcId]) then
             -- (npcId == 148716 or npcId == 148893 or npcId == 148894 or npcId == 242586 or npcId == 240905 or npcId == 219250) then
-                count = count + 1
-                TableInsert(units, unit)
+                if not npcId or (npcId and not specialTargetsIgnore[npcId]) then
+                    count = count + 1
+                    TableInsert(units, unit)
+                end
             end
         end
     end
