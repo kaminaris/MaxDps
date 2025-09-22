@@ -2038,6 +2038,10 @@ local specialThreatUnits = {
     [225976] = true, -- Normal Tank Dummy(225976)
     [225978] = true, -- Crystalmaw
     [225985] = true, -- Kelpfist
+    -- Mop training dummies
+    [46647] = true, -- Training Dummy(46647)
+    [67127] = true, -- Training Dummy(67127)
+    [31146] = true, -- Raider's Training Dummy(31146)
 }
 
 local specialTargetsIgnore = {
