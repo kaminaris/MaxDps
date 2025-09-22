@@ -311,26 +311,23 @@ function MaxDps:OnEnable()
         self.playerUnitFrame:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', 'player')
         self.playerUnitFrame:SetScript('OnEvent', function(_, _, _, _, spellId)
             -- event, unit, lineId
-            if not spellHistoryBlacklist[spellId] and IsPlayerSpell(spellId) then
-                TableInsert(self.spellHistory, 1, spellId)
+            if not spellHistoryBlacklist[spellId] then
+                if IsPlayerSpell(spellId) then
+                    TableInsert(self.spellHistory, 1, spellId)
+                end
                 if MaxDps:IsRetailWow() then
                     if not self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] then
                         self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] = {}
                     end
                     self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))].last_used = GetTime()
-
-                    if #self.spellHistory > 5 then
-                        TableRemove(self.spellHistory)
-                    end
                 else
                     if not self.spellHistoryTime[FormatItemorSpell(GetSpellInfo(spellId))] then
                         self.spellHistoryTime[FormatItemorSpell(GetSpellInfo(spellId))] = {}
                     end
                     self.spellHistoryTime[FormatItemorSpell(GetSpellInfo(spellId))].last_used = GetTime()
-
-                    if #self.spellHistory > 5 then
-                        TableRemove(self.spellHistory)
-                    end
+                end
+                if self.spellHistory and #self.spellHistory > 5 then
+                    TableRemove(self.spellHistory)
                 end
             end
         end)
