@@ -2069,7 +2069,8 @@ function MaxDps:ThreatCounter()
             -- Retail: pvp training dummies (219250)
             -- Also add units that are enemys but don't show threat status
             -- this still discludes friendly units and neutrals
-            if (UnitIsEnemy('player', unit) or specialThreatUnits[npcId]) then
+            -- don't include UnitIsEnemy('player', unit) or here or we will include mobs not in combat
+            if (specialThreatUnits[npcId]) then
             -- (npcId == 148716 or npcId == 148893 or npcId == 148894 or npcId == 242586 or npcId == 240905 or npcId == 219250) then
                 if not npcId or (npcId and not specialTargetsIgnore[npcId]) then
                     count = count + 1
