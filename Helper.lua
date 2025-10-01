@@ -2259,9 +2259,10 @@ end
 --FindBaseSpellByID
 
 function MaxDps:FormatItemorSpell(str)
-    if not str then return "" end
-    if type(str) ~= "string" then return end
-    return str:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", "")
+    if not str then return "FORMATEGOTNIL" end
+    if type(str) ~= "string" then return "FORMATEGOTNOTSTRING" end
+    str = str:gsub("%s+", ""):gsub("%'", ""):gsub("%,", ""):gsub("%-", ""):gsub("%:", "") or str
+    return str
 end
 
 local twwitems = {
