@@ -249,6 +249,23 @@ local function calculateValue(aura)
     return value
 end
 
+local function calculateCastTime(aura)
+    local castTime = 0
+    if aura and aura.spellId then
+        local spellInfo = GetSpellInfo(aura.spellId)
+        castTime = spellInfo and spellInfo.castTime or 0
+        if castTime and castTime > 0 then
+            local haste = UnitSpellHaste("player") / 100
+            return castTime / (1 + haste)
+        end
+    end
+    return castTime
+end
+
+local function calculateTickTimeRemains(aura)
+    return (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime()
+end
+
 function MaxDps:CollectAuras(unitTarget, updateInfo)
     if not unitTarget then
         return
@@ -363,6 +380,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         if key == "value" then
                             return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
+                        if key == "cast_time" then
+                            return calculateCastTime(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "tick_time_remains" then
+                            return calculateTickTimeRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
                     end
                 })
             end
@@ -394,6 +417,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "value" then
                             return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "cast_time" then
+                            return calculateCastTime(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "tick_time_remains" then
+                            return calculateTickTimeRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -429,6 +458,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     if key == "value" then
                         return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                     end
+                    if key == "cast_time" then
+                        return calculateCastTime(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                    end
+                    if key == "tick_time_remains" then
+                        return calculateTickTimeRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                    end
                 end
             })
         end
@@ -459,6 +494,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "value" then
                             return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "cast_time" then
+                            return calculateCastTime(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "tick_time_remains" then
+                            return calculateTickTimeRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -495,6 +536,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         if key == "value" then
                             return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
+                        if key == "cast_time" then
+                            return calculateCastTime(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "tick_time_remains" then
+                            return calculateTickTimeRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
                     end
                 })
             end
@@ -524,6 +571,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "value" then
                             return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "cast_time" then
+                            return calculateCastTime(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "tick_time_remains" then
+                            return calculateTickTimeRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -559,6 +612,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             if key == "value" then
                                 return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                             end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                            end
                         end
                     })
                 end
@@ -589,6 +648,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         end
                         if key == "value" then
                             return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "cast_time" then
+                            return calculateCastTime(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                        end
+                        if key == "tick_time_remains" then
+                            return calculateTickTimeRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
@@ -627,6 +692,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             if key == "value" then
                                 return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
                         end
                     })
                 end
@@ -656,6 +727,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             end
                             if key == "value" then
                                 return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
                         end
                     })
@@ -691,6 +768,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                                 if key == "value" then
                                     return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                                 end
+                                if key == "cast_time" then
+                                    return calculateCastTime(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                end
+                                if key == "tick_time_remains" then
+                                    return calculateTickTimeRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                end
                             end
                         })
                     end
@@ -721,6 +804,12 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                             end
                             if key == "value" then
                                 return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate value for ID 123
+                            end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
                         end
                     })
