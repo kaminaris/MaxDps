@@ -512,7 +512,7 @@ function MaxDps:UpdateSpellsAndTalents()
         --
         MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]
         for spellName,spellID in pairs(MaxDps.SpellTable) do
-            local origSpellData = C_Spell.GetSpellInfo(spellID)
+            local origSpellData = spellID and C_Spell.GetSpellInfo(spellID)
             local origSpellName = origSpellData and origSpellData.name
             local spellData = origSpellName and C_Spell.GetSpellInfo(origSpellName)
             if spellID and origSpellName and spellData then
