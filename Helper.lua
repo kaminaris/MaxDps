@@ -1735,10 +1735,10 @@ function MaxDps:EndCast(target)
         local gstart, gduration
         if C_Spell and C_Spell.GetSpellCooldown then
             local spellCooldownInfo = _GlobalCooldown and C_Spell.GetSpellCooldown(_GlobalCooldown)
-            gstart = spellCooldownInfo and spellCooldownInfo.startTime
-            gduration = spellCooldownInfo and spellCooldownInfo.duration
+            gstart = spellCooldownInfo and spellCooldownInfo.startTime or 0
+            gduration = spellCooldownInfo and spellCooldownInfo.duration or 0
         else
-            gstart, gduration = GetSpellCooldown(_GlobalCooldown)
+            gstart, gduration = GetSpellCooldown(_GlobalCooldown) or 0, 0
         end
         gcd = gduration - (t - gstart)
 
