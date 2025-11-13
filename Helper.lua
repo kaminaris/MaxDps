@@ -3040,7 +3040,7 @@ function MaxDps:FindADAuraData(spellID)
         value          = 0,
     }
     local lname = C_Spell.GetSpellName(spellID)
-    if not lname then return end
+    if not lname then MaxDps:Print(self.Colors.Error .. "Invalid Spell ID " .. spellID, "error") return aura end
     for guid,AuraIDTable in pairs(MaxDps.ActiveDots) do
         --print(guid,AuraIDTable)
         for iD, Data in pairs(AuraIDTable) do
@@ -3083,7 +3083,7 @@ function MaxDps:FindBuffAuraData(spellID)
         value          = 0,
     }
     local lname = C_Spell.GetSpellName(spellID)
-    if not lname then return end
+    if not lname then MaxDps:Print(self.Colors.Error .. "Invalid Spell ID " .. spellID, "error") return aura end
     for _,Data in pairs(MaxDps.PlayerAuras) do
         if lname == Data.name then
             local remains = 0
@@ -3123,7 +3123,7 @@ function MaxDps:FindDeBuffAuraData(spellID)
         value          = 0,
     }
     local lname = C_Spell.GetSpellName(spellID)
-    if not lname then return end
+    if not lname then MaxDps:Print(self.Colors.Error .. "Invalid Spell ID " .. spellID, "error") return aura end
     for _,Data in pairs(MaxDps.TargetAuras) do
         if lname == Data.name then
             local remains = 0
