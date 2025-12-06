@@ -890,21 +890,22 @@ function MaxDps:GlowSpell(spellId)
 
         self.SpellsGlowing[overrideID] = 1
         foundspell = true
-    else
-        if MaxDps:IsRetailWow() or MaxDps:IsClassicWow() then
-            C_Spell.RequestLoadSpellData(spellId)
-            local searchName = GetSpellName and GetSpellName(spellId) or GetSpellInfo(spellId)
-            for spellid,v in pairs(self.Spells) do
-                local knownSpellName = GetSpellName and GetSpellName(spellid) or GetSpellInfo(spellId)
-                if searchName == knownSpellName then
-                    for _, button in pairs(self.Spells[spellid]) do
-                        self:Glow(button, 'next', nil, 'normal')
-                    end
-                    self.SpellsGlowing[spellid] = 1
-                    foundspell = true
+    end
+
+    if (MaxDps:IsRetailWow() and not foundspell) or (MaxDps:IsClassicWow() or MaxDps:IsTBCWow()) then
+        C_Spell.RequestLoadSpellData(spellId)
+        local searchName = GetSpellName and GetSpellName(spellId) or GetSpellInfo(spellId)
+        for spellid,v in pairs(self.Spells) do
+            local knownSpellName = GetSpellName and GetSpellName(spellid) or GetSpellInfo(spellId)
+            if searchName == knownSpellName then
+                for _, button in pairs(self.Spells[spellid]) do
+                    self:Glow(button, 'next', nil, 'normal')
                 end
+                self.SpellsGlowing[spellid] = 1
+                foundspell = true
             end
         end
+    end
 
     --elseif self.Spells[spellId] == nil and (BaseSpellID and self.Spells[BaseSpellID] == nil) and (overrideID and self.Spells[overrideID] == nil) then
     --    for _, index in pairs(self.Spells) do
@@ -944,7 +945,7 @@ function MaxDps:GlowSpell(spellId)
     --            end
     --        end
     --    end
-    end
+    --end
     if foundspell == false then
         local spellInfo = GetSpellInfo(spellId)
         local spellName = spellInfo and spellInfo.name

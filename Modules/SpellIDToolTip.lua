@@ -99,7 +99,7 @@ function MyAddon:OnEnable()
     --MyAddon:SecureHookScript(GameTooltip, 'OnTooltipCleared', 'GameTooltip_OnTooltipCleared')
     --MyAddon:SecureHookScript(GameTooltip.StatusBar, 'OnValueChanged', 'GameTooltipStatusBar_OnValueChanged')
 
-    if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and not MaxDps.IsMistsWow() and not MaxDps.IsClassicWow() then -- exists but doesn't work atm on Cata
+    if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and not MaxDps.IsMistsWow() and not MaxDps.IsClassicWow() and not MaxDps:IsTBCWow() then -- exists but doesn't work atm on Cata
         TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, MyAddon.GameTooltip_OnTooltipSetSpell)
         TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Macro, MyAddon.GameTooltip_OnTooltipSetSpell)
         TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, MyAddon.GameTooltip_OnTooltipSetItem)

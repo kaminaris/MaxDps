@@ -286,7 +286,9 @@ function MaxDps:OnEnable()
     --self:RegisterBucketEvent('ACTIONBAR_UPDATE_STATE', 1, 'ButtonFetch')
     self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'ButtonFetch')
     self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', 'ButtonFetch')
-    self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch')
+    if not MaxDps:IsTBCWow() then
+        self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch')
+    end
     self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch')
     self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch')
     self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'ButtonFetch')
@@ -545,7 +547,7 @@ function MaxDps:UpdateSpellsAndTalents()
         --
         MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]]
     end
-    if MaxDps:IsClassicWow() then
+    if MaxDps:IsClassicWow() or MaxDps:IsTBCWow() then
         -- Insert Racials
         --MaxDpsSpellTable[idtoclass[classId]][name]["Berserking"] = 26297
         --MaxDpsSpellTable[idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924

@@ -2529,7 +2529,7 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
     end
 
     local spellFound = false
-    if MaxDps:IsClassicWow() then
+    if MaxDps:IsClassicWow() or MaxDps:IsTBCWow() then
         -- Loop through all the spells in the player's spellbook
         local lspellName = C_Spell.GetSpellName(spell)
         for i = 1, GetNumSpellTabs() do
