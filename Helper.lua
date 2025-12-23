@@ -3085,7 +3085,11 @@ function MaxDps:FindBuffAuraData(spellID)
     local lname = C_Spell.GetSpellName(spellID)
     if not lname then MaxDps:Print(self.Colors.Error .. "Invalid Spell ID " .. spellID, "error") return aura end
     for _,Data in pairs(MaxDps.PlayerAuras) do
-        if lname == Data.name then
+        --print("Player Has for: ", (Data.name:gsub(" Totem", "")))
+        --print("Searching for: ", (lname:gsub(" Totem", "")))
+        if (lname == Data.name) or
+        ((Data.name:gsub(" Totem", "")) == (lname:gsub(" Totem", "")))
+         then
             local remains = 0
             if Data.expirationTime == nil then
                 remains = 0
@@ -3104,6 +3108,34 @@ function MaxDps:FindBuffAuraData(spellID)
             aura.refreshable = remains < 0.3 * Data.duration
             aura.maxStacks = (Data.maxCharges and Data.maxCharges > 0 and Data.maxCharges) or 1
             aura.value = Data.points and Data.points[1] or 0
+        end
+    end
+
+    if MaxDps.className == "Shaman" then
+        for i=1,4 do
+            local _, totemName, startTime, duration = GetTotemInfo(i)
+            local totemNameOne = totemName and totemName:match("^(.-Totem)")
+            lname = lname and (lname:match("^(.-)Effect")) or lname
+            lname = lname and (lname:gsub("%s+$", "")) or lname
+            --if totemNameOne and lname then
+            --    print(firstDifference(totemNameOne, lname))
+            --    print((">%q<"):format(totemNameOne))
+            --    print((">%q<"):format(lname))
+            --end
+            if
+                (totemNameOne and lname and (totemNameOne == lname or (lname:gsub(" Totem", "")) == (totemNameOne:gsub(" Totem", "")) ) )
+            then
+                aura.name = lname
+                aura.up = true
+                aura.upMath = 1
+                aura.count = 1
+                aura.expirationTime = math.huge
+                aura.remains = (startTime and duration and math.floor(startTime+duration-GetTime()) ) or math.huge
+                aura.duration = (duration and duration > 0 and duration) or math.huge
+                aura.refreshable = (startTime and duration and math.floor(startTime+duration-GetTime()) ) < 0.3 or false
+                aura.maxStacks = 1
+                aura.value = 0
+            end
         end
     end
     return aura

@@ -779,6 +779,7 @@ function MaxDps:LoadModule(skipPrint)
     end
 
     local className = self.Classes[self.ClassId]
+    MaxDps.className = className
     local module = 'MaxDps_' .. className
     local _, _, _, loadable, reason = GetAddOnInfo(module)
 
