@@ -36,3 +36,4 @@ externals:
 ignore:
     - README.md
     - CHANGELOG.md
+    - supported_specs.md
