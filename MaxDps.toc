@@ -8,7 +8,7 @@
 ## Interface-BCC: 20504
 ## Interface-Wrath: 30403
 ## Interface-Cata: 40402
-## Interface-Mists: 50502
+## Interface-Mists: 50503
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI, Neuron, LibRangeCheck-3.0
 ## X-Curse-Project-ID: 91970
@@ -32,6 +32,9 @@ Libs\LibRangeCheck-3.0\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 #@version-classic@
 Libs\LibClassicSpecs\LibClassicSpecs.lua
 #@end-version-classic@
+#@version-bcc@
+Libs\LibClassicSpecs\LibClassicSpecs.lua
+#@end-version-bcc@
 #@version-cata@
 Libs\LibClassicSpecs\LibClassicSpecs.lua
 #@end-version-cata@
