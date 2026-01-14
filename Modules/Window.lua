@@ -222,8 +222,8 @@ function Window:GetWindowConfig()
 				},
 				forum   = {
 					type         = 'editBox',
-					label        = 'Patreon',
-					initialValue = 'https://www.patreon.com/maxdps',
+					label        = 'Doadins Paypal',
+					initialValue = 'https://www.paypal.com/cgi-bin/webscr?cn=Add+special+instructions+to+the+addon+author()&business=doadindonates%40gmail.com&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted&lc=US&item_name=Addons&cmd=_donations&rm=1&no_shipping=1&currency_code=USD',
 					column       = 6,
 					order        = 2,
 				}
