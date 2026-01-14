@@ -3,6 +3,7 @@
 ---
 
 ### Discord for support: [https://discord.gg/wCSj5SD](https://discord.gg/wCSj5SD)
+### Paypal for donations: [https://www.paypal.com/cgi-bin/webscr?cn=Add+special+instructions+to+the+addon+author()&business=doadindonates%40gmail.com&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted&lc=US&item_name=MaxDpsAddons&cmd=_donations&rm=1&no_shipping=1&currency_code=USD ](https://www.paypal.com/cgi-bin/webscr?cn=Add+special+instructions+to+the+addon+author()&business=doadindonates%40gmail.com&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted&lc=US&item_name=MaxDpsAddons&cmd=_donations&rm=1&no_shipping=1&currency_code=USD)
 [![](https://i.postimg.cc/g2R7fKHG/discord.png)](https://discord.gg/wCSj5SD)
 
 
