@@ -222,7 +222,7 @@ function Window:GetWindowConfig()
 				},
 				forum   = {
 					type         = 'editBox',
-					label        = 'Doadins Paypal',
+					label        = 'Paypal for Donations',
 					initialValue = 'https://www.paypal.com/cgi-bin/webscr?cn=Add+special+instructions+to+the+addon+author()&business=doadindonates%40gmail.com&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHosted&lc=US&item_name=Addons&cmd=_donations&rm=1&no_shipping=1&currency_code=USD',
 					column       = 6,
 					order        = 2,
@@ -253,9 +253,7 @@ function Window:GetWindowConfig()
 			{
 				infoText = {
 					type  = 'label',
-					label = 'Patreons:\n\n- Nub\n- Pman\n- monetta\n- Critycal\n\n' ..
-						'Special thanks to everyone that helped with implementing BfA rotations, submitted bug reports' ..
-						' and pull requests :)'
+					label = 'Special thanks to everyone for your continued support and help.'
 				},
 			},
 		}
