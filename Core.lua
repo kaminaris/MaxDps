@@ -182,10 +182,11 @@ function MaxDps:EnableRotation(skipPrint)
 
     if self.NextSpell == nil or self.rotationEnabled then
         local currentSpec = GetSpecialization()
-        if currentSpec and currentSpec == 5 then
-            self:Print(self.Colors.Error .. 'You are not in a spec, this is required for MaxDps to work!', "error")
+        if (currentSpec and currentSpec == 5) or (currentSpec and not MaxDps:IsRetailWow() and currentSpec == 0) then
+            self:Print(self.Colors.Info .. 'You are not in a spec, this is required for MaxDps to work!', "info")
+        else
+            self:Print(self.Colors.Error .. 'Failed to enable addon, either spec not supported or an error occured. If you have a spec please report on Discord, thanks!', "error")
         end
-        self:Print(self.Colors.Error .. 'Failed to enable addon, either spec not supported or an error occured. If you have a spec please report on Discord, thanks!', "error")
         return
     end
 
