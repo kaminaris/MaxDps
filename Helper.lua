@@ -271,6 +271,9 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
         return
     end
     local guid = UnitGUID(unitTarget)
+    if MaxDps:issecretvalue(guid) then
+        return
+    end
     local targetGUID = UnitGUID("target")
     local playerGUID = UnitGUID("player")
     if (updateInfo and updateInfo.isFullUpdate) then
@@ -879,21 +882,23 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 
 end
 
-local collectAurasframe = CreateFrame("Frame")
-collectAurasframe:SetScript("OnEvent", function(self, event, unitTarget, updateInfo)
-    if event == "UNIT_AURA" then
-        MaxDps:CollectAuras(unitTarget, updateInfo)
-    end
-    if event == "LOADING_SCREEN_DISABLED" then
-        MaxDps:CollectAuras("player", {isFullUpdate = true} )
-    end
-    if event == "PLAYER_TARGET_CHANGED" then
-        MaxDps:CollectAuras("target", {isFullUpdate = true} )
-    end
-end)
-collectAurasframe:RegisterEvent("UNIT_AURA")
-collectAurasframe:RegisterEvent("PLAYER_TARGET_CHANGED")
-collectAurasframe:RegisterEvent("LOADING_SCREEN_DISABLED")
+if not MaxDps:IsRetailWow() then
+    local collectAurasframe = CreateFrame("Frame")
+    collectAurasframe:SetScript("OnEvent", function(self, event, unitTarget, updateInfo)
+        if event == "UNIT_AURA" then
+            MaxDps:CollectAuras(unitTarget, updateInfo)
+        end
+        if event == "LOADING_SCREEN_DISABLED" then
+            MaxDps:CollectAuras("player", {isFullUpdate = true} )
+        end
+        if event == "PLAYER_TARGET_CHANGED" then
+            MaxDps:CollectAuras("target", {isFullUpdate = true} )
+        end
+    end)
+    collectAurasframe:RegisterEvent("UNIT_AURA")
+    collectAurasframe:RegisterEvent("PLAYER_TARGET_CHANGED")
+    collectAurasframe:RegisterEvent("LOADING_SCREEN_DISABLED")
+end
 
 function MaxDps:UpdateAuraData()
     --if MaxDps.PlayerAuras then
@@ -3013,18 +3018,20 @@ local function incoming_damage_3()
     end
 end
 
--- Register the event listeners
-local incomingDamageFrame = CreateFrame("Frame")
-incomingDamageFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-incomingDamageFrame:RegisterEvent("PLAYER_REGEN_ENABLED")  -- Event for leaving combat
-incomingDamageFrame:SetScript("OnEvent", function(self, event, ...)
-    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        incoming_damage_5(...)
-        incoming_damage_3(...)
-    elseif event == "PLAYER_REGEN_ENABLED" then
-        damageEvents = {}
-    end
-end)
+if not MaxDps:IsRetailWow() then
+    -- Register the event listeners
+    local incomingDamageFrame = CreateFrame("Frame")
+    incomingDamageFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    incomingDamageFrame:RegisterEvent("PLAYER_REGEN_ENABLED")  -- Event for leaving combat
+    incomingDamageFrame:SetScript("OnEvent", function(self, event, ...)
+        if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+            incoming_damage_5(...)
+            incoming_damage_3(...)
+        elseif event == "PLAYER_REGEN_ENABLED" then
+            damageEvents = {}
+        end
+    end)
+end
 
 function MaxDps:FindADAuraData(spellID)
     local aura = {

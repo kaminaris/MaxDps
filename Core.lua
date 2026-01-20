@@ -19,6 +19,7 @@ local GetSpecializationInfo = C_SpecializationInfo and C_SpecializationInfo.GetS
 local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local LoadAddOn = C_AddOns.LoadAddOn
 local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+local issecretvalue = issecretvalue
 
 local WOW_PROJECT_ID = WOW_PROJECT_ID
 local WOW_PROJECT_CLASSIC = WOW_PROJECT_CLASSIC
@@ -75,6 +76,10 @@ end
 
 function MaxDps:IsRetailWow()
     return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+end
+
+function MaxDps:issecretvalue(value)
+    return issecretvalue and issecretvalue(value) or false
 end
 
 local LCS = LibStub("LibClassicSpecs-Doadin", true)
@@ -287,7 +292,7 @@ function MaxDps:OnEnable()
     --self:RegisterBucketEvent('ACTIONBAR_UPDATE_STATE', 1, 'ButtonFetch')
     self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'ButtonFetch')
     self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', 'ButtonFetch')
-    if not MaxDps:IsTBCWow() then
+    if not MaxDps:IsTBCWow() and not MaxDps:IsRetailWow() then
         self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch')
     end
     self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch')
@@ -678,7 +683,9 @@ function MaxDps:PrepareFrameData()
     end
 
     self.FrameData.activeDot = self.ActiveDots
-    self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcdRemains = MaxDps:EndCast()
+    if not MaxDps:IsRetailWow() then
+        self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcdRemains = MaxDps:EndCast()
+    end
     self.FrameData.gcd = self:GlobalCooldown()
     self.FrameData.buff, self.FrameData.debuff = self.PlayerAuras, self.TargetAuras
     self.FrameData.talents = self.PlayerTalents
@@ -687,7 +694,9 @@ function MaxDps:PrepareFrameData()
     self.FrameData.covenant = self.CovenantInfo
     self.FrameData.runeforge = self.LegendaryBonusIds
     self.FrameData.spellHistory = self.spellHistory
-    self.FrameData.timeToDie = self:GetTimeToDie()
+    if not MaxDps:IsRetailWow() then
+        self.FrameData.timeToDie = self:GetTimeToDie()
+    end
 end
 
 local function err(s)
@@ -708,14 +717,25 @@ function MaxDps:InvokeNextSpell()
 
     -- Removed backward compatibility
     --self.Spell = self.NextSpell()
-    local ok, res = xpcall(self.NextSpell, err, self)
-    if ok then
-        self.Spell = res
-    else
-        if not self.Error then
-            self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "info")
+    if not MaxDps:IsRetailWow() then
+        local ok, res = xpcall(self.NextSpell, err, self)
+        if ok then
+            self.Spell = res
+        else
+            if not self.Error then
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "info")
+            end
+            self.Error = true
         end
-        self.Error = true
+    else
+        local ok, res = xpcall(self.NextSpell, err, self)
+        if not ok then
+            if not self.Error then
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "info")
+            end
+            self.Error = true
+        end
+        self.Spell = C_AssistedCombat.IsAvailable() and C_AssistedCombat.GetNextCastSpell() or 0
     end
 
     if not self.db.global.cdOnlyMode then
@@ -787,13 +807,17 @@ function MaxDps:LoadModule(skipPrint)
     local loadedOrLoading, loaded = IsAddOnLoaded(module)
 
     if loaded then
-        self:InitTTD()
+        if self.InitTTD then
+            self:InitTTD()
+        end
         self:EnableRotationModule(className, skipPrint)
         return
     else
         local sucess, value = LoadAddOn(module)
         if sucess then
-            self:InitTTD()
+            if self.InitTTD then
+                self:InitTTD()
+            end
             self:EnableRotationModule(className)
             return
         else

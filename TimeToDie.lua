@@ -1,6 +1,10 @@
 --- @type MaxDps MaxDps
 local _, MaxDps = ...
 
+if MaxDps:IsRetailWow() then
+    return
+end
+
 local GetTime = GetTime
 local UnitGUID = UnitGUID
 local UnitExists = UnitExists
