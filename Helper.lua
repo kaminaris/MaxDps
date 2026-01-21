@@ -2442,27 +2442,29 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
     -- When quering spellinfo by name it will return the known spell id instead of just a base id or talent id.
     -- Eg. Feral druid Primal Wrath Replaces Swipe without name Comparison it will try to cast Swipe when Primal Wrath is the known spell.
     -- Eg. Warrior Thane Thunder Clap Procs and Turns into Thunder Blast, the talent id for TB is different from spell id so need to find the known spell id.
-    if MaxDps:IsRetailWow() then
-        local originalSpellName = C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(spell).name
-        local NewName = C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).name or ""
-        if NewName and NewName == originalSpellName then
-            spell = (C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).spellID) or spell
-        end
-        local spellCooldownInfo = MaxDps:CooldownConsolidated(spell)
-        if spellCooldownInfo and not spellCooldownInfo.ready then
-            return false
-        end
-    end
+    --if MaxDps:IsRetailWow() then
+    --    local originalSpellName = C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(spell).name
+    --    local NewName = C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).name or ""
+    --    if NewName and NewName == originalSpellName then
+    --        spell = (C_Spell.GetSpellInfo(spell) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name) and C_Spell.GetSpellInfo(C_Spell.GetSpellInfo(spell).name).spellID) or spell
+    --    end
+    --    local spellCooldownInfo = MaxDps:CooldownConsolidated(spell)
+    --    if spellCooldownInfo and not spellCooldownInfo.ready then
+    --        return false
+    --    end
+    --end
     local isPassive = C_Spell.IsSpellPassive(spell)
     if isPassive then
         return false
     end
     if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
-        if UnitExists("pet") then
-            for i = 1, NUM_PET_ACTION_SLOTS do
-                local _, _, _, _, _, _, spellID = GetPetActionInfo(i)
-                if spellID == spell and C_Spell.IsSpellUsable(spell) and MaxDps:CooldownConsolidated(spell).ready then
-                    return true
+        if not MaxDps:IsRetailWow() then
+            if UnitExists("pet") then
+                for i = 1, NUM_PET_ACTION_SLOTS do
+                    local _, _, _, _, _, _, spellID = GetPetActionInfo(i)
+                    if spellID == spell and C_Spell.IsSpellUsable(spell) and MaxDps:CooldownConsolidated(spell).ready then
+                        return true
+                    end
                 end
             end
         end
@@ -2474,35 +2476,37 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
                 return false
         end
         if not C_Spell.IsSpellUsable(spell) then return false end
-        local ORID = FindSpellOverrideByID(spell)
-        -- Check that the Override ID is active
-        if ORID and ORID ~= spell and MaxDps.Spells[ORID] then
-            --local spellCooldownInfo = C_Spell.GetSpellCooldown(ORID)
-            ---- If the spell is currently over written and its on cooldown return false
-            --if spellCooldownInfo and spellCooldownInfo.duration > 0 then
-            --    return false
-            --end
-            local spellCooldownInfo = MaxDps:CooldownConsolidated(ORID)
-            if spellCooldownInfo and spellCooldownInfo.remains > 0 then
-                return false
-            end
-            local isPassiveORID = C_Spell.IsSpellPassive(ORID)
-            if isPassiveORID then
-                return false
-            end
-        end
-        local costs = C_Spell.GetSpellPowerCost(spell)
-        if type(costs) ~= 'table' and spellstring then return true end
-        for i,costtable in pairs(costs) do
-            if UnitPower('player', costtable.type) < costtable.cost then
-                if GetPowerRegenForPowerType(costtable.type) > 0 then
-                    if UnitPower('player', costtable.type) + GetPowerRegenForPowerType(costtable.type) < costtable.cost then
-                        return false
-                    end
-                else
+        if not MaxDps:IsRetailWow() then
+            local ORID = FindSpellOverrideByID(spell)
+            -- Check that the Override ID is active
+            if ORID and ORID ~= spell and MaxDps.Spells[ORID] then
+                --local spellCooldownInfo = C_Spell.GetSpellCooldown(ORID)
+                ---- If the spell is currently over written and its on cooldown return false
+                --if spellCooldownInfo and spellCooldownInfo.duration > 0 then
+                --    return false
+                --end
+                local spellCooldownInfo = MaxDps:CooldownConsolidated(ORID)
+                if spellCooldownInfo and spellCooldownInfo.remains > 0 then
                     return false
                 end
-                --return false
+                local isPassiveORID = C_Spell.IsSpellPassive(ORID)
+                if isPassiveORID then
+                    return false
+                end
+            end
+            local costs = C_Spell.GetSpellPowerCost(spell)
+            if type(costs) ~= 'table' and spellstring then return true end
+            for i,costtable in pairs(costs) do
+                if UnitPower('player', costtable.type) < costtable.cost then
+                    if GetPowerRegenForPowerType(costtable.type) > 0 then
+                        if UnitPower('player', costtable.type) + GetPowerRegenForPowerType(costtable.type) < costtable.cost then
+                            return false
+                        end
+                    else
+                        return false
+                    end
+                    --return false
+                end
             end
         end
     end
