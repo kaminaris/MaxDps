@@ -735,7 +735,8 @@ function MaxDps:InvokeNextSpell()
             end
             self.Error = true
         end
-        self.Spell = C_AssistedCombat.IsAvailable() and C_AssistedCombat.GetNextCastSpell() or 0
+        local nextSpell = C_AssistedCombat.GetNextCastSpell()
+        self.Spell = C_AssistedCombat.IsAvailable() and nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
     end
 
     if not self.db.global.cdOnlyMode then
