@@ -39,6 +39,7 @@ Libs\LibClassicSpecs\LibClassicSpecs.lua
 Libs\LibClassicSpecs\LibClassicSpecs.lua
 #@end-version-cata@
 
+Cooldowns.lua
 SpellData.lua
 spell_durations.lua
 Core.lua
