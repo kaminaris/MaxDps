@@ -771,3 +771,144 @@ ns.classCooldowns = {
         },
     },
 }
+
+ns.classInterrupts = {
+    WARRIOR = {
+        Arms = {
+            ["Pummel"] = 6552,
+        },
+        Fury = {
+            ["Pummel"] = 6552,
+        },
+        Protection = {
+            ["Pummel"] = 6552,
+        },
+    },
+
+    PALADIN = {
+        Holy = {
+            ["Rebuke"] = 96231,
+        },
+        Protection = {
+            ["Rebuke"] = 96231,
+        },
+        Retribution = {
+            ["Rebuke"] = 96231,
+        },
+    },
+
+    HUNTER = {
+        BeastMastery = {
+            ["Counter Shot"] = 147362,
+        },
+        Marksmanship = {
+            ["Counter Shot"] = 147362,
+        },
+        Survival = {
+            ["Muzzle"] = 187707,
+        },
+    },
+
+    ROGUE = {
+        Assassination = {
+            ["Kick"] = 1766,
+        },
+        Outlaw = {
+            ["Kick"] = 1766,
+        },
+        Subtlety = {
+            ["Kick"] = 1766,
+        },
+    },
+
+    PRIEST = {
+        Discipline = {},
+        Holy = {},
+        Shadow = {},
+    },
+
+    DEATHKNIGHT = {
+        Blood = {},
+        Frost = {},
+        Unholy = {},
+    },
+
+    SHAMAN = {
+        Elemental = {
+            ["Wind Shear"] = 57994,
+        },
+        Enhancement = {
+            ["Wind Shear"] = 57994,
+        },
+        Restoration = {
+            ["Wind Shear"] = 57994,
+        },
+    },
+
+    MAGE = {
+        Arcane = {
+            ["Counterspell"] = 2139,
+        },
+        Fire = {
+            ["Counterspell"] = 2139,
+        },
+        Frost = {
+            ["Counterspell"] = 2139,
+        },
+    },
+
+    WARLOCK = {
+        Affliction = {},
+        Demonology = {},
+        Destruction = {},
+    },
+
+    MONK = {
+        Brewmaster = {
+            ["Spear Hand Strike"] = 116705,
+        },
+        Mistweaver = {
+            ["Spear Hand Strike"] = 116705,
+        },
+        Windwalker = {
+            ["Spear Hand Strike"] = 116705,
+        },
+    },
+
+    DRUID = {
+        Balance = {
+            ["Skull Bash"] = 106839,
+        },
+        Feral = {
+            ["Skull Bash"] = 106839,
+        },
+        Guardian = {
+            ["Skull Bash"] = 106839,
+        },
+        Restoration = {
+            ["Skull Bash"] = 106839,
+        },
+    },
+
+    DEMONHUNTER = {
+        Havoc = {
+            ["Disrupt"] = 183752,
+        },
+        Vengeance = {
+            ["Disrupt"] = 183752,
+        },
+    },
+
+    EVOKER = {
+        Devastation = {
+            ["Quell"] = 351338,
+        },
+        Preservation = {
+            ["Quell"] = 351338,
+        },
+        Augmentation = {
+            ["Quell"] = 351338,
+        },
+    },
+}
+
