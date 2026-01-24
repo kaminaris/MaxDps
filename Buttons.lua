@@ -166,7 +166,7 @@ function MaxDps:UpdateButtonGlow()
     end
 end
 
-function MaxDps:Glow(button, id, texture, type, color)
+function MaxDps:Glow(button, id, texture, type, color, alpha)
     local opts = self.db.global
     if opts.customGlow then
         local col = color and {color.r, color.g, color.b, color.a} or nil
@@ -210,7 +210,9 @@ function MaxDps:Glow(button, id, texture, type, color)
 
     if button.MaxDpsOverlays and button.MaxDpsOverlays[id] then
         button.MaxDpsOverlays[id]:Show()
-        if color then
+        if color and alpha then
+            button.MaxDpsOverlays[id].texture:SetVertexColor(color.r, color.g, color.b, alpha)
+        elseif color then
             button.MaxDpsOverlays[id].texture:SetVertexColor(color.r, color.g, color.b, color.a)
         end
         button.MaxDpsOverlays[id].Maxtext:SetText("")
@@ -228,9 +230,13 @@ function MaxDps:Glow(button, id, texture, type, color)
         if not button.MaxDpsOverlays then
             button.MaxDpsOverlays = {}
         end
-
         button.MaxDpsOverlays[id] = self:CreateOverlay(button, id, texture, type, color)
         button.MaxDpsOverlays[id]:Show()
+        if color and alpha then
+            button.MaxDpsOverlays[id].texture:SetVertexColor(color.r, color.g, color.b, alpha)
+        elseif color then
+            button.MaxDpsOverlays[id].texture:SetVertexColor(color.r, color.g, color.b, color.a)
+        end
         if id and ( (MaxDps.empowerLevel and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[id]) ) then
             button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.empowerLevel[id])
         else
@@ -738,11 +744,11 @@ function MaxDps:FindSpell(spellId)
     return self.Spells[spellId]
 end
 
-function MaxDps:GlowIndependent(spellId, id, texture, color)
+function MaxDps:GlowIndependent(spellId, id, texture, color, alpha)
     if self.Spells[spellId] ~= nil then
         for _, button in pairs(self.Spells[spellId]) do
             if MaxDps:IsRetailWow() then
-                self:Glow(button, id, texture, nil, color)
+                self:Glow(button, id, texture, nil, color, alpha)
             else
                 self:Glow(button, id, texture, "cooldown", color)
             end
@@ -879,33 +885,44 @@ function MaxDps:GlowDefensiveHPMidnight(spellId, condition)
     curve:AddPoint(0.0, CreateColor(1, 0, 0, 1))
     curve:AddPoint(0.3, CreateColor(1, 1, 0, 0.5))
     curve:AddPoint(0.7, CreateColor(0, 1, 0, 0))
-    --curve:AddPoint(0.0, CreateColor(1, 0, 0, 0))
-    --curve:AddPoint(0.1, CreateColor(1, 0, 0, 0.1))
-    --curve:AddPoint(0.2, CreateColor(1, 0, 0, 0.2))
-    --curve:AddPoint(0.3, CreateColor(1, 0, 0, 0.3))
-    --curve:AddPoint(0.4, CreateColor(1, 0, 0, 0.4))
-    --curve:AddPoint(0.5, CreateColor(1, 0, 0, 0.5))
-    --curve:AddPoint(0.6, CreateColor(1, 0, 0, 0.6))
-    --curve:AddPoint(0.7, CreateColor(1, 0, 0, 0.7))
-    --curve:AddPoint(0.8, CreateColor(1, 0, 0, 0.8))
-    local usePredicted = false
-    local color = UnitHealthPercent("player", usePredicted, curve)
-    --local value = UnitHealthPercent("player", usePredicted, CurveConstants.ZeroToOne)
-    --DevTools_Dump(format("%s, health=%.2f, r=%.2f, g=%.2f, b=%.2f, a=%.2f", spellId, value, color:GetRGBA()))
-    --DevTools_Dump(spellId, value, color:GetRGBA())
-    --DevTools_Dump(value)
-    --DevTools_Dump(color:GetRGBA())
-    --statusBar:GetStatusBarTexture():SetVertexColor(color:GetRGB())
-    --print("GlowCooldownMidnight called for spellId: ", spellId, " with condition: ", condition, " and color: ", color)
+    local color = UnitHealthPercent("player", false, curve)
+    local duration = C_Spell.GetSpellCooldownDuration(spellId)
+    local durColor = duration and duration:EvaluateRemainingDuration(curve)
+    local _, _, _, alpha = durColor:GetRGBA()
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
-    if condition then
+    if not UnitIsDeadOrGhost("player") then
         --print("Condition is true, applying glow for spellId: ", spellId)
         self.Flags[spellId] = true
-        self:GlowIndependent(spellId, spellId, nil, color)
+        self:GlowIndependent(spellId, spellId, nil, color, alpha)
     end
-    if not condition then
+    if UnitIsDeadOrGhost("player") then
+        --print("Condition is false, clearing glow for spellId: ", spellId)
+        self.Flags[spellId] = false
+        self:ClearGlowIndependent(spellId, spellId)
+    end
+end
+
+function MaxDps:GlowInteruptMidnight(spellId)
+    local curve = C_CurveUtil.CreateColorCurve()
+    curve:SetType(Enum.LuaCurveType.Linear)
+    curve:AddPoint(0.0, CreateColor(1, 0, 0, 1))
+    curve:AddPoint(0.3, CreateColor(1, 1, 0, 0.5))
+    curve:AddPoint(0.7, CreateColor(0, 1, 0, 0))
+    local color = UnitCastingDuration("target")
+    local duration = C_Spell.GetSpellCooldownDuration(spellId)
+    local durColor = duration and duration:EvaluateRemainingDuration(curve)
+    local _, _, _, alpha = durColor:GetRGBA()
+    if self.Flags[spellId] == nil then
+        self.Flags[spellId] = false
+    end
+    if color then
+        --print("Condition is true, applying glow for spellId: ", spellId)
+        self.Flags[spellId] = true
+        self:GlowIndependent(spellId, spellId, nil, CreateColor(1, 0, 0, 1), alpha)
+    end
+    if not color then
         --print("Condition is false, clearing glow for spellId: ", spellId)
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)
@@ -918,24 +935,7 @@ function MaxDps:GlowCooldownMidnight(spellId, condition, buffId, spellTable)
     curve:AddPoint(0.7, CreateColor(1, 0, 0, 1))
     curve:AddPoint(0.3, CreateColor(1, 1, 0, 0.5))
     curve:AddPoint(0.0, CreateColor(0, 1, 0, 0))
-    --curve:AddPoint(0.0, CreateColor(1, 0, 0, 0))
-    --curve:AddPoint(0.1, CreateColor(1, 0, 0, 0.1))
-    --curve:AddPoint(0.2, CreateColor(1, 0, 0, 0.2))
-    --curve:AddPoint(0.3, CreateColor(1, 0, 0, 0.3))
-    --curve:AddPoint(0.4, CreateColor(1, 0, 0, 0.4))
-    --curve:AddPoint(0.5, CreateColor(1, 0, 0, 0.5))
-    --curve:AddPoint(0.6, CreateColor(1, 0, 0, 0.6))
-    --curve:AddPoint(0.7, CreateColor(1, 0, 0, 0.7))
-    --curve:AddPoint(0.8, CreateColor(1, 0, 0, 0.8))
-    --local usePredicted = false
-    --local color = UnitHealthPercent("player", usePredicted, curve)
-    --local value = UnitHealthPercent("player", usePredicted, CurveConstants.ZeroToOne)
-    --DevTools_Dump(format("%s, health=%.2f, r=%.2f, g=%.2f, b=%.2f, a=%.2f", spellId, value, color:GetRGBA()))
-    --DevTools_Dump(spellId, value, color:GetRGBA())
-    --DevTools_Dump(value)
-    --DevTools_Dump(color:GetRGBA())
-    --statusBar:GetStatusBarTexture():SetVertexColor(color:GetRGB())
-    --print("GlowCooldownMidnight called for spellId: ", spellId, " with condition: ", condition, " and color: ", color)
+
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
