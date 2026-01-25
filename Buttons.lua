@@ -636,7 +636,7 @@ end
 function MaxDps:FetchBlizzard()
     local BlizzardBars = {'Action', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarRight', 'MultiBarLeft', 'MultiBar5', 'MultiBar6', 'MultiBar7'}
     for _, barName in pairs(BlizzardBars) do
-        if _G[barName] then
+        if _G[barName] or barName == "Action" then
             for i = 1, 12 do
                 local button = _G[barName .. 'Button' .. i]
                 if button then
