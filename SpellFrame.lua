@@ -82,7 +82,28 @@ loader:SetScript("OnEvent", function(self, event, name)
 
     local cd = CreateFrame("Cooldown", nil, f, "CooldownFrameTemplate")
     cd:SetAllPoints()
+
+    local text = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    text:SetPoint("BOTTOMRIGHT", -2, 2)
+    local font, _, flags = text:GetFont()
+    text:SetFont(font, 24, flags)
+    text:SetTextColor(1, 1, 1)
+    f.bindText = text
+
 end)
+
+local function GetSpellKeybind(spellID)
+    for slot = 1, 180 do
+        local actionType, id = GetActionInfo(slot)
+        if actionType == "spell" and id == spellID then
+            local binding = "ACTIONBUTTON" .. slot
+            local key = GetBindingKey(binding)
+            return key
+        end
+    end
+    return ""
+end
+
 ------------------------------------------------------------
 -- Update Logic
 ------------------------------------------------------------
@@ -91,19 +112,8 @@ function MaxDps:UpdateSpellFrame(spellID)
     if not MaxDpsSpellFrame then
         return
     end
-    if not spellID then
-        return
-    end
-    if type(spellID) ~= "number" then
-        return
-    end
     if not cfg.enabled then
         MaxDpsSpellFrame:Hide()
-        return
-    end
-
-    if MaxDpsSpellFrame and spellID == 0 then
-        MaxDpsSpellFrame.icon:SetTexture("Interface/Icons/INV_Misc_QuestionMark")
         return
     end
 
@@ -125,6 +135,8 @@ function MaxDps:UpdateSpellFrame(spellID)
     MaxDpsSpellFrame.icon:SetTexture(texture)
     MaxDpsSpellFrame:ClearAllPoints()
     MaxDpsSpellFrame:SetPoint("CENTER", UIParent, "CENTER", cfg.pos.x, cfg.pos.y)
+
+    MaxDpsSpellFrame.bindText:SetText(GetSpellKeybind(spellID))
 
     --local start, duration = GetSpellCooldown(spellID)
     --if start and duration then

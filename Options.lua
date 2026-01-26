@@ -84,7 +84,7 @@ MaxDps.defaultOptions = {
 		interval = 0.15,
 		sizeMult = 1.4,
         spellFrame = {
-            enabled = true,
+            enabled = false,
 			isMovable = false,
 			spellID = 116,
 			pos = {x=0, y=0},
