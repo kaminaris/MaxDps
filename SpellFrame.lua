@@ -90,6 +90,9 @@ loader:SetScript("OnEvent", function(self, event, name)
     text:SetTextColor(1, 1, 1)
     f.bindText = text
 
+    if MaxDpsSpellFrame and ( (not MaxDps.db.global.spellFrame.enabled) or (not MaxDps.db.global.enabled) or (MaxDps.db.global.onCombatEnter) ) then
+        MaxDpsSpellFrame:Hide()
+    end
 end)
 
 local function ShortenKeybind(key)
