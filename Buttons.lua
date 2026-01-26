@@ -938,11 +938,7 @@ function MaxDps:GlowInteruptMidnight(spellId)
 end
 
 function MaxDps:GlowCooldownMidnight(spellId, condition)
-    local curve = C_CurveUtil.CreateColorCurve()
-    curve:SetType(Enum.LuaCurveType.Linear)
-    curve:AddPoint(0.7, CreateColor(1, 0, 0, 1))
-    curve:AddPoint(0.3, CreateColor(1, 1, 0, 0.5))
-    curve:AddPoint(0.0, CreateColor(0, 1, 0, 0))
+    local color = CreateColor(1, 0, 0, 1)
 
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
