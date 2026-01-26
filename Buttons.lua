@@ -937,7 +937,7 @@ function MaxDps:GlowInteruptMidnight(spellId)
     end
 end
 
-function MaxDps:GlowCooldownMidnight(spellId, condition, buffId, spellTable)
+function MaxDps:GlowCooldownMidnight(spellId, condition)
     local curve = C_CurveUtil.CreateColorCurve()
     curve:SetType(Enum.LuaCurveType.Linear)
     curve:AddPoint(0.7, CreateColor(1, 0, 0, 1))
@@ -947,52 +947,14 @@ function MaxDps:GlowCooldownMidnight(spellId, condition, buffId, spellTable)
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
-    local buffAura = C_UnitAuras.GetPlayerAuraBySpellID(spellId)
-    if buffAura then
-        self.Flags[spellId] = false
-        self:ClearGlowIndependent(spellId, spellId)
-        return
-    end
-    if spellTable and type(spellTable) == "table" then
-        local foundBuff = false
-        for _, id in pairs(spellTable) do
-            local aura = C_UnitAuras.GetPlayerAuraBySpellID(id)
-            if aura then
-                --if not aura then
-                --    self:ClearGlowIndependent(spellId, spellId)
-                --    return
-                --end
-                local duration = C_UnitAuras.GetAuraDuration("player", aura.auraInstanceID)
-                local color = duration:EvaluateRemainingPercent(curve)
-                --DevTools_Dump(color:GetRGBA())
-                --print("Condition is true, applying glow for spellId: ", spellId)
-                self.Flags[spellId] = true
-                self:GlowIndependent(spellId, spellId, nil, color)
-                foundBuff = true
-                break
-            end
-        end
-        if not foundBuff then
-            self.Flags[spellId] = false
-            self:ClearGlowIndependent(spellId, spellId)
-            return
-        end
-    elseif buffId and type(buffId) == "number" then
-        local aura = C_UnitAuras.GetPlayerAuraBySpellID(buffId)
-        if not aura then
-            self.Flags[spellId] = false
-            self:ClearGlowIndependent(spellId, spellId)
-            return
-        end
-        local duration = C_UnitAuras.GetAuraDuration("player", aura.auraInstanceID)
-        local color = duration:EvaluateRemainingPercent(curve)
-        --DevTools_Dump(color:GetRGBA())
-        if self.Flags[spellId] == nil then
-            self.Flags[spellId] = false
-        end
-        --print("Condition is true, applying glow for spellId: ", spellId)
+
+    if condition then
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, color)
+    end
+    if not condition then
+        self.Flags[spellId] = false
+        self:ClearGlowIndependent(spellId, spellId)
     end
 end
 
