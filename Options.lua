@@ -82,7 +82,14 @@ MaxDps.defaultOptions = {
 			a = 1
 		},
 		interval = 0.15,
-		sizeMult = 1.4
+		sizeMult = 1.4,
+        spellFrame = {
+            enabled = true,
+			isMovable = false,
+			spellID = 116,
+			x = 0,
+			y = 0,
+        }
 	}
 }
 
@@ -233,6 +240,24 @@ function MaxDps:AddToBlizzardOptions()
 	StdUi:AddLabel(optionsFrame, sizeMultiplier, 'Size Multiplier')
 	sizeMultiplier.OnValueChanged = function(_, val) MaxDps.db.global.sizeMult = val end
 
+	-- Spell Frame Options
+	local spellFrameLabel = StdUi:Label(optionsFrame, 'Spell Frame', 14)
+	StdUi:SetTextColor(spellFrameLabel, 'header')
+
+	local spellFrameEnabled = StdUi:Checkbox(optionsFrame, 'Enable spell frame', 200, 24)
+	spellFrameEnabled:SetChecked(MaxDps.db.global.spellFrame.enabled)
+	spellFrameEnabled.OnValueChanged = function(_, flag)
+		MaxDps.db.global.spellFrame.enabled = flag
+	end
+
+	local spellFramePosx = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.pos.x or 0, -2000, 2000)
+	StdUi:AddLabel(optionsFrame, spellFramePosx, 'x Possition')
+	spellFramePosx.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.pos.x = val end
+
+	local spellFramePosy = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.pos.y or 0, -2000, 2000)
+	StdUi:AddLabel(optionsFrame, spellFramePosy, 'y Possition')
+	spellFramePosy.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.pos.y = val end
+
 	--- Pixel Glow options
 
 	local customGlowHeader = StdUi:Label(optionsFrame, 'Custom Glow', 14)
@@ -273,13 +298,16 @@ function MaxDps:AddToBlizzardOptions()
 	optionsFrame:AddRow():AddElement(sizeMultiplier, { column = 6, margin = { top = 15 } })
 	optionsFrame:AddRow():AddElement(customGlowHeader)
 	optionsFrame:AddRow():AddElements(customGlow, customGlowType, { column = 'even' })
+	optionsFrame:AddRow():AddElement(spellFrameLabel)
+	optionsFrame:AddRow():AddElement(spellFrameEnabled)
+	optionsFrame:AddRow():AddElements(spellFramePosx, spellFramePosy, { column = 'even' })
 
 	-- no need to :SetScript when we have a 'native' Settings API callback for Panel:Show
 	optionsFrame.OnRefresh = function()
 		optionsFrame:DoLayout()
 		-- Settings cannot know the registered panel changed size AFTER showing, so rather
 		-- than jump through hoops to force a redraw / show a scrollbar, this is a simple workaround
-		optionsFrame:SetScale(.9)
+		optionsFrame:SetScale(.75)
 	end
 
 	if InterfaceOptions_AddCategory then
@@ -291,6 +319,7 @@ function MaxDps:AddToBlizzardOptions()
 	end
 
 	self:AddCustomGlowOptions()
+	--self:AddSpellFrameOptions()
 end
 
 function MaxDps:AddCustomGlowOptions()
@@ -392,3 +421,61 @@ function MaxDps:AddCustomGlowOptions()
 		local category, layout = Settings.RegisterCanvasLayoutSubcategory(MaxDps.settingsCategory, customGlowOptionsFrame, customGlowOptionsFrame.name);
 	end
 end
+
+function MaxDps:AddSpellFrameOptions()
+	local config = {
+		layoutConfig = { padding = { top = 30 } },
+		database     = self.db.global.spellFrame,
+		rows         = {
+			[1] = {
+				spellFrame = {
+					type = 'header',
+					label = 'Spell Frame'
+				}
+			},
+			[2] = {
+				enabled = {
+					type = 'checkbox',
+					label = 'Enable'
+				}
+			},
+			[3] = {
+				x = {
+					type   = 'sliderWithBox',
+					label  = 'x possition',
+					min    = -2000,
+					max    = 2000,
+					column = 6
+				},
+			},
+			[4] = {
+				y = {
+					type   = 'sliderWithBox',
+					label  = 'y possition',
+					min    = -2000,
+					max    = 2000,
+					column = 6
+				},
+			},
+		},
+	}
+
+	local SpellFrameOptionsFrame = StdUi:PanelWithTitle(nil, 100, 100, 'Spell Frame Options')
+	SpellFrameOptionsFrame:Hide()
+	SpellFrameOptionsFrame.name = 'SpellFrame'
+	SpellFrameOptionsFrame.parent = 'MaxDps'
+
+	StdUi:BuildWindow(SpellFrameOptionsFrame, config)
+
+	SpellFrameOptionsFrame:SetScript('OnShow', function(of)
+		of:DoLayout()
+	end)
+
+	if InterfaceOptions_AddCategory then
+		InterfaceOptions_AddCategory(SpellFrameOptionsFrame)
+	else
+		-- make the custom glow options a subcategory as intended, do not override the main options category
+		local category, layout = Settings.RegisterCanvasLayoutSubcategory(MaxDps.settingsCategory, SpellFrameOptionsFrame, SpellFrameOptionsFrame.name);
+	end
+end
+

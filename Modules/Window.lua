@@ -484,6 +484,54 @@ function Window:GetWindowConfig()
 		}
 	}
 
+	local spellFrameLayout = {
+		database = MaxDps.db.global.spellFrame,
+		rows         = {
+			[1] = {
+				spellFrame = {
+					type = 'header',
+					label = 'Spell Frame'
+				}
+			},
+			[2] = {
+				enabled = {
+					type = 'checkbox',
+					label = 'Enable',
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.enabled = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				}
+			},
+			[3] = {
+				x = {
+					type   = 'sliderWithBox',
+					label  = 'x possition',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.pos.x = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[4] = {
+				y = {
+					type   = 'sliderWithBox',
+					label  = 'y possition',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.pos.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+		},
+	}
+
 	local customEditRotation = {
 		rows = {
 			{ -- 1st row
@@ -652,6 +700,11 @@ function Window:GetWindowConfig()
 							name   = 'options',
 							title  = 'Options',
 							layout = optionsLayout
+						},
+						{
+							name   = 'spellframe',
+							title  = 'Spell Frame Options',
+							layout = spellFrameLayout
 						},
 						{
 							name   = 'custom',
