@@ -87,6 +87,7 @@ MaxDps.defaultOptions = {
             enabled = true,
 			isMovable = false,
 			spellID = 116,
+			pos = {x=0, y=0},
 			x = 0,
 			y = 0,
         }
