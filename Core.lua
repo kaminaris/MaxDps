@@ -745,6 +745,9 @@ function MaxDps:InvokeNextSpell()
     if not self.db.global.cdOnlyMode then
         if self.Spell == 0 then
             self:GlowClear()
+            if MaxDpsSpellFrame then
+                MaxDps:UpdateSpellFrame(0)
+            end
             if WeakAuras then
                 WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', nil)
             end
@@ -752,6 +755,9 @@ function MaxDps:InvokeNextSpell()
         end
         if (oldSkill ~= self.Spell or oldSkill == nil) and self.Spell ~= nil and self.Spell ~= "" then
             self:GlowNextSpell(self.Spell)
+            if MaxDpsSpellFrame then
+                MaxDps:UpdateSpellFrame(self.Spell)
+            end
             if WeakAuras then
                 WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', self.Spell)
             end
@@ -759,6 +765,9 @@ function MaxDps:InvokeNextSpell()
 
         if (self.Spell == nil or self.Spell == "") and oldSkill ~= nil then
             self:GlowClear()
+            if MaxDpsSpellFrame then
+                MaxDps:UpdateSpellFrame(0)
+            end
             if WeakAuras then
                 WeakAuras.ScanEvents('MAXDPS_SPELL_UPDATE', nil)
             end

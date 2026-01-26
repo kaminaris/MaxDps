@@ -91,15 +91,31 @@ function MaxDps:UpdateSpellFrame(spellID)
     if not MaxDpsSpellFrame then
         return
     end
+    if not spellID then
+        return
+    end
+    if type(spellID) ~= "number" then
+        return
+    end
     if not cfg.enabled then
         MaxDpsSpellFrame:Hide()
+        return
+    end
+
+    if MaxDpsSpellFrame and spellID == 0 then
+        MaxDpsSpellFrame.icon:SetTexture("Interface/Icons/INV_Misc_QuestionMark")
         return
     end
 
     MaxDpsSpellFrame:Show()
 
     spellID = spellID or cfg.spellID
-    local texture = C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(spellID) or GetSpellTexture(spellID)
+    local texture
+    if C_Spell and type(C_Spell.GetSpellTexture) == "function" then
+        texture = C_Spell.GetSpellTexture(spellID)
+    else
+        texture = GetSpellTexture(spellID)
+    end
 
     if not texture then
         MaxDpsSpellFrame.icon:SetTexture("Interface/Icons/INV_Misc_QuestionMark")
