@@ -112,8 +112,18 @@ function MaxDps:UpdateSpellFrame(spellID)
     if not MaxDpsSpellFrame then
         return
     end
+    if not spellID then
+        return
+    end
+    if type(spellID) ~= "number" then
+        return
+    end
     if not cfg.enabled then
         MaxDpsSpellFrame:Hide()
+        return
+    end
+    if MaxDpsSpellFrame and spellID == 0 then
+        MaxDpsSpellFrame.icon:SetTexture("Interface/Icons/INV_Misc_QuestionMark")
         return
     end
 
