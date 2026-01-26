@@ -236,6 +236,9 @@ function MaxDps:DisableRotation(skipPrint)
 
     self.Spell = nil
     self.rotationEnabled = false
+    if MaxDpsSpellFrame and ( (not MaxDps.db.global.spellFrame.enabled) or (not MaxDps.db.global.enabled) or (MaxDps.db.global.onCombatEnter) ) then
+        MaxDpsSpellFrame:Hide()
+    end
 end
 
 function MaxDps:DisableRotationTimer()
