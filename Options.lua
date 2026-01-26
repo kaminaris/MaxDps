@@ -51,6 +51,7 @@ MaxDps.defaultOptions = {
 		forceTargetAmount = false,
 		forceTargetAmountCount = 1,
 		disableButtonGlow = false,
+		enableDefensives = false,
 
 		customGlow = false,
 		customGlowType = 'pixel',
@@ -173,6 +174,10 @@ function MaxDps:AddToBlizzardOptions()
 	disableConsumables:SetChecked(MaxDps.db.global.disableConsumables)
 	disableConsumables.OnValueChanged = function(_, flag) MaxDps.db.global.disableConsumables = flag end
 
+	local enableDefensives = StdUi:Checkbox(optionsFrame, 'Enable Defensives', 200, 24)
+	enableDefensives:SetChecked(MaxDps.db.global.enableDefensives)
+	enableDefensives.OnValueChanged = function(_, flag) MaxDps.db.global.enableDefensives = flag end
+
 	local loadModuleBtn = StdUi:Button(optionsFrame, nil, 24, 'Load current class module')
 	loadModuleBtn:SetScript('OnClick', function() MaxDps:InitRotations() end)
 
@@ -285,6 +290,7 @@ function MaxDps:AddToBlizzardOptions()
 	optionsFrame:AddRow():AddElement(general)
 	optionsFrame:AddRow():AddElements(enabled, cdOnlyMode, { column = 'even' })
 	optionsFrame:AddRow():AddElements(onCombatEnter, disableConsumables, { column = 'even' })
+	optionsFrame:AddRow():AddElement(enableDefensives)
 	optionsFrame:AddRow():AddElements(disableButtonGlow, forceSingle, { column = 'even' })
 	optionsFrame:AddRow():AddElements(forceTargetAmount,forceTargetAmountCount, { column = 'even' })
 	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, { column = 'even' })

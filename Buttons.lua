@@ -879,6 +879,15 @@ function MaxDps:GlowCooldown(spellId, condition, color)
 end
 
 function MaxDps:GlowDefensiveHPMidnight(spellId, condition)
+    if not MaxDps.db.global.enableDefensives then
+        if self.Flags[spellId] == nil then
+            self.Flags[spellId] = false
+        end
+        if self.Flags[spellId] == true then
+            self.Flags[spellId] = false
+        end
+        self:ClearGlowIndependent(spellId, spellId)
+    end
     local curve = C_CurveUtil.CreateColorCurve()
     curve:SetType(Enum.LuaCurveType.Linear)
     curve:AddPoint(0.0, CreateColor(1, 0, 0, 1))

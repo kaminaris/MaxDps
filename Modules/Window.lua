@@ -301,6 +301,14 @@ function Window:GetWindowConfig()
 					order  = 4
 				},
 			},
+            {
+				enableDefensives = {
+					type   = 'checkbox',
+					label  = 'Enable Defensives',
+					column = 6,
+					order  = 5
+				},
+			},
 			{
 				disableButtonGlow = {
 					type     = 'checkbox',
