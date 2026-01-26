@@ -436,7 +436,12 @@ function MaxDps:AddSpellFrameOptions()
 			[2] = {
 				enabled = {
 					type = 'checkbox',
-					label = 'Enable'
+					label = 'Enable',
+					initialValue = MaxDps.db.global.spellFrame.enabled,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.enabled = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
 				}
 			},
 			[3] = {
@@ -445,7 +450,12 @@ function MaxDps:AddSpellFrameOptions()
 					label  = 'x possition',
 					min    = -2000,
 					max    = 2000,
-					column = 6
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.pos.x,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.pos.x = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
 				},
 			},
 			[4] = {
@@ -454,7 +464,12 @@ function MaxDps:AddSpellFrameOptions()
 					label  = 'y possition',
 					min    = -2000,
 					max    = 2000,
-					column = 6
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.pos.y,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.pos.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
 				},
 			},
 		},
