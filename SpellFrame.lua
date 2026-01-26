@@ -92,6 +92,26 @@ loader:SetScript("OnEvent", function(self, event, name)
 
 end)
 
+local function ShortenKeybind(key)
+    if not key then return "" end
+
+    key = key:gsub("SHIFT%-", "S-")
+    key = key:gsub("CTRL%-", "C-")
+    key = key:gsub("ALT%-", "A-")
+    key = key:gsub("BUTTON1", "LMB")
+    key = key:gsub("BUTTON2", "RMB")
+    key = key:gsub("BUTTON3", "MB3")
+    key = key:gsub("BUTTON4", "MB4")
+    key = key:gsub("BUTTON5", "MB5")
+    key = key:gsub("MOUSEWHEELUP", "MWU")
+    key = key:gsub("MOUSEWHEELDOWN", "MWD")
+    key = key:gsub("NUMPAD", "N")
+    key = key:gsub("PLUS", "+")
+    key = key:gsub("MINUS", "-")
+
+    return key
+end
+
 local function GetSpellKeybind(spellID)
     for slot = 1, 180 do
         local actionType, id = GetActionInfo(slot)
@@ -146,7 +166,7 @@ function MaxDps:UpdateSpellFrame(spellID)
     MaxDpsSpellFrame:ClearAllPoints()
     MaxDpsSpellFrame:SetPoint("CENTER", UIParent, "CENTER", cfg.pos.x, cfg.pos.y)
 
-    MaxDpsSpellFrame.bindText:SetText(GetSpellKeybind(spellID))
+    MaxDpsSpellFrame.bindText:SetText(ShortenKeybind(GetSpellKeybind(spellID)))
 
     --local start, duration = GetSpellCooldown(spellID)
     --if start and duration then
