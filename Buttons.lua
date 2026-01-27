@@ -938,17 +938,25 @@ function MaxDps:GlowInteruptMidnight(spellId)
 end
 
 function MaxDps:GlowCooldownMidnight(spellId, condition)
-    local color = CreateColor(1, 0, 0, 1)
-
+    local curve = C_CurveUtil.CreateColorCurve()
+    curve:SetType(Enum.LuaCurveType.Linear)
+    curve:AddPoint(0.0, CreateColor(1, 0, 0, 1))
+    curve:AddPoint(0.3, CreateColor(1, 1, 0, 0.5))
+    curve:AddPoint(0.7, CreateColor(0, 1, 0, 0))
+    local color = CreateColor(0, 1, 0, 1)
+    local duration = C_Spell.GetSpellCooldownDuration(spellId)
+    local durColor = duration and duration:EvaluateRemainingDuration(curve)
+    local _, _, _, alpha = durColor:GetRGBA()
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
-
     if condition then
+        --print("Condition is true, applying glow for spellId: ", spellId)
         self.Flags[spellId] = true
-        self:GlowIndependent(spellId, spellId, nil, color)
+        self:GlowIndependent(spellId, spellId, nil, color, alpha)
     end
     if not condition then
+        --print("Condition is false, clearing glow for spellId: ", spellId)
         self.Flags[spellId] = false
         self:ClearGlowIndependent(spellId, spellId)
     end
