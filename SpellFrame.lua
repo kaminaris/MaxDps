@@ -116,6 +116,13 @@ local function ShortenKeybind(key)
 end
 
 local function GetSpellKeybind(spellID)
+    if MaxDps
+    and MaxDps.Spells
+    and MaxDps.Spells[spellID]
+    and MaxDps.Spells[spellID][1]
+    and MaxDps.Spells[spellID][1].HotKey then
+        return MaxDps.Spells[spellID][1].HotKey:GetText()
+    end
     for slot = 1, 180 do
         local actionType, id = GetActionInfo(slot)
         if actionType == "spell" and id == spellID then
