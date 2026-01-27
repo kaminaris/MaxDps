@@ -887,6 +887,7 @@ function MaxDps:GlowDefensiveHPMidnight(spellId, condition)
             self.Flags[spellId] = false
         end
         self:ClearGlowIndependent(spellId, spellId)
+        return
     end
     local curve = C_CurveUtil.CreateColorCurve()
     curve:SetType(Enum.LuaCurveType.Linear)
