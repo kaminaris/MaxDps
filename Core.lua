@@ -700,7 +700,7 @@ function MaxDps:PrepareFrameData()
     if not MaxDps:IsRetailWow() then
         self.FrameData.timeToDie = self:GetTimeToDie()
     end
-    if MaxDps:IsRetailWow() then
+    if MaxDps:IsRetailWow() and not self.FrameData.ACSpells then
         self.FrameData.ACSpells = {}
         if C_AssistedCombat and C_AssistedCombat.GetRotationSpells then
             for _,spellid in pairs(C_AssistedCombat.GetRotationSpells()) do
