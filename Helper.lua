@@ -2323,7 +2323,8 @@ function MaxDps:SmartAoe(itemId)
         end
     end
 
-    if count == 0 and UnitExists("target") and UnitHealth("target") > 0 and UnitCanAttack("player","target") == true then
+    local UnitTHP = UnitHealth("target")
+    if count == 0 and UnitExists("target") and (not MaxDps:issecretvalue(UnitTHP) and UnitTHP or 0) > 0 and UnitCanAttack("player","target") == true then
         count = 1
     end
 
