@@ -384,6 +384,12 @@ function MaxDps:AddStandardButton(button)
         end
     end
     -- End pet bar code
+    if button and button.viewerFrame and button.GetSpellID and not InCombatLockdown() then
+        local spellID = button.GetSpellID(button)
+        if not MaxDps:issecretvalue(spellID) then
+            self:AddButton(spellID, button)
+        end
+    end
 end
 
 function MaxDps:Fetch(event)
@@ -660,6 +666,18 @@ function MaxDps:FetchBlizzard()
                 end
             end
             self:AddStandardButton(button)
+        end
+    end
+    local viewers = {
+        { viewer = _G["EssentialCooldownViewer"], name = "Essential" },
+        { viewer = _G["UtilityCooldownViewer"], name = "Utility" },
+        { viewer = _G["BuffIconCooldownViewer"], name = "Buff" }
+    }
+    for _, viewerData in ipairs(viewers) do
+        if viewerData.viewer then
+            for frame in viewerData.viewer.itemFramePool:EnumerateActive() do
+                self:AddStandardButton(frame, true)
+            end
         end
     end
 end
