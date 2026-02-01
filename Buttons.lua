@@ -763,12 +763,13 @@ function MaxDps:FindSpell(spellId)
     return self.Spells[spellId]
 end
 
-function MaxDps:GlowIndependent(spellId, id, texture, color, alpha)
+function MaxDps:GlowIndependent(spellId, id, texture, color, alpha, type)
     if self.Spells[spellId] ~= nil then
         for _, button in pairs(self.Spells[spellId]) do
-            if MaxDps:IsRetailWow() then
+            if MaxDps:IsRetailWow() and
+            (type == "defensive" and self.db.global.enableDefensives or type == "cooldown" and self.db.global.enableCooldowns) then
                 self:Glow(button, id, texture, nil, color, alpha)
-            else
+            elseif self.db.global.enableCooldowns then
                 self:Glow(button, id, texture, "cooldown", color)
             end
         end
@@ -886,7 +887,7 @@ function MaxDps:GlowCooldown(spellId, condition, color)
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
-    if condition then
+    if self.db.global.enableCooldowns and condition then
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, color)
     end
@@ -924,7 +925,7 @@ function MaxDps:GlowDefensiveHPMidnight(spellId, condition)
     if not UnitIsDeadOrGhost("player") then
         --print("Condition is true, applying glow for spellId: ", spellId)
         self.Flags[spellId] = true
-        self:GlowIndependent(spellId, spellId, nil, color, alpha)
+        self:GlowIndependent(spellId, spellId, nil, color, alpha, "defensive")
     end
     if UnitIsDeadOrGhost("player") then
         --print("Condition is false, clearing glow for spellId: ", spellId)
@@ -959,6 +960,16 @@ function MaxDps:GlowInteruptMidnight(spellId)
 end
 
 function MaxDps:GlowCooldownMidnight(spellId, condition)
+    if not MaxDps.db.global.enableCooldowns then
+        if self.Flags[spellId] == nil then
+            self.Flags[spellId] = false
+        end
+        if self.Flags[spellId] == true then
+            self.Flags[spellId] = false
+        end
+        self:ClearGlowIndependent(spellId, spellId)
+        return
+    end
     local curve = C_CurveUtil.CreateColorCurve()
     curve:SetType(Enum.LuaCurveType.Linear)
     curve:AddPoint(0.0, CreateColor(1, 0, 0, 1))
@@ -974,7 +985,7 @@ function MaxDps:GlowCooldownMidnight(spellId, condition)
     if condition then
         --print("Condition is true, applying glow for spellId: ", spellId)
         self.Flags[spellId] = true
-        self:GlowIndependent(spellId, spellId, nil, color, alpha)
+        self:GlowIndependent(spellId, spellId, nil, color, alpha, "defensive")
     end
     if not condition then
         --print("Condition is false, clearing glow for spellId: ", spellId)
