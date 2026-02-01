@@ -819,7 +819,7 @@ function MaxDps:InitRotations(skipPrint)
         if type(customRotation.fn) == "function" then
             local ok, res = xpcall(customRotation.fn, err, self)
             if ok then
-                self.NextSpell = res
+                self.NextSpell = customRotation.fn
             else
                 if not self.Error or (customRotation and customRotation.enabled) then
                     self:Print(self.Colors.Error .. "MaxDps Encountered an error with Custom Rotation, fix or disable!", "error")
