@@ -371,13 +371,15 @@ function MaxDps:AddStandardButton(button)
         end
     end
     if IsAddOnLoaded('Bartender4') then
-        if button.Name.GetName(button):match('^BT4PetButton') then
-            if button and button.id then
-                local id = button.id
-                if id then
-                    local _, _, _, _, _, _, spellId = GetPetActionInfo(id)
-                    if spellId then
-                        self:AddButton(spellId, button)
+        if button and button.Name and button.Name.GetName then
+            if button.Name.GetName(button):match('^BT4PetButton') then
+                if button and button.id then
+                    local id = button.id
+                    if id then
+                        local _, _, _, _, _, _, spellId = GetPetActionInfo(id)
+                        if spellId then
+                            self:AddButton(spellId, button)
+                        end
                     end
                 end
             end
