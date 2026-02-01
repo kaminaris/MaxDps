@@ -2538,6 +2538,10 @@ function MaxDps:CheckSpellUsable(spell,spellstring)
         end
     end
 
+    if MaxDps:IsTBCWow() then
+        if not C_Spell.IsSpellUsable(spell) then return false end
+    end
+
     local spellFound = false
     if MaxDps:IsClassicWow() or MaxDps:IsTBCWow() then
         -- Loop through all the spells in the player's spellbook
