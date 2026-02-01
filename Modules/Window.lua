@@ -308,6 +308,12 @@ function Window:GetWindowConfig()
 					column = 6,
 					order  = 5
 				},
+				enableCooldowns = {
+					type   = 'checkbox',
+					label  = 'Enable Cooldowns',
+					column = 6,
+					order  = 5
+				},
 			},
 			{
 				disableButtonGlow = {
