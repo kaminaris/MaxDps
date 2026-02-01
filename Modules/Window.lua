@@ -23,7 +23,7 @@ function Window:ShowWindow()
 		return
 	end
 
-	local window = StdUi:Window(nil, 800, 700, 'MaxDps')
+	local window = StdUi:Window(nil, 800, 750, 'MaxDps')
 	window:SetPoint('CENTER')
 
 	StdUi:BuildWindow(window, self:GetWindowConfig())
@@ -515,6 +515,34 @@ function Window:GetWindowConfig()
 			[3] = {
 				x = {
 					type   = 'sliderWithBox',
+					label  = 'x size',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.size.x,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.size.x = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[4] = {
+				y = {
+					type   = 'sliderWithBox',
+					label  = 'y size',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.size.y,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.size.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[5] = {
+				x = {
+					type   = 'sliderWithBox',
 					label  = 'x possition',
 					min    = -2000,
 					max    = 2000,
@@ -526,7 +554,7 @@ function Window:GetWindowConfig()
 					end
 				},
 			},
-			[4] = {
+			[6] = {
 				y = {
 					type   = 'sliderWithBox',
 					label  = 'y possition',

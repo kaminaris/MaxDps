@@ -13,13 +13,14 @@ loader:SetScript("OnEvent", function(self, event, name)
     cfg.enabled = cfg.enabled ~= false  -- default true
     cfg.spellID = cfg.spellID or 116
     cfg.pos = cfg.pos or { x = 0, y = 0 }
+    cfg.size = cfg.size or { x = 48, y = 48 }
     cfg.isMovable =  cfg.isMovable or false
 
     ------------------------------------------------------------
     -- Frame
     ------------------------------------------------------------
     local f = CreateFrame("Frame", "MaxDpsSpellFrame", UIParent, "BackdropTemplate")
-    f:SetSize(48, 48)
+    f:SetSize(cfg.size.x, cfg.size.y)
     f:SetPoint("CENTER", UIParent, "CENTER", cfg.pos.x, cfg.pos.y)
     f:SetMovable(cfg.isMovable)
     f:EnableMouse(true)
@@ -121,7 +122,12 @@ local function GetSpellKeybind(spellID)
     and MaxDps.Spells[spellID]
     and MaxDps.Spells[spellID][1]
     and MaxDps.Spells[spellID][1].HotKey then
-        return MaxDps.Spells[spellID][1].HotKey:GetText()
+        for i=1,#MaxDps.Spells[spellID] do
+            local key = MaxDps.Spells[spellID][i].HotKey:GetText() or ""
+            if key and key ~= "" and string.byte(key) ~= 226 then
+                return MaxDps.Spells[spellID][i].HotKey:GetText()
+            end
+        end
     end
     for slot = 1, 180 do
         local actionType, id = GetActionInfo(slot)
@@ -175,8 +181,14 @@ function MaxDps:UpdateSpellFrame(spellID)
     MaxDpsSpellFrame.icon:SetTexture(texture)
     MaxDpsSpellFrame:ClearAllPoints()
     MaxDpsSpellFrame:SetPoint("CENTER", UIParent, "CENTER", cfg.pos.x, cfg.pos.y)
+    MaxDpsSpellFrame:SetSize(cfg.size.x, cfg.size.x)
 
-    MaxDpsSpellFrame.bindText:SetText(ShortenKeybind(GetSpellKeybind(spellID)))
+    local key = ShortenKeybind(GetSpellKeybind(spellID))
+    if key and key ~= "" and string.byte(key) ~= 226 then
+        MaxDpsSpellFrame.bindText:SetText(key)
+    else
+        MaxDpsSpellFrame.bindText:SetText("")
+    end
 
     --local start, duration = GetSpellCooldown(spellID)
     --if start and duration then

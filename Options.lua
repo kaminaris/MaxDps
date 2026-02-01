@@ -52,6 +52,7 @@ MaxDps.defaultOptions = {
 		forceTargetAmountCount = 1,
 		disableButtonGlow = false,
 		enableDefensives = false,
+		enableCooldowns = true,
 
 		customGlow = false,
 		customGlowType = 'pixel',
@@ -89,6 +90,7 @@ MaxDps.defaultOptions = {
 			isMovable = false,
 			spellID = 116,
 			pos = {x=0, y=0},
+			size = {x=48, y=48},
 			x = 0,
 			y = 0,
         }
@@ -178,6 +180,10 @@ function MaxDps:AddToBlizzardOptions()
 	enableDefensives:SetChecked(MaxDps.db.global.enableDefensives)
 	enableDefensives.OnValueChanged = function(_, flag) MaxDps.db.global.enableDefensives = flag end
 
+	local enableCooldowns = StdUi:Checkbox(optionsFrame, 'Enable Cooldowns', 200, 24)
+	enableCooldowns:SetChecked(MaxDps.db.global.enableCooldowns)
+	enableCooldowns.OnValueChanged = function(_, flag) MaxDps.db.global.enableCooldowns = flag end
+
 	local loadModuleBtn = StdUi:Button(optionsFrame, nil, 24, 'Load current class module')
 	loadModuleBtn:SetScript('OnClick', function() MaxDps:InitRotations() end)
 
@@ -264,6 +270,14 @@ function MaxDps:AddToBlizzardOptions()
 	StdUi:AddLabel(optionsFrame, spellFramePosy, 'y Possition')
 	spellFramePosy.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.pos.y = val end
 
+	local spellFrameSizex = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.size.x or 0, -2000, 2000)
+	StdUi:AddLabel(optionsFrame, spellFrameSizex, 'x Possition')
+	spellFrameSizex.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.size.x = val end
+
+	local spellFrameSizey = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.size.y or 0, -2000, 2000)
+	StdUi:AddLabel(optionsFrame, spellFrameSizey, 'y Possition')
+	spellFrameSizey.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.size.y = val end
+
 	--- Pixel Glow options
 
 	local customGlowHeader = StdUi:Label(optionsFrame, 'Custom Glow', 14)
@@ -290,7 +304,7 @@ function MaxDps:AddToBlizzardOptions()
 	optionsFrame:AddRow():AddElement(general)
 	optionsFrame:AddRow():AddElements(enabled, cdOnlyMode, { column = 'even' })
 	optionsFrame:AddRow():AddElements(onCombatEnter, disableConsumables, { column = 'even' })
-	optionsFrame:AddRow():AddElement(enableDefensives)
+	optionsFrame:AddRow():AddElements(enableDefensives, enableCooldowns, { column = 'even' })
 	optionsFrame:AddRow():AddElements(disableButtonGlow, forceSingle, { column = 'even' })
 	optionsFrame:AddRow():AddElements(forceTargetAmount,forceTargetAmountCount, { column = 'even' })
 	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, { column = 'even' })
@@ -305,16 +319,17 @@ function MaxDps:AddToBlizzardOptions()
 	optionsFrame:AddRow():AddElement(sizeMultiplier, { column = 6, margin = { top = 15 } })
 	optionsFrame:AddRow():AddElement(customGlowHeader)
 	optionsFrame:AddRow():AddElements(customGlow, customGlowType, { column = 'even' })
-	optionsFrame:AddRow():AddElement(spellFrameLabel)
-	optionsFrame:AddRow():AddElement(spellFrameEnabled)
-	optionsFrame:AddRow():AddElements(spellFramePosx, spellFramePosy, { column = 'even' })
+	--optionsFrame:AddRow():AddElement(spellFrameLabel)
+	--optionsFrame:AddRow():AddElement(spellFrameEnabled)
+	--optionsFrame:AddRow():AddElements(spellFrameSizex, spellFrameSizey, { column = 'even' })
+	--optionsFrame:AddRow():AddElements(spellFramePosx, spellFramePosy, { column = 'even' })
 
 	-- no need to :SetScript when we have a 'native' Settings API callback for Panel:Show
 	optionsFrame.OnRefresh = function()
 		optionsFrame:DoLayout()
 		-- Settings cannot know the registered panel changed size AFTER showing, so rather
 		-- than jump through hoops to force a redraw / show a scrollbar, this is a simple workaround
-		optionsFrame:SetScale(.75)
+		optionsFrame:SetScale(.8)
 	end
 
 	if InterfaceOptions_AddCategory then
@@ -326,7 +341,7 @@ function MaxDps:AddToBlizzardOptions()
 	end
 
 	self:AddCustomGlowOptions()
-	--self:AddSpellFrameOptions()
+	self:AddSpellFrameOptions()
 end
 
 function MaxDps:AddCustomGlowOptions()
@@ -454,6 +469,34 @@ function MaxDps:AddSpellFrameOptions()
 			[3] = {
 				x = {
 					type   = 'sliderWithBox',
+					label  = 'x size',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.size.x,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.size.x = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[4] = {
+				y = {
+					type   = 'sliderWithBox',
+					label  = 'y size',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.size.y,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.size.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[5] = {
+				x = {
+					type   = 'sliderWithBox',
 					label  = 'x possition',
 					min    = -2000,
 					max    = 2000,
@@ -465,7 +508,7 @@ function MaxDps:AddSpellFrameOptions()
 					end
 				},
 			},
-			[4] = {
+			[6] = {
 				y = {
 					type   = 'sliderWithBox',
 					label  = 'y possition',
