@@ -109,8 +109,8 @@ function Custom:LoadCustomRotations()
     end
 
     for _, rotation in pairs(MaxDps.db.global.customRotations) do
-        MaxDps:Print(MaxDps.Colors.Info .. 'Loaded Custom Rotation: ' .. (rotation and rotation.name or "Unknown") )
         if rotation.enabled and rotation.class ~= nil and rotation.spec ~= nil then
+            MaxDps:Print(MaxDps.Colors.Info .. 'Loaded Custom Rotation: ' .. (rotation and rotation.name or "Unknown") )
             local fn = Custom.LoadFunction(rotation.fn)
             if not self.CustomRotations[rotation.class] then
                 self.CustomRotations[rotation.class] = {}
@@ -118,7 +118,8 @@ function Custom:LoadCustomRotations()
 
             self.CustomRotations[rotation.class][rotation.spec] = {
                 name = rotation.name,
-                fn   = fn
+                fn   = fn,
+                enabled = rotation.enabled
             }
         end
     end

@@ -815,10 +815,22 @@ function MaxDps:InitRotations(skipPrint)
     local customRotation = self.Custom:GetCustomRotation(classId, spec)
 
     if customRotation then
-        self.NextSpell = customRotation.fn
+        --self.NextSpell = customRotation.fn
+        local ok, res = xpcall(customRotation.fn, err, self)
+        if ok then
+            self.NextSpell = res
+        else
+            if not self.Error or customRotation.enabled then
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error with Custom Rotation, fix or disable!", "error")
+            end
+            self.Error = true
+        end
 
-        if not skipPrint then
+        if ok then
             self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name, "info")
+        else
+            self:Print(self.Colors.Error .. 'Error With Custom Rotation: ' .. customRotation.name .. " Attempting Class Module", "error")
+            self:LoadModule(skipPrint)
         end
     else
         self:LoadModule(skipPrint)
