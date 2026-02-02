@@ -828,9 +828,15 @@ ns.classInterrupts = {
     },
 
     DEATHKNIGHT = {
-        Blood = {},
-        Frost = {},
-        Unholy = {},
+        Blood = {
+            ["Mind Freeze"] = 47528,
+        },
+        Frost = {
+            ["Mind Freeze"] = 47528,
+        },
+        Unholy = {
+            ["Mind Freeze"] = 47528,
+        },
     },
 
     SHAMAN = {
