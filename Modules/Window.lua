@@ -511,9 +511,26 @@ function Window:GetWindowConfig()
 				enabled = {
 					type = 'checkbox',
 					label = 'Enable',
+					column = 6,
+					order = 1,
 					initialValue = MaxDps.db.global.spellFrame.enabled,
 					onValueChanged = function(_, flag)
 						MaxDps.db.global.spellFrame.enabled = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+				isMovable = {
+					type = 'checkbox',
+					label = 'Unlock',
+					column = 6,
+					order = 2,
+					initialValue = MaxDps.db.global.spellFrame.isMovable,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.isMovable = flag
+						if MaxDpsSpellFrame then
+							MaxDpsSpellFrame:SetMouseClickEnabled(MaxDps.db.global.spellFrame.isMovable)
+							MaxDpsSpellFrame:SetMovable(MaxDps.db.global.spellFrame.isMovable)
+						end
 						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
 					end
 				}
