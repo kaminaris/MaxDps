@@ -748,10 +748,14 @@ function MaxDps:InvokeNextSpell()
             end
             self.Error = true
         end
-        local nextSpell = C_AssistedCombat.GetNextCastSpell()
-        self.Spell = C_AssistedCombat.IsAvailable() and nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
-        if MaxDpsSpellFrame then
-            MaxDps:UpdateSpellFrame(self.Spell)
+        if not self.customRotationEabled then
+            local nextSpell = C_AssistedCombat.GetNextCastSpell()
+            self.Spell = C_AssistedCombat.IsAvailable() and nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
+            if MaxDpsSpellFrame then
+                MaxDps:UpdateSpellFrame(self.Spell)
+            end
+        else
+            self.Spell = res
         end
     end
 
@@ -807,6 +811,7 @@ function MaxDps:InitRotations(skipPrint)
 
     self.ClassId = classId
     self.Spec = spec
+    self.customRotationEabled = false
 
     if not self.Custom then
         self.Custom = self:GetModule('Custom')
@@ -830,6 +835,7 @@ function MaxDps:InitRotations(skipPrint)
 
             if ok then
                 self:Print(self.Colors.Success .. 'Loaded Custom Rotation: ' .. customRotation.name, "info")
+                self.customRotationEabled = customRotation.enabled
             else
                 self:Print(self.Colors.Error .. 'Error With Custom Rotation: ' .. customRotation.name .. " Attempting Class Module", "error")
                 self:LoadModule(skipPrint)
@@ -840,9 +846,11 @@ function MaxDps:InitRotations(skipPrint)
             end
             self:Print(self.Colors.Error .. 'Error With Custom Rotation: ' .. customRotation.name .. " Attempting Class Module", "error")
             self:LoadModule(skipPrint)
+            self.customRotationEabled = false
         end
     else
         self:LoadModule(skipPrint)
+        self.customRotationEabled = false
     end
 end
 
