@@ -751,6 +751,10 @@ function MaxDps:InvokeNextSpell()
         if not self.customRotationEabled then
             local nextSpell = C_AssistedCombat.GetNextCastSpell()
             self.Spell = C_AssistedCombat.IsAvailable() and nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
+            AssistedCombatManager.updateRate = MaxDps.db.global.interval or 0.1
+            if not InCombatLockdown() then
+                SetCVar("assistedCombatIconUpdateRate", MaxDps.db.global.interval)
+            end
             if MaxDpsSpellFrame then
                 MaxDps:UpdateSpellFrame(self.Spell)
             end
