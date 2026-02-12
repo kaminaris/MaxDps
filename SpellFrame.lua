@@ -23,29 +23,32 @@ loader:SetScript("OnEvent", function(self, event, name)
     f:SetSize(cfg.size.x, cfg.size.y)
     f:SetPoint("CENTER", UIParent, "CENTER", cfg.pos.x, cfg.pos.y)
     f:SetMovable(cfg.isMovable)
-    f:EnableMouse(true)
-    f:RegisterForDrag("LeftButton")
-    f:SetScript("OnMouseDown", function(self, button)
-        if button == "RightButton" then
-            -- Toggle movable state
-            local newState = not self.isMovable
-            self.isMovable = newState
-            cfg.isMovable = newState
-            self:SetMovable(newState)
-
-            if newState then
-                print("Frame unlocked — drag with left click")
+    C_Timer.After(0,function()
+        f:SetMouseMotionEnabled(true)
+        f:SetMouseClickEnabled(cfg.isMovable)
+    end) -- next frame, as frame engine ignores mouse setting at frame creation
+    local function SetTooltipHint(owner,cfg)
+        if not InCombatLockdown() and IsModifierKeyDown() then
+            GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
+            GameTooltip:SetText("MaxDps Spell Frame")
+            if cfg.isMovable then
+                GameTooltip:AddLine("Right-click to Lock")
             else
-                print("Frame locked")
+                GameTooltip:AddDoubleLine("Unlock from Options","/maxdps",nil,nil,nil,GRAY_FONT_COLOR:GetRGB())
             end
-        elseif button == "LeftButton" and self.isMovable then
-            self:SetMovable(true)
+            GameTooltip:Show()
+        end
+    end
+    f:SetScript("OnMouseDown", function(self, button)
+        if button == "LeftButton" and cfg.isMovable then
             self:StartMoving()
+            self.isMoving = true
         end
     end)
     f:SetScript("OnMouseUp", function(self, button)
-        if button == "LeftButton" and self.isMovable then
+        if button == "LeftButton" and cfg.isMovable then
             self:StopMovingOrSizing()
+            self.isMoving = false
 
             -- Save position
             local x, y = self:GetCenter()
@@ -56,16 +59,43 @@ loader:SetScript("OnEvent", function(self, event, name)
             self:ClearAllPoints()
             self:SetPoint("CENTER", UIParent, "CENTER", cfg.pos.x, cfg.pos.y)
         end
+        if button == "RightButton" and cfg.isMovable then
+            cfg.isMovable = false
+            self:SetMouseClickEnabled(cfg.isMovable)
+            self:SetMovable(cfg.isMovable)
+        end
     end)
-    --f:SetScript("OnDragStart", f.StartMoving)
-    f:SetScript("OnDragStop", function(self)
+    f:SetScript("OnShow", function(self)
+        self:SetMouseClickEnabled(cfg.isMovable)
+        self:SetMovable(cfg.isMovable)
+    end)
+    f:SetScript("OnHide", function(self)
         self:StopMovingOrSizing()
-        local x, y = self:GetCenter()
-        local ux, uy = UIParent:GetCenter()
-        cfg.pos.x = x - ux
-        cfg.pos.y = y - uy
+        self.isMoving = false
+        self.isMouseOver = false
     end)
-
+    f:SetScript("OnEnter", function(self)
+        self.isMouseOver = true
+        SetTooltipHint(self,cfg)
+    end)
+    f:SetScript("OnLeave", function(self)
+        self.isMouseOver = false
+        if GameTooltip:IsOwned(self) then
+            GameTooltip_Hide()
+        end
+    end)
+    f:SetScript("OnEvent", function(self,event,key,down)
+        if self.isMouseOver then
+            if down == 1 then
+                SetTooltipHint(self,cfg)
+            else
+                if GameTooltip:IsOwned(self) then
+                    GameTooltip_Hide()
+                end
+            end
+        end
+    end)
+    f:RegisterEvent("MODIFIER_STATE_CHANGED")
     f:SetBackdrop({
         bgFile = "Interface/Buttons/WHITE8x8",
         edgeFile = "Interface/Buttons/WHITE8x8",
@@ -179,9 +209,11 @@ function MaxDps:UpdateSpellFrame(spellID)
     end
 
     MaxDpsSpellFrame.icon:SetTexture(texture)
-    MaxDpsSpellFrame:ClearAllPoints()
-    MaxDpsSpellFrame:SetPoint("CENTER", UIParent, "CENTER", cfg.pos.x, cfg.pos.y)
-    MaxDpsSpellFrame:SetSize(cfg.size.x, cfg.size.x)
+    if not MaxDpsSpellFrame.isMoving then
+        MaxDpsSpellFrame:ClearAllPoints()
+        MaxDpsSpellFrame:SetPoint("CENTER", UIParent, "CENTER", cfg.pos.x, cfg.pos.y)
+        MaxDpsSpellFrame:SetSize(cfg.size.x, cfg.size.x)
+    end
 
     local key = ShortenKeybind(GetSpellKeybind(spellID))
     if key and key ~= "" and string.byte(key) ~= 226 then

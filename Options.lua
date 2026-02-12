@@ -262,20 +262,30 @@ function MaxDps:AddToBlizzardOptions()
 		MaxDps.db.global.spellFrame.enabled = flag
 	end
 
+	local spellFrameMovable = StdUi:Checkbox(optionsFrame, 'Unlock spell frame', 200, 24)
+	spellFrameMovable:SetChecked(MaxDps.db.global.spellFrame.isMovable)
+	spellFrameMovable.OnValueChanged = function(_, flag)
+		MaxDps.db.global.spellFrame.isMovable = flag
+		if MaxDpsSpellFrame then
+			MaxDpsSpellFrame:SetMouseClickEnabled(MaxDps.db.global.spellFrame.isMovable)
+			MaxDpsSpellFrameself:SetMovable(MaxDps.db.global.spellFrame.isMovable)
+		end
+	end
+
 	local spellFramePosx = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.pos.x or 0, -2000, 2000)
-	StdUi:AddLabel(optionsFrame, spellFramePosx, 'x Possition')
+	StdUi:AddLabel(optionsFrame, spellFramePosx, 'x Position')
 	spellFramePosx.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.pos.x = val end
 
 	local spellFramePosy = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.pos.y or 0, -2000, 2000)
-	StdUi:AddLabel(optionsFrame, spellFramePosy, 'y Possition')
+	StdUi:AddLabel(optionsFrame, spellFramePosy, 'y Position')
 	spellFramePosy.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.pos.y = val end
 
 	local spellFrameSizex = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.size.x or 0, -2000, 2000)
-	StdUi:AddLabel(optionsFrame, spellFrameSizex, 'x Possition')
+	StdUi:AddLabel(optionsFrame, spellFrameSizex, 'x Position')
 	spellFrameSizex.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.size.x = val end
 
 	local spellFrameSizey = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.size.y or 0, -2000, 2000)
-	StdUi:AddLabel(optionsFrame, spellFrameSizey, 'y Possition')
+	StdUi:AddLabel(optionsFrame, spellFrameSizey, 'y Position')
 	spellFrameSizey.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.size.y = val end
 
 	--- Pixel Glow options
@@ -459,10 +469,26 @@ function MaxDps:AddSpellFrameOptions()
 				enabled = {
 					type = 'checkbox',
 					label = 'Enable',
+					column = 6,
+					order = 1,
 					initialValue = MaxDps.db.global.spellFrame.enabled,
 					onValueChanged = function(_, flag)
 						MaxDps.db.global.spellFrame.enabled = flag
 						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+				isMovable = {
+					type = 'checkbox',
+					label = 'Unlock',
+					column = 6,
+					order = 2,
+					initialValue = MaxDps.db.global.spellFrame.isMovable,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.isMovable = flag
+						if MaxDpsSpellFrame then
+							MaxDpsSpellFrame:SetMouseClickEnabled(MaxDps.db.global.spellFrame.isMovable)
+							MaxDpsSpellFrame:SetMovable(MaxDps.db.global.spellFrame.isMovable)
+						end
 					end
 				}
 			},
@@ -497,7 +523,7 @@ function MaxDps:AddSpellFrameOptions()
 			[5] = {
 				x = {
 					type   = 'sliderWithBox',
-					label  = 'x possition',
+					label  = 'x position',
 					min    = -2000,
 					max    = 2000,
 					column = 6,
@@ -511,7 +537,7 @@ function MaxDps:AddSpellFrameOptions()
 			[6] = {
 				y = {
 					type   = 'sliderWithBox',
-					label  = 'y possition',
+					label  = 'y position',
 					min    = -2000,
 					max    = 2000,
 					column = 6,
