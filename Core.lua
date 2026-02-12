@@ -83,7 +83,12 @@ function MaxDps:issecretvalue(value)
 end
 
 local LCS = LibStub("LibClassicSpecs-Doadin", true)
-local GetSpecialization = LCS and LCS.GetSpecialization or C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
+local GetSpecialization
+if (MaxDps:IsClassicWow() or MaxDps:IsSoDWow()) and LCS then
+    GetSpecialization = LCS.GetSpecialization
+else
+    GetSpecialization = C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
+end
 
 function MaxDps:ShowMainWindow()
     if not self.Window then
