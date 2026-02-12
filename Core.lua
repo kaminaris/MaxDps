@@ -84,7 +84,7 @@ end
 
 local LCS = LibStub("LibClassicSpecs-Doadin", true)
 local GetSpecialization
-if (MaxDps:IsClassicWow() or MaxDps:IsSoDWow()) and LCS then
+if (MaxDps:IsClassicWow() or MaxDps:IsSoDWow() or MaxDps:IsTBCWow()) and LCS then
     GetSpecialization = LCS.GetSpecialization
 else
     GetSpecialization = C_SpecializationInfo and C_SpecializationInfo.GetSpecialization or GetSpecialization
@@ -754,7 +754,34 @@ function MaxDps:InvokeNextSpell()
             self.Error = true
         end
         if not self.customRotationEabled then
-            local nextSpell = C_AssistedCombat.GetNextCastSpell()
+            ----AssistedCombatManager.rotationSpells[279302] = nil
+            ----AssistedCombatManager.useAssistedHighlight = false
+            --local class = string.upper(MaxDps.Classes[MaxDps.ClassId])
+            --local specName = MaxDps:SpecName()
+            --local sSpell = C_AssistedCombat.GetNextCastSpell()
+            --AssistedCombatManager.UpdateAssistedHighlightCandidateActionButtonsList(self)
+            ----for _, spellID in pairs(MaxDps.classCooldowns[class][specName].offensive) do
+            ----    if sSpell == spellID then
+            ----        --print("cooldown suggested")
+            ----        AssistedCombatManager.lastNextCastSpellID = sSpell
+            ----    end
+            ----end
+            --for button, spellID in pairs(AssistedCombatManager.assistedHighlightCandidateActionButtons) do
+            --    --print(spellID)
+            --    --print(MaxDps.classCooldowns[class][specName].offensive[C_Spell.GetSpellName(spellID)])
+            --    if MaxDps.classCooldowns[class][specName].offensive[C_Spell.GetSpellName(spellID)] then
+            --        print("removing button")
+            --        AssistedCombatManager.assistedHighlightCandidateActionButtons[button] = nil
+            --    end
+            --end
+            --if class and specName and MaxDps.classCooldowns[class] and MaxDps.classCooldowns[class][specName] then
+            --    for _, spellID in pairs(MaxDps.classCooldowns[class][specName].offensive) do
+            --        if AssistedCombatManager.rotationSpells[spellID] then
+            --            AssistedCombatManager.rotationSpells[spellID] = nil
+            --        end
+            --    end
+            --end
+            local nextSpell = C_AssistedCombat.GetNextCastSpell(true)
             self.Spell = C_AssistedCombat.IsAvailable() and nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
             AssistedCombatManager.updateRate = MaxDps.db.global.interval or 0.1
             if not InCombatLockdown() then
