@@ -27,6 +27,18 @@ loader:SetScript("OnEvent", function(self, event, name)
         f:SetMouseMotionEnabled(true)
         f:SetMouseClickEnabled(cfg.isMovable)
     end) -- next frame, as frame engine ignores mouse setting at frame creation
+    local function SetTooltipHint(owner,cfg)
+        if not InCombatLockdown() and IsModifierKeyDown() then
+            GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
+            GameTooltip:SetText("MaxDps Spell Frame")
+            if cfg.isMovable then
+                GameTooltip:AddLine("Right-click to Lock")
+            else
+                GameTooltip:AddDoubleLine("Unlock from Options","/maxdps",nil,nil,nil,GRAY_FONT_COLOR:GetRGB())
+            end
+            GameTooltip:Show()
+        end
+    end
     f:SetScript("OnMouseDown", function(self, button)
         if button == "LeftButton" and cfg.isMovable then
             self:StartMoving()
@@ -60,24 +72,30 @@ loader:SetScript("OnEvent", function(self, event, name)
     f:SetScript("OnHide", function(self)
         self:StopMovingOrSizing()
         self.isMoving = false
+        self.isMouseOver = false
     end)
     f:SetScript("OnEnter", function(self)
-        if not InCombatLockdown() then
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetText("MaxDps Spell Frame")
-            if cfg.isMovable then
-                GameTooltip:AddLine("Right-click to Lock")
-            else
-                GameTooltip:AddLine("Unlock from Options")
-            end
-            GameTooltip:Show()
-        end
+        self.isMouseOver = true
+        SetTooltipHint(self,cfg)
     end)
     f:SetScript("OnLeave", function(self)
+        self.isMouseOver = false
         if GameTooltip:IsOwned(self) then
             GameTooltip_Hide()
         end
     end)
+    f:SetScript("OnEvent", function(self,event,key,down)
+        if self.isMouseOver then
+            if down == 1 then
+                SetTooltipHint(self,cfg)
+            else
+                if GameTooltip:IsOwned(self) then
+                    GameTooltip_Hide()
+                end
+            end
+        end
+    end)
+    f:RegisterEvent("MODIFIER_STATE_CHANGED")
     f:SetBackdrop({
         bgFile = "Interface/Buttons/WHITE8x8",
         edgeFile = "Interface/Buttons/WHITE8x8",
