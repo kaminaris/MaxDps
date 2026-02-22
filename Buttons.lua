@@ -107,6 +107,16 @@ function MaxDps:DestroyAllOverlays()
         TableInsert(self.FramePool, frame)
         self.Frames[key] = nil
     end
+
+    if MaxDps.IsRetailWow() then
+        for spellID in pairs(self.Flags) do
+            local frame = "MaxDps_Overlay_" .. spellID
+            if frame and frame.texture then
+                frame.texture:SetAlpha(0)
+            end
+            self.Flags[spellID] = nil
+        end
+    end
 end
 
 function MaxDps:ApplyOverlayChanges()
