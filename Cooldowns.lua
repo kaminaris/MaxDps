@@ -864,9 +864,15 @@ ns.classInterrupts = {
     },
 
     WARLOCK = {
-        Affliction = {},
-        Demonology = {},
-        Destruction = {},
+        Affliction = {
+            ["Spell Lock"] = 19647,
+        },
+        Demonology = {
+            ["Spell Lock"] = 19647,
+        },
+        Destruction = {
+            ["Spell Lock"] = 19647,
+        },
     },
 
     MONK = {
@@ -897,6 +903,9 @@ ns.classInterrupts = {
     },
 
     DEMONHUNTER = {
+        Devourer = {
+            ["Disrupt"] = 183752,
+        },
         Havoc = {
             ["Disrupt"] = 183752,
         },
