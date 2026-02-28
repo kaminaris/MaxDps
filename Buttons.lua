@@ -961,6 +961,11 @@ function MaxDps:GlowInteruptMidnight(spellId)
         --print("Condition is true, applying glow for spellId: ", spellId)
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, CreateColor(1, 0, 0, 1), alpha)
+        for _, Button in pairs(self.Spells[spellId]) do
+            if Button and Button.MaxDpsOverlays and Button.MaxDpsOverlays[spellId] then
+                Button.MaxDpsOverlays[spellId].texture:SetAlphaFromBoolean(isInterruptible, 0, alpha)
+            end
+        end
     end
     if not color then
         --print("Condition is false, clearing glow for spellId: ", spellId)
