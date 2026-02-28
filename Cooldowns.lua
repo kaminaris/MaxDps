@@ -307,6 +307,7 @@ ns.classCooldowns = {
                 --["Volley"] = 260243,
                 --["Wailing Arrow"] = 392060,
                 ["Death Chakram"] = 375891,
+                ["Moonlight Chakram"] = 1264902,
             },
             defensive = {
                 ["Exhilaration"] = 109304,
@@ -323,6 +324,8 @@ ns.classCooldowns = {
                 --["Spearhead"] = 360966,
                 ["Death Chakram"] = 375891,
                 ["Stampede"] = 201430,
+                ["Takedown"] = 1250646,
+                ["Moonlight Chakram"] = 1264902,
             },
             defensive = {
                 ["Exhilaration"] = 109304,
