@@ -954,6 +954,7 @@ function MaxDps:GlowInteruptMidnight(spellId)
     local duration = C_Spell.GetSpellCooldownDuration(spellId)
     local durColor = duration and duration:EvaluateRemainingDuration(curve)
     local _, _, _, alpha = durColor:GetRGBA()
+    local isInterruptible = select(8, UnitCastingInfo("target"))
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
@@ -961,9 +962,11 @@ function MaxDps:GlowInteruptMidnight(spellId)
         --print("Condition is true, applying glow for spellId: ", spellId)
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, CreateColor(1, 0, 0, 1), alpha)
-        for _, Button in pairs(self.Spells[spellId]) do
-            if Button and Button.MaxDpsOverlays and Button.MaxDpsOverlays[spellId] then
-                Button.MaxDpsOverlays[spellId].texture:SetAlphaFromBoolean(isInterruptible, 0, alpha)
+        if MaxDps:issecretvalue(isInterruptible) or ((not MaxDps:issecretvalue(isInterruptible)) and isInterruptible ~= nil) then
+            for _, Button in pairs(self.Spells[spellId]) do
+                if Button and Button.MaxDpsOverlays and Button.MaxDpsOverlays[spellId] then
+                    Button.MaxDpsOverlays[spellId].texture:SetAlphaFromBoolean(isInterruptible, 0, alpha)
+                end
             end
         end
     end
