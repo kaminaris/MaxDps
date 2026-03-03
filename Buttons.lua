@@ -922,13 +922,16 @@ function MaxDps:GlowDefensiveHPMidnight(spellId, condition)
     end
     local curve = C_CurveUtil.CreateColorCurve()
     curve:SetType(Enum.LuaCurveType.Linear)
-    curve:AddPoint(0.0, CreateColor(1, 0, 0, 1))
-    curve:AddPoint(0.3, CreateColor(1, 1, 0, 0.5))
-    curve:AddPoint(0.7, CreateColor(0, 1, 0, 0))
+    curve:AddPoint(0.3, CreateColor(1, 0, 0, 1))
+    curve:AddPoint(0.5, CreateColor(1, 1, 0, 0.5))
+    curve:AddPoint(1.0, CreateColor(0, 1, 0, 0))
     local color = UnitHealthPercent("player", false, curve)
     local duration = C_Spell.GetSpellCooldownDuration(spellId)
     local durColor = duration and duration:EvaluateRemainingDuration(curve)
-    local _, _, _, alpha = durColor and durColor:GetRGBA()
+    local _, alpha
+    if durColor then
+        _, _, _, alpha = durColor:GetRGBA()
+    end
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
