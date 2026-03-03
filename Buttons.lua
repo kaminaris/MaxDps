@@ -928,7 +928,7 @@ function MaxDps:GlowDefensiveHPMidnight(spellId, condition)
     local color = UnitHealthPercent("player", false, curve)
     local duration = C_Spell.GetSpellCooldownDuration(spellId)
     local durColor = duration and duration:EvaluateRemainingDuration(curve)
-    local _, _, _, alpha = durColor:GetRGBA()
+    local _, _, _, alpha = durColor and durColor:GetRGBA()
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
