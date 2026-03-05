@@ -1172,7 +1172,7 @@ function MaxDps:CheckIsPlayerMelee()
 end
 
 function MaxDps:HasTalent(talent)
-    return self.PlayerTalents[talent]
+    return self.PlayerTalents[talent] and type(self.PlayerTalents[talent]) == "number" and self.PlayerTalents[talent] > 0 or false
 end
 
 function MaxDps:GetAzeriteTraits()
