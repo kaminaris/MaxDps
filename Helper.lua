@@ -1090,7 +1090,7 @@ function MaxDps:CheckTalents()
                 end
             end
         end
-    else
+    elseif MaxDps:IsClassicWow() then
         if not MaxDpsTalentsSpellTooltip then
             local tip = CreateFrame( "GameTooltip", "MaxDpsTalentsSpellTooltip", nil, "GameTooltipTemplate" )
 		    MaxDpsTalentsSpellTooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
@@ -1108,42 +1108,43 @@ function MaxDps:CheckTalents()
                 end
             end
         end
+        MaxDpsTalentsSpellTooltip:Hide()
+    elseif MaxDps:IsTBCWow() then
 
-        if MaxDps:IsTBCWow() then
-            local function FindTalentSpellID(talentName)
-                --for i = 1, 50000 do
-                --   local name, rank, icon = GetSpellInfo(i)
-                --   if name and name == talentName and icon == talentIcon then
-                --      return i
-                --   end
-                --end
-                local spellInfo = GetSpellInfo(talentName)
-                if spellInfo and spellInfo.spellID then
-                    return spellInfo.spellID
-                else
-                    for i = 1, 50000 do
-                        spellInfo = GetSpellInfo(i)
-                        if spellInfo and spellInfo.name == talentName then
-                            return i
-                        end
-                    end
-                end
-            end
+        --local function FindTalentSpellID(talentName, talentID)
+        --    --for i = 1, 50000 do
+        --    --   local name, rank, icon = GetSpellInfo(i)
+        --    --   if name and name == talentName and icon == talentIcon then
+        --    --      return i
+        --    --   end
+        --    --end
+        --    local spellInfo = GetSpellInfo(talentName)
+        --    if spellInfo and spellInfo.spellID then
+        --        return spellInfo.spellID
+        --    elseif talentIDtoSpellID[talentID] then
+        --        return talentIDtoSpellID[talentID]
+        --    else
+        --        for i = 1, 500000 do
+        --            spellInfo = GetSpellInfo(i)
+        --            if spellInfo and spellInfo.name == talentName then
+        --                talentIDtoSpellID[talentID] = i
+        --                return i
+        --            end
+        --        end
+        --    end
+        --end
 
-            for tab = 1, GetNumTalentTabs() do
-                for index = 1, GetNumTalents(tab) do
-                    local talentName, talentIcon, row , column , rank, maxrank = GetTalentInfo(tab, index)
+        for tab = 1, GetNumTalentTabs() do
+            for index = 1, GetNumTalents(tab) do
+                local talentName, talentIcon, row , column , rank, maxrank, _ , _, _, _, _, talentID = GetTalentInfo(tab, index)
 
-                    local spellID = FindTalentSpellID(talentName, talentIcon)
+                --local spellID = FindTalentSpellID(talentName, talentID)
 
-                    if spellID and rank > 0 then
-                        self.PlayerTalents[spellID] = rank
-                    end
+                if talentID and rank > 0 then
+                    self.PlayerTalents[talentID] = rank
                 end
             end
         end
-
-        MaxDpsTalentsSpellTooltip:Hide()
     end
 end
 
