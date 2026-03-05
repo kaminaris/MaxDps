@@ -1108,6 +1108,41 @@ function MaxDps:CheckTalents()
                 end
             end
         end
+
+        if MaxDps:IsTBCWow() then
+            local function FindTalentSpellID(talentName)
+                --for i = 1, 50000 do
+                --   local name, rank, icon = GetSpellInfo(i)
+                --   if name and name == talentName and icon == talentIcon then
+                --      return i
+                --   end
+                --end
+                local spellInfo = GetSpellInfo(talentName)
+                if spellInfo and spellInfo.spellID then
+                    return spellInfo.spellID
+                else
+                    for i = 1, 50000 do
+                        spellInfo = GetSpellInfo(i)
+                        if spellInfo and spellInfo.name == talentName then
+                            return i
+                        end
+                    end
+                end
+            end
+
+            for tab = 1, GetNumTalentTabs() do
+                for index = 1, GetNumTalents(tab) do
+                    local talentName, talentIcon, row , column , rank, maxrank = GetTalentInfo(tab, index)
+
+                    local spellID = FindTalentSpellID(talentName, talentIcon)
+
+                    if spellID and rank > 0 then
+                        self.PlayerTalents[spellID] = rank
+                    end
+                end
+            end
+        end
+
         MaxDpsTalentsSpellTooltip:Hide()
     end
 end
