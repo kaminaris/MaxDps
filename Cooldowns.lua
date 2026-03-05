@@ -695,6 +695,7 @@ ns.classCooldowns = {
                 --["Power Siphon"] = 264130,
                 --["Demonic Strength"] = 267171,
                 ["Soulburn"] = 385899,
+                ["Implosion"] = 196277,
             },
             defensive = {
                 ["Unending Resolve"] = 104773,

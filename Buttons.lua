@@ -226,16 +226,16 @@ function MaxDps:Glow(button, id, texture, type, color, alpha)
             button.MaxDpsOverlays[id].texture:SetVertexColor(color.r, color.g, color.b, color.a)
         end
         button.MaxDpsOverlays[id].Maxtext:SetText("")
-        if id and ( (MaxDps.empowerLevel and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[id]) ) then
-            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.empowerLevel[id])
+        if id and ( (MaxDps.FrameData and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[id]) ) then
+            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.FrameData.empowerLevel[id])
         else
             button.MaxDpsOverlays[id].Maxtext:SetText("")
         end
-        if id and ( (MaxDps.Spell and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[MaxDps.Spell]) ) then
-            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.FrameData.empowerLevel[MaxDps.Spell])
-        else
-            button.MaxDpsOverlays[id].Maxtext:SetText("")
-        end
+        --if id and ( (MaxDps.Spell and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[MaxDps.Spell]) ) then
+        --    button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.FrameData.empowerLevel[MaxDps.Spell])
+        --else
+        --    button.MaxDpsOverlays[id].Maxtext:SetText("")
+        --end
     else
         if not button.MaxDpsOverlays then
             button.MaxDpsOverlays = {}
@@ -247,16 +247,16 @@ function MaxDps:Glow(button, id, texture, type, color, alpha)
         elseif color then
             button.MaxDpsOverlays[id].texture:SetVertexColor(color.r, color.g, color.b, color.a)
         end
-        if id and ( (MaxDps.empowerLevel and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[id]) ) then
-            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.empowerLevel[id])
+        if id and ( (MaxDps.FrameData and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[id]) ) then
+            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.FrameData.empowerLevel[id])
         else
             button.MaxDpsOverlays[id].Maxtext:SetText("")
         end
-        if id and ( (MaxDps.Spell and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[MaxDps.Spell]) ) then
-            button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.FrameData.empowerLevel[MaxDps.Spell])
-        else
-            button.MaxDpsOverlays[id].Maxtext:SetText("")
-        end
+        --if id and ( (MaxDps.Spell and MaxDps.FrameData.empowerLevel and MaxDps.FrameData.empowerLevel[MaxDps.Spell]) ) then
+        --    button.MaxDpsOverlays[id].Maxtext:SetText(MaxDps.FrameData.empowerLevel[MaxDps.Spell])
+        --else
+        --    button.MaxDpsOverlays[id].Maxtext:SetText("")
+        --end
     end
 end
 
@@ -1005,6 +1005,12 @@ function MaxDps:GlowCooldownMidnight(spellId, condition)
     end
     if condition then
         --print("Condition is true, applying glow for spellId: ", spellId)
+        if spellId == 196277 then
+            if not MaxDps.FrameData.empowerLevel then
+                MaxDps.FrameData.empowerLevel = {}
+            end
+            MaxDps.FrameData.empowerLevel[spellId] = 6
+        end
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, color, alpha, "defensive")
     end
