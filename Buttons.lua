@@ -1007,12 +1007,12 @@ function MaxDps:GlowCooldownMidnight(spellId, condition)
     end
     if condition then
         --print("Condition is true, applying glow for spellId: ", spellId)
-        if spellId == 196277 then
-            if not MaxDps.FrameData.empowerLevel then
-                MaxDps.FrameData.empowerLevel = {}
-            end
-            MaxDps.FrameData.empowerLevel[spellId] = 6
-        end
+        --if spellId == 196277 then
+        --    if not MaxDps.FrameData.empowerLevel then
+        --        MaxDps.FrameData.empowerLevel = {}
+        --    end
+        --    MaxDps.FrameData.empowerLevel[spellId] = 6
+        --end
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, color, alpha, "defensive")
     end
