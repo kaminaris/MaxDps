@@ -966,9 +966,11 @@ function MaxDps:GlowInteruptMidnight(spellId)
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, CreateColor(1, 0, 0, 1), alpha)
         if MaxDps:issecretvalue(isInterruptible) or ((not MaxDps:issecretvalue(isInterruptible)) and isInterruptible ~= nil) then
-            for _, Button in pairs(self.Spells[spellId]) do
-                if Button and Button.MaxDpsOverlays and Button.MaxDpsOverlays[spellId] then
-                    Button.MaxDpsOverlays[spellId].texture:SetAlphaFromBoolean(isInterruptible, 0, alpha)
+            if self.Spells and self.Spells[spellId] then
+                for _, Button in pairs(self.Spells[spellId]) do
+                    if Button and Button.MaxDpsOverlays and Button.MaxDpsOverlays[spellId] then
+                        Button.MaxDpsOverlays[spellId].texture:SetAlphaFromBoolean(isInterruptible, 0, alpha)
+                    end
                 end
             end
         end
