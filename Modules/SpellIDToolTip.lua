@@ -39,7 +39,7 @@ function MyAddon:GameTooltip_OnTooltipSetSpell(self)
     if not self then
         self = GameTooltip
     end
-    local spellId = ( self.GetSpell and select(2,self:GetSpell()) ) or (self.id and self.id ~= 0 and self.id)
+    local spellId = ( self.GetSpell and select(2,self:GetSpell()) ) or (not MaxDps:issecretvalue(self.id) and self.id and self.id ~= 0 and self.id)
     if self.type and self.type == 25 then
         if self.lines and self.lines[1] and self.lines[1] and self.lines[1].tooltipType == 1 then
             spellId = self.lines[1].tooltipID or nil
