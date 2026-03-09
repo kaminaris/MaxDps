@@ -105,7 +105,9 @@ ns.classCooldowns = {
     DEMONHUNTER = {
         Devourer = {
             offensive = {
-                ["Metamorphosis"] = 1217605,
+                ["Void Metamorphosis"] = 1217605,
+                ["Collapsing Star"] = 1221150,
+                ["The Hunt"] = 1246167,
             },
             defensive = {
                 ["Blur"] = 198589,
