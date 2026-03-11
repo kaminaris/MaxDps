@@ -505,7 +505,7 @@ ns.classCooldowns = {
                 ["Mindbender"] = 123040,
                 ["Shadowfiend"] = 34433,
                 ["Power Infusion"] = 10060,
-                ["Penance"] = 47540, -- rotational but often tracked
+                --["Penance"] = 47540, -- rotational but often tracked
             },
             defensive = {
                 ["Pain Suppression"] = 33206,
