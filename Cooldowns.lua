@@ -830,7 +830,9 @@ ns.classInterrupts = {
     PRIEST = {
         Discipline = {},
         Holy = {},
-        Shadow = {},
+        Shadow = {
+            ["Silence"] = 15487,
+        },
     },
 
     DEATHKNIGHT = {
