@@ -995,7 +995,10 @@ function MaxDps:GlowInteruptMidnight(spellId)
     local duration = C_Spell.GetSpellCooldownDuration(spellId)
     local durColor = duration and duration:EvaluateRemainingDuration(GlowInteruptcurve)
     local _, _, _, alpha = durColor:GetRGBA()
-    local isInterruptible = select(8, UnitCastingInfo("target")) or select(7, UnitChannelInfo("target"))
+    local isInterruptible = UnitCastingInfo("target") and type(select(8, UnitCastingInfo("target"))) == "boolean" and select(8, UnitCastingInfo("target"))
+    if type(isInterruptible) == nil then
+        isInterruptible = UnitChannelInfo("target") and  type(isInterruptible) ~= nil and (type(select(7, UnitChannelInfo("target"))) == "boolean" and select(7, UnitChannelInfo("target")))
+    end
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
@@ -1003,7 +1006,7 @@ function MaxDps:GlowInteruptMidnight(spellId)
         --print("Condition is true, applying glow for spellId: ", spellId)
         self.Flags[spellId] = true
         self:GlowIndependent(spellId, spellId, nil, CreateColor(1, 0, 0, 1), alpha)
-        if MaxDps:issecretvalue(isInterruptible) or ((not MaxDps:issecretvalue(isInterruptible)) and isInterruptible ~= nil) then
+        --if MaxDps:issecretvalue(isInterruptible) or ((not MaxDps:issecretvalue(isInterruptible)) and isInterruptible ~= nil) then
             if self.Spells and self.Spells[spellId] then
                 for _, Button in pairs(self.Spells[spellId]) do
                     if Button and Button.MaxDpsOverlays and Button.MaxDpsOverlays[spellId] then
@@ -1011,6 +1014,10 @@ function MaxDps:GlowInteruptMidnight(spellId)
                     end
                 end
             end
+        --end
+        local overlayTexture = "MaxDps_Overlay_".. spellId
+        if _G[overlayTexture] and _G[overlayTexture].texture then
+            _G[overlayTexture].texture:SetAlphaFromBoolean(isInterruptible, 0, alpha)
         end
     end
     if not color then
