@@ -302,6 +302,41 @@ function MaxDps:AddItemButton(button)
     end
 end
 
+local function GetAllSpellsFromMacro(macroID)
+    local spells = {}
+    local name, icon, body = GetMacroInfo(macroID)
+    local base = GetMacroSpell(macroID)
+    DevTools_Dump(test)
+    if base then
+    spells[id] = spell
+    end
+    if not body then return spells end
+
+    for line in body:gmatch("[^\n]+") do
+        -- Only process /cast or /use lines
+        local cmd = line:match("^%s*/cast%s+(.+)$") or line:match("^%s*/use%s+(.+)$")
+        if cmd then
+            -- Remove conditionals like [mod], [@focus], etc.
+            cmd = cmd:gsub("%b[]", "")
+
+            -- Split on ; and ,
+            for token in cmd:gmatch("[^;,]+") do
+                local spell = token:match("^%s*(.-)%s*$") -- trim
+                if spell ~= "" then
+                    --DevTools_Dump(C_Spell.GetSpellInfo(spell))
+                    local id = C_Spell.GetSpellInfo(spell).spellID
+                    if id then
+                        spells[id] = spell
+                    end
+                end
+            end
+        end
+    end
+    DevTools_Dump("---------")
+    DevTools_Dump(spells)
+    return spells
+end
+
 function MaxDps:AddStandardButton(button)
     local btype = button:GetAttribute('type')
     if btype then
@@ -960,7 +995,7 @@ function MaxDps:GlowInteruptMidnight(spellId)
     local duration = C_Spell.GetSpellCooldownDuration(spellId)
     local durColor = duration and duration:EvaluateRemainingDuration(GlowInteruptcurve)
     local _, _, _, alpha = durColor:GetRGBA()
-    local isInterruptible = select(8, UnitCastingInfo("target"))
+    local isInterruptible = select(8, UnitCastingInfo("target")) or select(7, UnitChannelInfo("target"))
     if self.Flags[spellId] == nil then
         self.Flags[spellId] = false
     end
