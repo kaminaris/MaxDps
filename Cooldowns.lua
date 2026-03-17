@@ -440,6 +440,7 @@ ns.classCooldowns = {
     PALADIN = {
         Holy = {
             offensive = {
+                ["Avenging Wrath"] = 31884,
                 ["Holy Prism"] = 114165,
                 ["Hammer of Wrath"] = 24275, -- executes are often tracked
                 ["Avenging Crusader"] = 216331,
@@ -463,6 +464,7 @@ ns.classCooldowns = {
                 ["Avenging Wrath"] = 31884,
                 --["Divine Toll"] = 375576,
                 --["Hammer of Wrath"] = 24275,
+                ["Sentinel"] = 389539,
             },
             defensive = {
                 ["Ardent Defender"] = 31850,
