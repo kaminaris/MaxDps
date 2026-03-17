@@ -501,6 +501,10 @@ function MaxDps:Fetch(event)
         self:FetchDragonflightUIButtons()
     end
 
+    if IsAddOnLoaded('EllesmereUIActionBars') then
+        self:FetchEllesmereUI()
+    end
+
     if self.rotationEnabled then
         self:EnableRotationTimer()
         self:InvokeNextSpell()
@@ -521,6 +525,18 @@ function MaxDps:Bartender4()
             self:AddStandardButton(button)
         end
     end
+end
+
+function MaxDps:FetchEllesmereUI()
+    --local EllesmereBars = {'EABButton'}
+    --for _, button in pairs(EllesmereBars) do
+        for i = 1, 12 do
+            local button = _G['EABButton' .. i]
+            if button then
+                self:AddStandardButton(button)
+            end
+        end
+    --end
 end
 
 function MaxDps:FetchNeuron()
