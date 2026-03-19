@@ -493,6 +493,10 @@ function MaxDps:Fetch(event)
         self:FetchAzeriteUI()
     end
 
+    if IsAddOnLoaded('AzeriteUI5_JuNNeZ_Edition') then
+        self:FetchAzeriteUI5_JuNNeZ_Edition()
+    end
+
     if IsAddOnLoaded('Neuron') then
         self:FetchNeuron()
     end
@@ -584,6 +588,39 @@ function MaxDps:FetchDominos()
 end
 
 function MaxDps:FetchAzeriteUI()
+    --for i = 1, 24 do
+    --	local button = _G['AzeriteUIActionButton' .. i]
+    --	if button then
+    --		self:AddStandardButton(button)
+    --	end
+    --end
+    for b = 1, 8 do
+        for i = 1, 12 do
+            local button = _G['AzeriteActionBar'.. b .. 'Button' .. i]
+            if button and not button.GetPagedID and button.id then
+                button.GetPagedID = function ()
+                    return button.id
+                end
+            end
+            if button then
+                self:AddStandardButton(button)
+            end
+        end
+    end
+    for b = 1, 10 do
+        local button = _G['AzeriteStanceBar' .. 'Button' .. b]
+        if button and not button.GetPagedID and button.id then
+            button.GetPagedID = function ()
+                return button.id
+            end
+        end
+        if button then
+            self:AddStandardButton(button)
+        end
+    end
+end
+
+function MaxDps:FetchAzeriteUI5_JuNNeZ_Edition()
     --for i = 1, 24 do
     --	local button = _G['AzeriteUIActionButton' .. i]
     --	if button then
@@ -1030,9 +1067,11 @@ function MaxDps:GlowInteruptMidnight(spellId)
                     end
                 end
             end
-            local overlayTexture = "MaxDps_Overlay_".. spellId
-            if _G[overlayTexture] and _G[overlayTexture].texture then
-                _G[overlayTexture].texture:SetAlphaFromBoolean(isInterruptible, 0, alpha)
+            if IsAddOnLoaded('AzeriteUI5_JuNNeZ_Edition') then
+                local overlayTexture = "MaxDps_Overlay_".. spellId
+                if _G[overlayTexture] and _G[overlayTexture].texture then
+                    _G[overlayTexture].texture:SetAlphaFromBoolean(isInterruptible, 0, alpha)
+                end
             end
         end
     end
