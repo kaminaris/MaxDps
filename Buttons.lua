@@ -1016,7 +1016,20 @@ function MaxDps:GlowDefensiveHPMidnight(spellId)
         GlowDcurve:AddPoint(0.5, CreateColor(1, 1, 0, 0.5))
         GlowDcurve:AddPoint(1.0, CreateColor(0, 1, 0, 0))
     end
-    local color = UnitHealthPercent("player", false, GlowDcurve)
+    local color
+    if spellID == 119582 then
+        local stagger = UnitStagger("player")
+        local maxHealth = UnitHealthMax("player")
+        local staggerPercent
+        if not MaxDps:issecretvalue(stagger) and not MaxDps:issecretvalue(maxHealth)then
+            staggerPercent = (stagger / maxHealth) * 100
+            staggerPercent = math.min(1, math.max(0, staggerPercent))
+            color = GlowDcurve:Evaluate(staggerPercent / 100)
+        end
+    end
+    if not color then
+        color = UnitHealthPercent("player", false, GlowDcurve)
+    end
     local duration = C_Spell.GetSpellCooldownDuration(spellId)
     local durColor = duration and duration:EvaluateRemainingDuration(GlowDcurve)
     local alpha = durColor and select(4,durColor:GetRGBA()) or 1
