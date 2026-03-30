@@ -998,6 +998,7 @@ function MaxDps:GlowCooldown(spellId, condition, color)
 end
 
 local GlowDcurve
+local ReverseGlowCurve
 function MaxDps:GlowDefensiveHPMidnight(spellId)
     if not MaxDps.db.global.enableDefensives then
         if self.Flags[spellId] == nil then
@@ -1016,15 +1017,21 @@ function MaxDps:GlowDefensiveHPMidnight(spellId)
         GlowDcurve:AddPoint(0.5, CreateColor(1, 1, 0, 0.5))
         GlowDcurve:AddPoint(1.0, CreateColor(0, 1, 0, 0))
     end
+    if not ReverseGlowCurve then
+        ReverseGlowCurve = C_CurveUtil.CreateColorCurve()
+        ReverseGlowCurve:SetType(Enum.LuaCurveType.Linear)
+        ReverseGlowCurve:AddPoint(0.3, CreateColor(0, 1, 0, 1))
+        ReverseGlowCurve:AddPoint(0.5, CreateColor(1, 1, 0, 0.5))
+        ReverseGlowCurve:AddPoint(1.0, CreateColor(1, 0, 0, 1))
+    end
     local color
-    if spellID == 119582 then
+    if spellId == 119582 then
         local stagger = UnitStagger("player")
         local maxHealth = UnitHealthMax("player")
         local staggerPercent
-        if not MaxDps:issecretvalue(stagger) and not MaxDps:issecretvalue(maxHealth)then
-            staggerPercent = (stagger / maxHealth) * 100
-            staggerPercent = math.min(1, math.max(0, staggerPercent))
-            color = GlowDcurve:Evaluate(staggerPercent / 100)
+        if not MaxDps:issecretvalue(stagger) and not MaxDps:issecretvalue(maxHealth) then
+            staggerPercent = (stagger / maxHealth)
+            color = ReverseGlowCurve:Evaluate(staggerPercent)
         end
     end
     if not color then
