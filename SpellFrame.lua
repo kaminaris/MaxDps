@@ -134,10 +134,15 @@ local function GetSpellKeybind(spellID)
     and MaxDps.Spells[spellID]
     and MaxDps.Spells[spellID][1]
     and MaxDps.Spells[spellID][1].HotKey then
-        for i=1,#MaxDps.Spells[spellID] do
-            local key = MaxDps.Spells[spellID][i].HotKey:GetText() or ""
-            if key and key ~= "" and string.byte(key) ~= 226 then
-                return MaxDps.Spells[spellID][i].HotKey:GetText()
+        for i = 1, #MaxDps.Spells[spellID] do
+            local entry = MaxDps.Spells[spellID][i]
+            local hotkey = entry and entry.HotKey
+
+            if hotkey and hotkey.GetText then
+                local key = hotkey:GetText()
+                if key and key ~= "" and string.byte(key) ~= 226 then
+                    return key
+                end
             end
         end
     end
