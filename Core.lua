@@ -783,6 +783,9 @@ function MaxDps:InvokeNextSpell()
             --end
             local nextSpell = C_AssistedCombat.GetNextCastSpell(false)
             self.Spell = C_AssistedCombat.IsAvailable() and nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
+            if self.Spell and MaxDps and MaxDps.FrameData and MaxDps.FrameData.ACSpells and not MaxDps.FrameData.ACSpells[self.Spell] then
+                MaxDps.FrameData.ACSpells[self.Spell] = true
+            end
             AssistedCombatManager.updateRate = MaxDps.db.global.interval or 0.1
             if not InCombatLockdown() then
                 SetCVar("assistedCombatIconUpdateRate", MaxDps.db.global.interval)
