@@ -2,9 +2,33 @@
 local MyAddon = LibStub("AceAddon-3.0"):NewAddon("MaxDpsHookDemo", "AceHook-3.0")
 local UnitAura = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex or UnitAura -- use C_UnitAuras if available
 
-function MyAddon:SetUnitAura(self,unit,index,filter)
+-- Tracks whether an ID line has already been added for the current tooltip build.
+-- Reset via hooksecurefunc on SetItem/SetSpell/SetHyperlink (fires after all post-callbacks)
+-- and via OnHide.
+local tooltipIDAdded = false
+
+local function TooltipHasIDLine(tooltip)
+    for i = 1, tooltip:NumLines() do
+        local line = _G[tooltip:GetName() .. "TextLeft" .. i]
+        if line then
+            local text = line:GetText()
+            if text and text:find("ID:") then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+-- NOTE: These functions are called by TooltipDataProcessor as plain functions:
+--   callback(tooltipFrame, tooltipData)
+-- Because of Lua colon-notation desugaring, the implicit 'self' = tooltipFrame (arg1)
+-- and the explicit parameter 'tooltipData' = the data table (arg2).
+-- When called via SecureHookScript: callback(tooltipFrame) → self = tooltipFrame, tooltipData = nil.
+
+function MyAddon:SetUnitAura(self, unit, index, filter)
     if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
-    local _,id, source
+    local _, id, source
     if unit then
         -- print(UnitAura(unit,index,filter))
         if C_UnitAuras and C_UnitAuras.GetAuraDataByIndex then
@@ -14,16 +38,16 @@ function MyAddon:SetUnitAura(self,unit,index,filter)
                 source = aura.sourceUnit
             end
         else
-            _,_,_,_,_,_,source,_,_,id=UnitAura(unit,index,filter)
+            _, _, _, _, _, _, source, _, _, id = UnitAura(unit, index, filter)
         end
     else
         if self.GetSpell then
-            _,id=self:GetSpell()
+            _, id = self:GetSpell()
         end
     end
     if id then
         self:AddLine(" ")
-        self:AddLine("ID: "..id)
+        self:AddLine("ID: " .. id)
     end
     if source then
         local name = UnitName(source)
@@ -34,49 +58,49 @@ end
 
 --function MyAddon:Dummy()
 --end
-function MyAddon:GameTooltip_OnTooltipSetSpell(self)
+function MyAddon:GameTooltip_OnTooltipSetSpell(tooltipData)
+    -- self = tooltip frame (from colon-notation implicit first param, NOT shadowed here)
     if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
-    if not self then
-        self = GameTooltip
-    end
-    local spellId = ( self.GetSpell and select(2,self:GetSpell()) ) or (not MaxDps:issecretvalue(self.id) and self.id and self.id ~= 0 and self.id)
-    if self.type and self.type == 25 then
-        if self.lines and self.lines[1] and self.lines[1] and self.lines[1].tooltipType == 1 then
-            spellId = self.lines[1].tooltipID or nil
+    if not self or not self.AddLine then return end
+    local spellId = (self.GetSpell and select(2, self:GetSpell()))
+        or (tooltipData and not MaxDps:issecretvalue(tooltipData.id) and tooltipData.id and tooltipData.id ~= 0 and tooltipData.id)
+    if tooltipData and tooltipData.type == 25 then
+        if tooltipData.lines and tooltipData.lines[1] and tooltipData.lines[1].tooltipType == 1 then
+            spellId = tooltipData.lines[1].tooltipID or nil
         end
     end
     if not spellId then return end
-    if spellId then
-        GameTooltip:AddLine("ID: " .. spellId)
+    if not tooltipIDAdded and not TooltipHasIDLine(self) then
+        self:AddLine("ID: " .. spellId)
+        tooltipIDAdded = true
     end
 end
-function MyAddon:GameTooltip_OnTooltipSetItem(self)
+
+function MyAddon:GameTooltip_OnTooltipSetItem(tooltipData)
+    -- self = tooltip frame
     if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
-    if not self then
-        self = GameTooltip
-    end
-    local itemId
-    if MaxDps and MaxDps.IsRetailWow() then
-        itemId = self.GetItem and self:GetItem() or self.id and self.id ~= 0 and self.id
-    else
-        itemId = self.GetItem and self:GetItem() or self.id and self.id ~= 0 and self.id
-    end
-    if itemId then
-        GameTooltip:AddLine("ID: " .. itemId)
+    if not self or not self.AddLine then return end
+    local itemId = (tooltipData and tooltipData.id and tooltipData.id ~= 0 and tooltipData.id)
+        or (self.GetItem and select(2, self:GetItem()) and tonumber(string.match(select(2, self:GetItem()) or "", "item:(%d+)")))
+    if not itemId then return end
+    if not tooltipIDAdded and not TooltipHasIDLine(self) then
+        self:AddLine("ID: " .. itemId)
+        tooltipIDAdded = true
     end
 end
-function MyAddon:GameTooltip_OnTooltipSetUnit(self)
+
+function MyAddon:GameTooltip_OnTooltipSetUnit(tooltipData)
+    -- self = tooltip frame
     if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
-    if not self then
-        self = GameTooltip
-    end
+    if not self or not self.GetUnit then return end
     local unit = self:GetUnit()
     if unit then
         local guid = UnitGUID(unit)
         if guid then
             local id = tonumber(guid:match("-(%d+)$"))
-            if id then
-                GameTooltip:AddLine("ID: " .. id)
+            if id and not tooltipIDAdded and not TooltipHasIDLine(self) then
+                self:AddLine("ID: " .. id)
+                tooltipIDAdded = true
             end
         end
     end
@@ -93,6 +117,16 @@ function MyAddon:OnEnable()
     --MyAddon:SecureHook('EmbeddedItemTooltip_SetItemByID', 'Dummy') --EmbeddedItemTooltip_ID
     --MyAddon:SecureHook('EmbeddedItemTooltip_SetCurrencyByID', 'Dummy') --EmbeddedItemTooltip_ID
     --MyAddon:SecureHook('EmbeddedItemTooltip_SetItemByQuestReward', 'Dummy') --EmbeddedItemTooltip_QuestReward
+
+    -- Reset the flag after each tooltip population completes (hooksecurefunc fires after
+    -- the original function AND all its post-call callbacks have finished).
+    local function resetFlag() tooltipIDAdded = false end
+    if GameTooltip.SetItem then hooksecurefunc(GameTooltip, "SetItem", resetFlag) end
+    if GameTooltip.SetSpell then hooksecurefunc(GameTooltip, "SetSpell", resetFlag) end
+    if GameTooltip.SetHyperlink then hooksecurefunc(GameTooltip, "SetHyperlink", resetFlag) end
+    if GameTooltip.SetUnit then hooksecurefunc(GameTooltip, "SetUnit", resetFlag) end
+    GameTooltip:HookScript("OnHide", resetFlag)
+
     MyAddon:SecureHook(GameTooltip, 'SetUnitAura')
     MyAddon:SecureHook(GameTooltip, 'SetUnitBuff', 'SetUnitAura')
     MyAddon:SecureHook(GameTooltip, 'SetUnitDebuff', 'SetUnitAura')
@@ -116,16 +150,16 @@ function MyAddon:OnEnable()
     end
 
     --if not MaxDps.IsClassicWow() then
-    --	MyAddon:SecureHook('BattlePetToolTip_Show', 'AddBattlePetID')
+    --MyAddon:SecureHook('BattlePetToolTip_Show', 'AddBattlePetID')
     --end
     --if MaxDps.IsRetailWow() then
-    --	RegisterEvent('WORLD_CURSOR_TOOLTIP_UPDATE', 'WorldCursorTooltipUpdate')
-    --	MyAddon:SecureHook('EmbeddedItemTooltip_SetSpellWithTextureByID', 'EmbeddedItemTooltip_ID')
-    --	MyAddon:SecureHook('EmbeddedItemTooltip_SetSpellByQuestReward', 'EmbeddedItemTooltip_QuestReward')
-    --	MyAddon:SecureHook(GameTooltip, 'SetToyByItemID')
-    --	MyAddon:SecureHook(GameTooltip, 'SetCurrencyToken')
-    --	MyAddon:SecureHook(GameTooltip, 'SetBackpackToken')
-    --	MyAddon:SecureHook('QuestMapLogTitleButton_OnEnter', 'AddQuestID')
-    --	MyAddon:SecureHook('TaskPOI_OnEnter', 'AddQuestID')
+    --RegisterEvent('WORLD_CURSOR_TOOLTIP_UPDATE', 'WorldCursorTooltipUpdate')
+    --MyAddon:SecureHook('EmbeddedItemTooltip_SetSpellWithTextureByID', 'EmbeddedItemTooltip_ID')
+    --MyAddon:SecureHook('EmbeddedItemTooltip_SetSpellByQuestReward', 'EmbeddedItemTooltip_QuestReward')
+    --MyAddon:SecureHook(GameTooltip, 'SetToyByItemID')
+    --MyAddon:SecureHook(GameTooltip, 'SetCurrencyToken')
+    --MyAddon:SecureHook(GameTooltip, 'SetBackpackToken')
+    --MyAddon:SecureHook('QuestMapLogTitleButton_OnEnter', 'AddQuestID')
+    --MyAddon:SecureHook('TaskPOI_OnEnter', 'AddQuestID')
     --end
 end
