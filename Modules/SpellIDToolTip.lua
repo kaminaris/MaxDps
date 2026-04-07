@@ -2,6 +2,19 @@
 local MyAddon = LibStub("AceAddon-3.0"):NewAddon("MaxDpsHookDemo", "AceHook-3.0")
 local UnitAura = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex or UnitAura -- use C_UnitAuras if available
 
+local function TooltipHasIDLine()
+    for i = 1, GameTooltip:NumLines() do
+        local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
+        if line then
+            local text = line:GetText()
+            if text and text:find("ID:") then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 function MyAddon:SetUnitAura(self,unit,index,filter)
     if MaxDpsOptions and MaxDpsOptions.global and not MaxDpsOptions.global.debugMode then return end
     local _,id, source
@@ -46,7 +59,7 @@ function MyAddon:GameTooltip_OnTooltipSetSpell(self)
         end
     end
     if not spellId then return end
-    if spellId then
+    if spellId and not TooltipHasIDLine(GameTooltip) then
         GameTooltip:AddLine("ID: " .. spellId)
     end
 end
@@ -61,7 +74,7 @@ function MyAddon:GameTooltip_OnTooltipSetItem(self)
     else
         itemId = self.GetItem and self:GetItem() or self.id and self.id ~= 0 and self.id
     end
-    if itemId then
+    if itemId and not TooltipHasIDLine(GameTooltip) then
         GameTooltip:AddLine("ID: " .. itemId)
     end
 end
@@ -75,7 +88,7 @@ function MyAddon:GameTooltip_OnTooltipSetUnit(self)
         local guid = UnitGUID(unit)
         if guid then
             local id = tonumber(guid:match("-(%d+)$"))
-            if id then
+            if id and not TooltipHasIDLine(GameTooltip) then
                 GameTooltip:AddLine("ID: " .. id)
             end
         end
