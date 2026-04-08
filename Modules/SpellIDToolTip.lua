@@ -7,7 +7,7 @@ local function TooltipHasIDLine()
         local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
         if line then
             local text = line:GetText()
-            if text and text:find("ID:") then
+            if type(text) == "string" and text.find and text:find("ID:") then
                 return true
             end
         end
