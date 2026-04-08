@@ -7,7 +7,11 @@ local function TooltipHasIDLine()
         local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
         if line then
             local text = line:GetText()
-            if type(text) == "string" and text.find and text:find("ID:") then
+            if not MaxDps:issecretvalue(text) then
+                if type(text) == "string" and text.find and text:find("ID:") then
+                    return true
+                end
+            else
                 return true
             end
         end
