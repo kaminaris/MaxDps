@@ -700,6 +700,7 @@ ns.classCooldowns = {
                 --["Demonic Strength"] = 267171,
                 ["Soulburn"] = 385899,
                 ["Implosion"] = 196277,
+                ["Summon Doomguard"] = 1276672,
             },
             defensive = {
                 ["Unending Resolve"] = 104773,
