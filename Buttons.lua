@@ -497,6 +497,10 @@ function MaxDps:Fetch(event)
         self:FetchAzeriteUI5_JuNNeZ_Edition()
     end
 
+    if IsAddOnLoaded('QUI') then
+        self:FetchQUI()
+    end
+
     if IsAddOnLoaded('Neuron') then
         self:FetchNeuron()
     end
@@ -541,6 +545,17 @@ function MaxDps:FetchEllesmereUI()
             end
         end
     --end
+end
+
+function MaxDps:FetchQUI()
+    for x = 1, 12 do
+        for i = 1, 12 do
+            local button = _G['QUI_Bar' .. x  .. 'Button' .. i]
+            if button then
+                self:AddStandardButton(button)
+            end
+        end
+    end
 end
 
 function MaxDps:FetchNeuron()
