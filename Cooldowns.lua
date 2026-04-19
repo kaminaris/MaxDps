@@ -399,6 +399,7 @@ ns.classCooldowns = {
                 ["Purifying Brew"] = 119582,
                 ["Zen Meditation"] = 115176,
                 ["Expel Harm"] = 322101,
+                ["Invoke Niuzao, the Black Ox"] = 132578,
             },
         },
 
