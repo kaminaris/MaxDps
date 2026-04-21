@@ -43,8 +43,10 @@ function MyAddon:SetUnitAura(self,unit,index,filter)
         self:AddLine("ID: "..id)
     end
     if source then
-        local name = UnitName(source)
-        if name then self:AddLine("Source: " .. name) end
+        if not MaxDps:issecretvalue(source) then
+            local name = UnitName(source)
+            if name then self:AddLine("Source: " .. name) end
+        end
     end
     self:Show()
 end
