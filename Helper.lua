@@ -1806,6 +1806,13 @@ function MaxDps:GlobalCooldown(spellId)
         baseGCD = select(2, GetSpellBaseCooldown(spellId)) / 1000
     end
     local haste = UnitSpellHaste('player')
+    if MaxDps:issecretvalue(haste) or type(haste) ~= 'number' then
+        haste = (MaxDps.FrameData and MaxDps.FrameData.haste) or 0
+    else
+        if MaxDps.FrameData then
+            MaxDps.FrameData.haste = haste
+        end
+    end
     local gcd = baseGCD / ((haste / 100) + 1)
 
     if gcd < 0.75 then
@@ -1817,6 +1824,13 @@ end
 
 function MaxDps:AttackHaste()
     local haste = UnitSpellHaste('player')
+    if MaxDps:issecretvalue(haste) or type(haste) ~= 'number' then
+        haste = (MaxDps.FrameData and MaxDps.FrameData.haste) or 0
+    else
+        if MaxDps.FrameData then
+            MaxDps.FrameData.haste = haste
+        end
+    end
     return 1 / ((haste / 100) + 1)
 end
 
