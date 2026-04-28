@@ -315,13 +315,17 @@ function MaxDps:UpdateSpellFrame(spellID)
                 if MaxDps and MaxDps.ItemSpells and MaxDps.ItemSpells[id] then
                     local texture
                     local spellID = MaxDps.ItemSpells[id]
-                    local overlay = _G["MaxDps_Overlay_" .. spellID]
+                    --local overlay = _G["MaxDps_Overlay_" .. spellID]
                     --local alpha = 1
                     local visible = true
-                    if overlay and overlay.texture then
-                        --alpha = overlay.texture:GetAlpha()
-                        visible = overlay.texture:IsVisible()
+                    local CD = C_Item and type(C_Item.GetItemCooldown) == "function" and C_Item.GetItemCooldown(id) or GetItemCooldown(id)
+                    if CD and CD > 0 then
+                        visible = false
                     end
+                    --if overlay and overlay.texture then
+                    --    --alpha = overlay.texture:GetAlpha()
+                    --    visible = overlay.texture:IsVisible()
+                    --end
                     if C_Item and type(C_Item.GetItemIconByID) == "function" then
                         texture = C_Item.GetItemIconByID(id)
                     else
@@ -451,13 +455,17 @@ function MaxDps:UpdateSpellFrame(spellID)
             if MaxDps and MaxDps.ItemSpells and MaxDps.ItemSpells[id13] then
                 local texture
                 local spellID = MaxDps.ItemSpells[id13]
-                local overlay = _G["MaxDps_Overlay_" .. spellID]
+                --local overlay = _G["MaxDps_Overlay_" .. spellID]
                 --local alpha = 1
                 local visible = true
-                if overlay and overlay.texture then
-                    --alpha = overlay.texture:GetAlpha()
-                    visible = overlay.texture:IsVisible()
+                local CD = C_Item and type(C_Item.GetItemCooldown) == "function" and C_Item.GetItemCooldown(id13) or GetItemCooldown(id13)
+                if CD and CD > 0 then
+                    visible = false
                 end
+                --if overlay and overlay.texture then
+                --    --alpha = overlay.texture:GetAlpha()
+                --    visible = overlay.texture:IsVisible()
+                --end
                 if C_Item and type(C_Item.GetItemIconByID) == "function" then
                     texture = C_Item.GetItemIconByID(id13)
                 else
@@ -482,13 +490,17 @@ function MaxDps:UpdateSpellFrame(spellID)
             if MaxDps and MaxDps.ItemSpells and MaxDps.ItemSpells[id14] then
                 local texture
                 local spellID = MaxDps.ItemSpells[id14]
-                local overlay = _G["MaxDps_Overlay_" .. spellID]
+                --local overlay = _G["MaxDps_Overlay_" .. spellID]
                 --local alpha = 1
                 local visible = true
-                if overlay and overlay.texture then
-                    --alpha = overlay.texture:GetAlpha()
-                    visible = overlay.texture:IsVisible()
+                local CD = C_Item and type(C_Item.GetItemCooldown) == "function" and C_Item.GetItemCooldown(id14) or GetItemCooldown(id14)
+                if CD and CD > 0 then
+                    visible = false
                 end
+                --if overlay and overlay.texture then
+                --    --alpha = overlay.texture:GetAlpha()
+                --    visible = overlay.texture:IsVisible()
+                --end
                 if C_Item and type(C_Item.GetItemIconByID) == "function" then
                     texture = C_Item.GetItemIconByID(id14)
                 else
