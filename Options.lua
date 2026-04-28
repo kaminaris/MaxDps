@@ -88,6 +88,10 @@ MaxDps.defaultOptions = {
         spellFrame = {
             enabled = false,
 			isMovable = false,
+			showConsumable = false,
+			showDefensive = false,
+			showTrinket = false,
+            showOffensive = false,
 			spellID = 116,
 			pos = {x=0, y=0},
 			size = {x=48, y=48},
@@ -260,6 +264,30 @@ function MaxDps:AddToBlizzardOptions()
 	spellFrameEnabled:SetChecked(MaxDps.db.global.spellFrame.enabled)
 	spellFrameEnabled.OnValueChanged = function(_, flag)
 		MaxDps.db.global.spellFrame.enabled = flag
+	end
+
+	local spellFrameshowConsumable = StdUi:Checkbox(optionsFrame, 'Show consumable spells', 200, 24)
+	spellFrameshowConsumable:SetChecked(MaxDps.db.global.spellFrame.showConsumable)
+	spellFrameshowConsumable.OnValueChanged = function(_, flag)
+		MaxDps.db.global.spellFrame.showConsumable = flag
+	end
+
+	local spellFrameshowDefensive = StdUi:Checkbox(optionsFrame, 'Show defensive spells', 200, 24)
+	spellFrameshowDefensive:SetChecked(MaxDps.db.global.spellFrame.showDefensive)
+	spellFrameshowDefensive.OnValueChanged = function(_, flag)
+		MaxDps.db.global.spellFrame.showDefensive = flag
+	end
+
+	local spellFrameshowOffensive = StdUi:Checkbox(optionsFrame, 'Show offensive spells', 200, 24)
+	spellFrameshowOffensive:SetChecked(MaxDps.db.global.spellFrame.showOffensive)
+	spellFrameshowOffensive.OnValueChanged = function(_, flag)
+		MaxDps.db.global.spellFrame.showOffensive = flag
+	end
+
+	local spellFrameshowTrinket = StdUi:Checkbox(optionsFrame, 'Show trinket spells', 200, 24)
+	spellFrameshowTrinket:SetChecked(MaxDps.db.global.spellFrame.showTrinket)
+	spellFrameshowTrinket.OnValueChanged = function(_, flag)
+		MaxDps.db.global.spellFrame.showTrinket = flag
 	end
 
 	local spellFrameMovable = StdUi:Checkbox(optionsFrame, 'Unlock spell frame', 200, 24)
@@ -477,11 +505,61 @@ function MaxDps:AddSpellFrameOptions()
 						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
 					end
 				},
+			},
+			[3] = {
+				showConsumable = {
+					type = 'checkbox',
+					label = 'Show consumable spells',
+					column = 6,
+					order = 2,
+					initialValue = MaxDps.db.global.spellFrame.showConsumable,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.showConsumable = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+				showDefensive = {
+					type = 'checkbox',
+					label = 'Show defensive spells',
+					column = 6,
+					order = 3,
+					initialValue = MaxDps.db.global.spellFrame.showDefensive,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.showDefensive = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[4] = {
+				showOffensive = {
+					type = 'checkbox',
+					label = 'Show offensive spells',
+					column = 6,
+					order = 4,
+					initialValue = MaxDps.db.global.spellFrame.showOffensive,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.showOffensive = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+				showTrinket = {
+					type = 'checkbox',
+					label = 'Show trinket spells',
+					column = 6,
+					order = 5,
+					initialValue = MaxDps.db.global.spellFrame.showTrinket,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.showTrinket = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[5] = {
 				isMovable = {
 					type = 'checkbox',
 					label = 'Unlock',
 					column = 6,
-					order = 2,
+					order = 6,
 					initialValue = MaxDps.db.global.spellFrame.isMovable,
 					onValueChanged = function(_, flag)
 						MaxDps.db.global.spellFrame.isMovable = flag
@@ -492,7 +570,7 @@ function MaxDps:AddSpellFrameOptions()
 					end
 				}
 			},
-			[3] = {
+			[6] = {
 				x = {
 					type   = 'sliderWithBox',
 					label  = 'x size',
@@ -506,7 +584,7 @@ function MaxDps:AddSpellFrameOptions()
 					end
 				},
 			},
-			[4] = {
+			[7] = {
 				y = {
 					type   = 'sliderWithBox',
 					label  = 'y size',
@@ -520,7 +598,7 @@ function MaxDps:AddSpellFrameOptions()
 					end
 				},
 			},
-			[5] = {
+			[8] = {
 				x = {
 					type   = 'sliderWithBox',
 					label  = 'x position',
@@ -534,7 +612,7 @@ function MaxDps:AddSpellFrameOptions()
 					end
 				},
 			},
-			[6] = {
+			[9] = {
 				y = {
 					type   = 'sliderWithBox',
 					label  = 'y position',
