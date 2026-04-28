@@ -519,11 +519,61 @@ function Window:GetWindowConfig()
 						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
 					end
 				},
+			},
+			[3] = {
+				showConsumable = {
+					type = 'checkbox',
+					label = 'Show consumable spells',
+					column = 6,
+					order = 2,
+					initialValue = MaxDps.db.global.spellFrame.showConsumable,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.showConsumable = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+				showDefensive = {
+					type = 'checkbox',
+					label = 'Show defensive spells',
+					column = 6,
+					order = 3,
+					initialValue = MaxDps.db.global.spellFrame.showDefensive,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.showDefensive = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[4] = {
+				showOffensive = {
+					type = 'checkbox',
+					label = 'Show offensive spells',
+					column = 6,
+					order = 4,
+					initialValue = MaxDps.db.global.spellFrame.showOffensive,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.showOffensive = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+				showTrinket = {
+					type = 'checkbox',
+					label = 'Show trinket spells',
+					column = 6,
+					order = 5,
+					initialValue = MaxDps.db.global.spellFrame.showTrinket,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.showTrinket = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[5] = {
 				isMovable = {
 					type = 'checkbox',
 					label = 'Unlock',
 					column = 6,
-					order = 2,
+					order = 6,
 					initialValue = MaxDps.db.global.spellFrame.isMovable,
 					onValueChanged = function(_, flag)
 						MaxDps.db.global.spellFrame.isMovable = flag
@@ -531,11 +581,10 @@ function Window:GetWindowConfig()
 							MaxDpsSpellFrame:SetMouseClickEnabled(MaxDps.db.global.spellFrame.isMovable)
 							MaxDpsSpellFrame:SetMovable(MaxDps.db.global.spellFrame.isMovable)
 						end
-						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
 					end
 				}
 			},
-			[3] = {
+			[6] = {
 				x = {
 					type   = 'sliderWithBox',
 					label  = 'x size',
@@ -549,7 +598,7 @@ function Window:GetWindowConfig()
 					end
 				},
 			},
-			[4] = {
+			[7] = {
 				y = {
 					type   = 'sliderWithBox',
 					label  = 'y size',
@@ -563,10 +612,10 @@ function Window:GetWindowConfig()
 					end
 				},
 			},
-			[5] = {
+			[8] = {
 				x = {
 					type   = 'sliderWithBox',
-					label  = 'x possition',
+					label  = 'x position',
 					min    = -2000,
 					max    = 2000,
 					column = 6,
@@ -577,10 +626,10 @@ function Window:GetWindowConfig()
 					end
 				},
 			},
-			[6] = {
+			[9] = {
 				y = {
 					type   = 'sliderWithBox',
-					label  = 'y possition',
+					label  = 'y position',
 					min    = -2000,
 					max    = 2000,
 					column = 6,
