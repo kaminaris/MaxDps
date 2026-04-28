@@ -108,6 +108,47 @@ loader:SetScript("OnEvent", function(self, event, name)
     end
 end)
 
+local function CreateExtraFrames(type, number)
+    local cfg = MaxDps.db.global.spellFrame
+    local parent = MaxDpsSpellFrame
+    local name = "MaxDpsSpellFrame" .. type .. number
+
+    local f = CreateFrame("Frame", name, parent, "BackdropTemplate")
+    --f:SetSize(20, 20) -- example size
+    f:SetSize(cfg.size.x/2, cfg.size.y/2)
+
+    if number == 1 then
+        -- First frame anchors to the main frame
+        if type == "consumable" then
+            f:SetPoint("LEFT", parent, "RIGHT", 5, 12)
+        elseif type == "defensive" then
+            f:SetPoint("RIGHT", parent, "LEFT", -5, 12)
+        elseif type == "offensive" then
+            f:SetPoint("RIGHT", parent, "LEFT", -5, -12)
+        elseif type == "trinket" then
+            f:SetPoint("LEFT", parent, "RIGHT", 5, -12)
+        end
+    else
+        local prev = _G["MaxDpsSpellFrame" .. type .. (number - 1)]
+        if prev then
+            if type == "defensive" or type == "offensive" then
+                f:SetPoint("LEFT", prev, "LEFT", -cfg.size.y/2, 0)
+            else
+                f:SetPoint("LEFT", prev, "RIGHT", 5, 0)
+            end
+        end
+    end
+    f.icon = f:CreateTexture(nil, "ARTWORK")
+    f.icon:SetAllPoints()
+    local text = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    text:SetPoint("BOTTOMRIGHT", -2, 2)
+    local font, _, flags = text:GetFont()
+    text:SetFont(font, 12, flags)
+    text:SetTextColor(1, 1, 1)
+    f.bindText = text
+    f:Hide() -- hide by default
+end
+
 local function ShortenKeybind(key)
     if not key then return "" end
 
@@ -222,4 +263,264 @@ function MaxDps:UpdateSpellFrame(spellID)
     --else
     --    icon:SetVertexColor(0.4, 0.4, 0.4)
     --end
+    if not MaxDpsSpellFrame.extraFramesCreated then
+        if cfg.showConsumable then
+            local c = 0
+            for id in pairs(MaxDps.Consumables) do
+                c = c + 1
+            end
+            for i=1, c do
+                CreateExtraFrames("consumable", i)
+            end
+        end
+        if cfg.showDefensive then
+            local _, class = UnitClass("player")
+            local specIndex = GetSpecialization()
+            local specName = specIndex and select(2, GetSpecializationInfo(specIndex))
+            local d = 1
+            for i in pairs(MaxDps.classCooldowns[class][specName].defensive) do
+                if MaxDps and MaxDps.Spells and MaxDps.Spells[spellID] then
+                    d = d + 1
+                end
+            end
+            for i=1, d do
+                CreateExtraFrames("defensive", i)
+            end
+        end
+        if cfg.showOffensive then
+            local _, class = UnitClass("player")
+            local specIndex = GetSpecialization()
+            local specName = specIndex and select(2, GetSpecializationInfo(specIndex))
+            local d = 1
+            for i in pairs(MaxDps.classCooldowns[class][specName].offensive) do
+                if MaxDps and MaxDps.Spells and MaxDps.Spells[spellID] then
+                    d = d + 1
+                end
+            end
+            for i=1, d do
+                CreateExtraFrames("offensive", i)
+            end
+        end
+        if cfg.showTrinket then
+            CreateExtraFrames("trinket", 1)
+            CreateExtraFrames("trinket", 2)
+        end
+        MaxDpsSpellFrame.extraFramesCreated = true
+    end
+    --local icon = select(5, GetItemInfoInstant(itemID))
+    if MaxDpsSpellFrame.extraFramesCreated then
+        if cfg.showConsumable then
+            local index = 1
+            for id in pairs(MaxDps.Consumables) do
+                if MaxDps and MaxDps.ItemSpells and MaxDps.ItemSpells[id] then
+                    local texture
+                    local spellID = MaxDps.ItemSpells[id]
+                    local overlay = _G["MaxDps_Overlay_" .. spellID]
+                    --local alpha = 1
+                    local visible = true
+                    if overlay and overlay.texture then
+                        --alpha = overlay.texture:GetAlpha()
+                        visible = overlay.texture:IsVisible()
+                    end
+                    if C_Item and type(C_Item.GetItemIconByID) == "function" then
+                        texture = C_Item.GetItemIconByID(id)
+                    else
+                        texture = select(5, GetItemInfoInstant(id))
+                    end
+                    if not texture then
+                        texture = select(5, GetItemInfoInstant(id))
+                    end
+                    local frame = _G["MaxDpsSpellFrameconsumable" .. index]
+                    local ckey = ShortenKeybind(GetSpellKeybind(spellID))
+                    if ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
+                        frame.bindText:SetText(ckey)
+                    else
+                        frame.bindText:SetText("")
+                    end
+                    if frame and texture and texture ~= 134400 then
+                        frame.icon:SetTexture(texture)
+                        frame.icon:SetAlphaFromBoolean(visible, 1, 0.5)
+                        frame:Show()
+                    end
+                    index = index + 1
+                end
+            end
+        end
+
+        if cfg.showDefensive then
+            local _, class = UnitClass("player")
+            local specIndex = GetSpecialization()
+            local specName = specIndex and select(2, GetSpecializationInfo(specIndex))
+            local index = 1
+            for _, spellID in pairs(MaxDps.classCooldowns[class][specName].defensive) do
+                if MaxDps:CheckSpellUsable(spellID) then
+                    local texture
+                    local overlay = _G["MaxDps_Overlay_" .. spellID]
+                    local alpha = 1
+                    local SCD
+                    local iszero
+                    local CD
+                    if MaxDps.IsRetailWow() then
+                        SCD = C_Spell.GetSpellCooldownDuration(spellID)
+                        iszero = SCD and SCD:IsZero()
+                    else
+                        CD = MaxDps:Cooldown(spellID)
+                    end
+                    if C_Spell and type(C_Spell.GetSpellTexture) == "function" then
+                        texture = C_Spell.GetSpellTexture(spellID)
+                    else
+                        texture = GetSpellTexture(spellID)
+                    end
+                    local frame = _G["MaxDpsSpellFramedefensive" .. index]
+                    local ckey = ShortenKeybind(GetSpellKeybind(spellID))
+                    if ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
+                        frame.bindText:SetText(ckey)
+                    else
+                        frame.bindText:SetText("")
+                    end
+                    if frame and texture and texture ~= 134400 then
+                        frame.icon:SetTexture(texture)
+                        if MaxDps.IsRetailWow() then
+                            frame.icon:SetAlphaFromBoolean(iszero, 1, 0.5)
+                        else
+                            if CD and CD > 0 then
+                                frame.icon:SetAlpha(0.5)
+                            else
+                                frame.icon:SetAlpha(1)
+                            end
+                        end
+                        frame:Show()
+                    end
+                    index = index + 1
+                end
+            end
+        end
+
+        if cfg.showOffensive then
+            local _, class = UnitClass("player")
+            local specIndex = GetSpecialization()
+            local specName = specIndex and select(2, GetSpecializationInfo(specIndex))
+            local index = 1
+            for _, spellID in pairs(MaxDps.classCooldowns[class][specName].offensive) do
+                if MaxDps:CheckSpellUsable(spellID) then
+                    local texture
+                    local overlay = _G["MaxDps_Overlay_" .. spellID]
+                    local alpha = 1
+                    local SCD
+                    local iszero
+                    local CD
+                    if MaxDps.IsRetailWow() then
+                        SCD = C_Spell.GetSpellCooldownDuration(spellID)
+                        iszero = SCD and SCD:IsZero()
+                    else
+                        CD = MaxDps:Cooldown(spellID)
+                    end
+                    if C_Spell and type(C_Spell.GetSpellTexture) == "function" then
+                        texture = C_Spell.GetSpellTexture(spellID)
+                    else
+                        texture = GetSpellTexture(spellID)
+                    end
+                    local frame = _G["MaxDpsSpellFrameoffensive" .. index]
+                    local ckey = ShortenKeybind(GetSpellKeybind(spellID))
+                    if ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
+                        frame.bindText:SetText(ckey)
+                    else
+                        frame.bindText:SetText("")
+                    end
+                    if frame and texture and texture ~= 134400 then
+                        frame.icon:SetTexture(texture)
+                        if MaxDps.IsRetailWow() then
+                            frame.icon:SetAlphaFromBoolean(iszero, 1, 0.5)
+                        else
+                            if CD and CD > 0 then
+                                frame.icon:SetAlpha(0.5)
+                            else
+                                frame.icon:SetAlpha(1)
+                            end
+                        end
+                        frame:Show()
+                    end
+                    index = index + 1
+                end
+            end
+        end
+
+        if cfg.showTrinket then
+            local id13 = GetInventoryItemID("player", 13)
+            local id14 = GetInventoryItemID("player", 14)
+            if MaxDps and MaxDps.ItemSpells and MaxDps.ItemSpells[id13] then
+                local texture
+                local spellID = MaxDps.ItemSpells[id13]
+                local overlay = _G["MaxDps_Overlay_" .. spellID]
+                --local alpha = 1
+                local visible = true
+                if overlay and overlay.texture then
+                    --alpha = overlay.texture:GetAlpha()
+                    visible = overlay.texture:IsVisible()
+                end
+                if C_Item and type(C_Item.GetItemIconByID) == "function" then
+                    texture = C_Item.GetItemIconByID(id13)
+                else
+                    texture = select(5, GetItemInfoInstant(id13))
+                end
+                if not texture then
+                    texture = select(5, GetItemInfoInstant(id13))
+                end
+                local frame = _G["MaxDpsSpellFrametrinket" .. 1]
+                local tkey = ShortenKeybind(GetSpellKeybind(spellID))
+                if tkey and tkey ~= "" and string.byte(tkey) ~= 226 then
+                    frame.bindText:SetText(tkey)
+                else
+                    frame.bindText:SetText("")
+                end
+                if frame and texture and texture ~= 134400 then
+                    frame.icon:SetTexture(texture)
+                    frame.icon:SetAlphaFromBoolean(visible, 1, 0.5)
+                    frame:Show()
+                end
+            end
+            if MaxDps and MaxDps.ItemSpells and MaxDps.ItemSpells[id14] then
+                local texture
+                local spellID = MaxDps.ItemSpells[id14]
+                local overlay = _G["MaxDps_Overlay_" .. spellID]
+                --local alpha = 1
+                local visible = true
+                if overlay and overlay.texture then
+                    --alpha = overlay.texture:GetAlpha()
+                    visible = overlay.texture:IsVisible()
+                end
+                if C_Item and type(C_Item.GetItemIconByID) == "function" then
+                    texture = C_Item.GetItemIconByID(id14)
+                else
+                    texture = select(5, GetItemInfoInstant(id14))
+                end
+                if not texture then
+                    texture = select(5, GetItemInfoInstant(id14))
+                end
+                local frame
+                if MaxDps:HasOnUseEffect(13) then
+                    frame = _G["MaxDpsSpellFrametrinket" .. 2]
+                else
+                    frame = _G["MaxDpsSpellFrametrinket" .. 1]
+                end
+                local tkey = ShortenKeybind(GetSpellKeybind(spellID))
+                if tkey and tkey ~= "" and string.byte(tkey) ~= 226 then
+                    frame.bindText:SetText(tkey)
+                else
+                    frame.bindText:SetText("")
+                end
+                if frame and texture and texture ~= 134400 then
+                    frame.icon:SetTexture(texture)
+                    frame.icon:SetAlphaFromBoolean(visible, 1, 0.5)
+                    frame:Show()
+                end
+            end
+            if not MaxDps:HasOnUseEffect(13) and MaxDps:HasOnUseEffect(14) then
+                local frame = _G["MaxDpsSpellFrametrinket" .. 2]
+                if frame then
+                    frame:Hide()
+                end
+            end
+        end
+    end
 end
