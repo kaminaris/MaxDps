@@ -1690,6 +1690,52 @@ local Consumables = {
     [431432] = true, --Draught of Shocking Revelations
     [431424] = true, --Draught of Silent Footfalls / Treading Lightly
     [460074] = true, --Grotesque Vial
+    -- Midnight
+    [241309] = true, --Light's Potential R2
+    [241308] = true, --Light's Potential R3
+    [241289] = true, --Potion of Recklessness R2
+    [241288] = true, --Potion of Recklessness R3
+}
+
+MaxDps.Consumables = {
+    --BFA
+    [169299] = true, -- Potion of Unbridled Fury
+    [168529] = true, -- Potion of Empowered Proximity
+    [168506] = true, -- Potion of Focused Resolve
+    [168489] = true, -- Superior Battle Potion of Agility
+    [168498] = true, -- Superior Battle Potion of Intellect
+    [168500] = true, -- Superior Battle Potion of Strength
+    [163223] = true, -- Battle Potion of Agility
+    [163222] = true, -- Battle Potion of Intellect
+    [163224] = true, -- Battle Potion of Strength
+    [152559] = true, -- Potion of Rising Death
+    [152560] = true, -- Potion of Bursting Blood
+    --DF
+    [191383] = true, -- Elemental Potion of Ultimate Power
+    [191389] = true, -- Elemental Potion of Power
+    [191401] = true, -- Potion of Shocking Disclosure
+    --TWW
+    [212259] = true, -- Potion of Unwavering Focus
+    [212265] = true, -- Tempered Potion
+    [431419] = true, --Cavedweller's Delight
+    [431416] = true, --Healing Potion algari
+    [431914] = true, --Potion of Unwavering Focus
+    [431932] = true, --Tempered Potion
+    [453205] = true, --Potion Bomb of Power
+    [453162] = true, --Potion Bomb of Recovery
+    [453283] = true, --Potion Bomb of Speed
+    [431925] = true, --Frontline Potion
+    [431941] = true, --Potion of the Reborn Cheetah
+    [431418] = true, --Algari Mana Potion
+    [431422] = true, --Slumbering Soul Serum
+    [431432] = true, --Draught of Shocking Revelations
+    [431424] = true, --Draught of Silent Footfalls / Treading Lightly
+    [460074] = true, --Grotesque Vial
+    -- Midnight
+    [241309] = true, --Light's Potential R2
+    [241308] = true, --Light's Potential R3
+    [241289] = true, --Potion of Recklessness R2
+    [241288] = true, --Potion of Recklessness R3
 }
 
 function MaxDps:GlowConsumables()
