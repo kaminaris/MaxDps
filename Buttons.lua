@@ -538,7 +538,7 @@ end
 function MaxDps:FetchEllesmereUI()
     --local EllesmereBars = {'EABButton'}
     --for _, button in pairs(EllesmereBars) do
-        for i = 1, 12 do
+        for i = 1, 180 do
             local button = _G['EABButton' .. i]
             if button then
                 self:AddStandardButton(button)
