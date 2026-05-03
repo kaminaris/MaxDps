@@ -336,7 +336,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                     end
                     local frame = _G["MaxDpsSpellFrameconsumable" .. index]
                     local ckey = ShortenKeybind(GetSpellKeybind(spellID))
-                    if ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
+                    if frame and ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
                         frame.bindText:SetText(ckey)
                     else
                         frame.bindText:SetText("")
@@ -377,7 +377,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                     end
                     local frame = _G["MaxDpsSpellFramedefensive" .. index]
                     local ckey = ShortenKeybind(GetSpellKeybind(spellID))
-                    if ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
+                    if frame and ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
                         frame.bindText:SetText(ckey)
                     else
                         frame.bindText:SetText("")
@@ -426,7 +426,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                     end
                     local frame = _G["MaxDpsSpellFrameoffensive" .. index]
                     local ckey = ShortenKeybind(GetSpellKeybind(spellID))
-                    if ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
+                    if frame and ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
                         frame.bindText:SetText(ckey)
                     else
                         frame.bindText:SetText("")
@@ -476,7 +476,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                 end
                 local frame = _G["MaxDpsSpellFrametrinket" .. 1]
                 local tkey = ShortenKeybind(GetSpellKeybind(spellID))
-                if tkey and tkey ~= "" and string.byte(tkey) ~= 226 then
+                if frame and tkey and tkey ~= "" and string.byte(tkey) ~= 226 then
                     frame.bindText:SetText(tkey)
                 else
                     frame.bindText:SetText("")
@@ -516,7 +516,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                     frame = _G["MaxDpsSpellFrametrinket" .. 1]
                 end
                 local tkey = ShortenKeybind(GetSpellKeybind(spellID))
-                if tkey and tkey ~= "" and string.byte(tkey) ~= 226 then
+                if frame and tkey and tkey ~= "" and string.byte(tkey) ~= 226 then
                     frame.bindText:SetText(tkey)
                 else
                     frame.bindText:SetText("")
