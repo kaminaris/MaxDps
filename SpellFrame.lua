@@ -338,7 +338,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                     local ckey = ShortenKeybind(GetSpellKeybind(spellID))
                     if frame and ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
                         frame.bindText:SetText(ckey)
-                    else
+                    elseif frame then
                         frame.bindText:SetText("")
                     end
                     if frame and texture and texture ~= 134400 then
@@ -379,7 +379,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                     local ckey = ShortenKeybind(GetSpellKeybind(spellID))
                     if frame and ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
                         frame.bindText:SetText(ckey)
-                    else
+                    elseif frame then
                         frame.bindText:SetText("")
                     end
                     if frame and texture and texture ~= 134400 then
@@ -428,7 +428,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                     local ckey = ShortenKeybind(GetSpellKeybind(spellID))
                     if frame and ckey and ckey ~= "" and string.byte(ckey) ~= 226 then
                         frame.bindText:SetText(ckey)
-                    else
+                    elseif frame then
                         frame.bindText:SetText("")
                     end
                     if frame and texture and texture ~= 134400 then
@@ -478,7 +478,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                 local tkey = ShortenKeybind(GetSpellKeybind(spellID))
                 if frame and tkey and tkey ~= "" and string.byte(tkey) ~= 226 then
                     frame.bindText:SetText(tkey)
-                else
+                elseif frame then
                     frame.bindText:SetText("")
                 end
                 if frame and texture and texture ~= 134400 then
@@ -518,7 +518,7 @@ function MaxDps:UpdateSpellFrame(spellID)
                 local tkey = ShortenKeybind(GetSpellKeybind(spellID))
                 if frame and tkey and tkey ~= "" and string.byte(tkey) ~= 226 then
                     frame.bindText:SetText(tkey)
-                else
+                elseif frame then
                     frame.bindText:SetText("")
                 end
                 if frame and texture and texture ~= 134400 then
