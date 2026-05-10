@@ -498,7 +498,9 @@ function Window:GetWindowConfig()
 		}
 	}
 
-	local spellFrameLayout = {
+	local spellFrameLayout
+	if MaxDps:IsRetailWow() then
+	spellFrameLayout = {
 		database = MaxDps.db.global.spellFrame,
 		rows         = {
 			[1] = {
@@ -642,6 +644,104 @@ function Window:GetWindowConfig()
 			},
 		},
 	}
+	else
+	spellFrameLayout = {
+		database = MaxDps.db.global.spellFrame,
+		rows         = {
+			[1] = {
+				spellFrame = {
+					type = 'header',
+					label = 'Spell Frame'
+				}
+			},
+			[2] = {
+				enabled = {
+					type = 'checkbox',
+					label = 'Enable',
+					column = 6,
+					order = 1,
+					initialValue = MaxDps.db.global.spellFrame.enabled,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.enabled = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[5] = {
+				isMovable = {
+					type = 'checkbox',
+					label = 'Unlock',
+					column = 6,
+					order = 6,
+					initialValue = MaxDps.db.global.spellFrame.isMovable,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.isMovable = flag
+						if MaxDpsSpellFrame then
+							MaxDpsSpellFrame:SetMouseClickEnabled(MaxDps.db.global.spellFrame.isMovable)
+							MaxDpsSpellFrame:SetMovable(MaxDps.db.global.spellFrame.isMovable)
+						end
+					end
+				}
+			},
+			[6] = {
+				x = {
+					type   = 'sliderWithBox',
+					label  = 'x size',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.size.x,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.size.x = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[7] = {
+				y = {
+					type   = 'sliderWithBox',
+					label  = 'y size',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.size.y,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.size.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[8] = {
+				x = {
+					type   = 'sliderWithBox',
+					label  = 'x position',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.pos.x,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.pos.x = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[9] = {
+				y = {
+					type   = 'sliderWithBox',
+					label  = 'y position',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.pos.y,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.pos.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+		},
+	}
+    end
 
 	local customEditRotation = {
 		rows = {

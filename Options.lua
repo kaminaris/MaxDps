@@ -266,29 +266,31 @@ function MaxDps:AddToBlizzardOptions()
 		MaxDps.db.global.spellFrame.enabled = flag
 	end
 
-	local spellFrameshowConsumable = StdUi:Checkbox(optionsFrame, 'Show consumable spells', 200, 24)
-	spellFrameshowConsumable:SetChecked(MaxDps.db.global.spellFrame.showConsumable)
-	spellFrameshowConsumable.OnValueChanged = function(_, flag)
-		MaxDps.db.global.spellFrame.showConsumable = flag
-	end
+	if MaxDps:IsRetailWow() then
+	    local spellFrameshowConsumable = StdUi:Checkbox(optionsFrame, 'Show consumable spells', 200, 24)
+	    spellFrameshowConsumable:SetChecked(MaxDps.db.global.spellFrame.showConsumable)
+	    spellFrameshowConsumable.OnValueChanged = function(_, flag)
+            MaxDps.db.global.spellFrame.showConsumable = flag
+	    end
 
-	local spellFrameshowDefensive = StdUi:Checkbox(optionsFrame, 'Show defensive spells', 200, 24)
-	spellFrameshowDefensive:SetChecked(MaxDps.db.global.spellFrame.showDefensive)
-	spellFrameshowDefensive.OnValueChanged = function(_, flag)
-		MaxDps.db.global.spellFrame.showDefensive = flag
-	end
+	    local spellFrameshowDefensive = StdUi:Checkbox(optionsFrame, 'Show defensive spells', 200, 24)
+	    spellFrameshowDefensive:SetChecked(MaxDps.db.global.spellFrame.showDefensive)
+	    spellFrameshowDefensive.OnValueChanged = function(_, flag)
+            MaxDps.db.global.spellFrame.showDefensive = flag
+	    end
 
-	local spellFrameshowOffensive = StdUi:Checkbox(optionsFrame, 'Show offensive spells', 200, 24)
-	spellFrameshowOffensive:SetChecked(MaxDps.db.global.spellFrame.showOffensive)
-	spellFrameshowOffensive.OnValueChanged = function(_, flag)
-		MaxDps.db.global.spellFrame.showOffensive = flag
-	end
+	    local spellFrameshowOffensive = StdUi:Checkbox(optionsFrame, 'Show offensive spells', 200, 24)
+	    spellFrameshowOffensive:SetChecked(MaxDps.db.global.spellFrame.showOffensive)
+	    spellFrameshowOffensive.OnValueChanged = function(_, flag)
+            MaxDps.db.global.spellFrame.showOffensive = flag
+	    end
 
-	local spellFrameshowTrinket = StdUi:Checkbox(optionsFrame, 'Show trinket spells', 200, 24)
-	spellFrameshowTrinket:SetChecked(MaxDps.db.global.spellFrame.showTrinket)
-	spellFrameshowTrinket.OnValueChanged = function(_, flag)
-		MaxDps.db.global.spellFrame.showTrinket = flag
-	end
+	    local spellFrameshowTrinket = StdUi:Checkbox(optionsFrame, 'Show trinket spells', 200, 24)
+	    spellFrameshowTrinket:SetChecked(MaxDps.db.global.spellFrame.showTrinket)
+	    spellFrameshowTrinket.OnValueChanged = function(_, flag)
+            MaxDps.db.global.spellFrame.showTrinket = flag
+	    end
+    end
 
 	local spellFrameMovable = StdUi:Checkbox(optionsFrame, 'Unlock spell frame', 200, 24)
 	spellFrameMovable:SetChecked(MaxDps.db.global.spellFrame.isMovable)
@@ -483,7 +485,9 @@ function MaxDps:AddCustomGlowOptions()
 end
 
 function MaxDps:AddSpellFrameOptions()
-	local config = {
+	local config
+	if MaxDps:IsRetailWow() then
+	config = {
 		layoutConfig = { padding = { top = 30 } },
 		database     = self.db.global.spellFrame,
 		rows         = {
@@ -628,6 +632,105 @@ function MaxDps:AddSpellFrameOptions()
 			},
 		},
 	}
+	else
+	config = {
+		layoutConfig = { padding = { top = 30 } },
+		database     = self.db.global.spellFrame,
+		rows         = {
+			[1] = {
+				spellFrame = {
+					type = 'header',
+					label = 'Spell Frame'
+				}
+			},
+			[2] = {
+				enabled = {
+					type = 'checkbox',
+					label = 'Enable',
+					column = 6,
+					order = 1,
+					initialValue = MaxDps.db.global.spellFrame.enabled,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.enabled = flag
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[5] = {
+				isMovable = {
+					type = 'checkbox',
+					label = 'Unlock',
+					column = 6,
+					order = 6,
+					initialValue = MaxDps.db.global.spellFrame.isMovable,
+					onValueChanged = function(_, flag)
+						MaxDps.db.global.spellFrame.isMovable = flag
+						if MaxDpsSpellFrame then
+							MaxDpsSpellFrame:SetMouseClickEnabled(MaxDps.db.global.spellFrame.isMovable)
+							MaxDpsSpellFrame:SetMovable(MaxDps.db.global.spellFrame.isMovable)
+						end
+					end
+				}
+			},
+			[6] = {
+				x = {
+					type   = 'sliderWithBox',
+					label  = 'x size',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.size.x,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.size.x = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[7] = {
+				y = {
+					type   = 'sliderWithBox',
+					label  = 'y size',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.size.y,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.size.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[8] = {
+				x = {
+					type   = 'sliderWithBox',
+					label  = 'x position',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.pos.x,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.pos.x = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[9] = {
+				y = {
+					type   = 'sliderWithBox',
+					label  = 'y position',
+					min    = -2000,
+					max    = 2000,
+					column = 6,
+					initialValue = MaxDps.db.global.spellFrame.pos.y,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.pos.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+		},
+	}
+    end
 
 	local SpellFrameOptionsFrame = StdUi:PanelWithTitle(nil, 100, 100, 'Spell Frame Options')
 	SpellFrameOptionsFrame:Hide()
