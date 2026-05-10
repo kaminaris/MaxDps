@@ -263,7 +263,7 @@ function MaxDps:UpdateSpellFrame(spellID)
     --else
     --    icon:SetVertexColor(0.4, 0.4, 0.4)
     --end
-    if not MaxDpsSpellFrame.extraFramesCreated then
+    if MaxDps:IsRetailWow() and not MaxDpsSpellFrame.extraFramesCreated then
         if cfg.showConsumable then
             local c = 0
             for id in pairs(MaxDps.Consumables) do
