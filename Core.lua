@@ -82,6 +82,77 @@ function MaxDps:issecretvalue(value)
     return issecretvalue and issecretvalue(value) or false
 end
 
+MaxDps.idtoclass = {
+    [1] = "Warrior",
+    [2] = "Paladin",
+    [3] = "Hunter",
+    [4] = "Rogue",
+    [5] = "Priest",
+    [6] = "Death Knight",
+    [7] = "Shaman",
+    [8] = "Mage",
+    [9] = "Warlock",
+    [10] = "Monk",
+    [11] = "Druid",
+    [12] = "Demon Hunter",
+    [13] = "Evoker",
+}
+MaxDps.idtospec = {
+    --Death Knight
+    [250] = "Blood",
+    [251] = "Frost",
+    [252] = "Unholy",
+    --Demon Hunter
+    [577] = "Havoc",
+    [581] = "Vengeance",
+    [1480] = "Devourer",
+    --Druid
+    [102] = "Balance",
+    [103] = "Feral",
+    [104] = "Guardian",
+    [105] = "Restoration",
+    --Evoker
+    [1473] = "Augmentation",
+    [1467] = "Devastation",
+    [1468] = "Preservation",
+    --Hunter
+    [253] = "Beast Mastery",
+    [254] = "Marksmanship",
+    [255] = "Survival",
+    --Mage
+    [62] = "Arcane",
+    [63] = "Fire",
+    [64] = "Frost",
+    --Monk
+    [268] = "Brewmaster",
+    [269] = "Windwalker",
+    [270] = "Mistweaver",
+    --Paladin
+    [65] = "Holy",
+    [66] = "Protection",
+    [70] = "Retribution",
+    --Priest
+    [256] = "Discipline",
+    [257] = "Holy",
+    [258] = "Shadow",
+    --Rogue
+    [259] = "Assassination",
+    [260] = "Outlaw",
+    [261] = "Subtlety",
+    --Shaman
+    [262] = "Elemental",
+    [263] = "Enhancement",
+    [264] = "Restoration",
+    --Warlock
+    [265] = "Affliction",
+    [266] = "Demonology",
+    [267] = "Destruction",
+    --Warrior
+    [71] = "Arms",
+    [72] = "Fury",
+    [73] = "Protection",
+}
+
 local LCS = LibStub("LibClassicSpecs-Doadin", true)
 local GetSpecialization
 if (MaxDps:IsClassicWow() or MaxDps:IsSoDWow() or MaxDps:IsTBCWow()) and LCS then
@@ -387,76 +458,6 @@ function MaxDps:TalentsUpdated()
 end
 
 function MaxDps:UpdateSpellsAndTalents()
-    local idtoclass = {
-        [1] = "Warrior",
-        [2] = "Paladin",
-        [3] = "Hunter",
-        [4] = "Rogue",
-        [5] = "Priest",
-        [6] = "Death Knight",
-        [7] = "Shaman",
-        [8] = "Mage",
-        [9] = "Warlock",
-        [10] = "Monk",
-        [11] = "Druid",
-        [12] = "Demon Hunter",
-        [13] = "Evoker",
-    }
-    local idtospec = {
-        --Death Knight
-        [250] = "Blood",
-        [251] = "Frost",
-        [252] = "Unholy",
-        --Demon Hunter
-        [577] = "Havoc",
-        [581] = "Vengeance",
-        --Druid
-        [102] = "Balance",
-        [103] = "Feral",
-        [104] = "Guardian",
-        [105] = "Restoration",
-        --Evoker
-        [1473] = "Augmentation",
-        [1467] = "Devastation",
-        [1468] = "Preservation",
-        --Hunter
-        [253] = "Beast Mastery",
-        [254] = "Marksmanship",
-        [255] = "Survival",
-        --Mage
-        [62] = "Arcane",
-        [63] = "Fire",
-        [64] = "Frost",
-        --Monk
-        [268] = "Brewmaster",
-        [269] = "Windwalker",
-        [270] = "Mistweaver",
-        --Paladin
-        [65] = "Holy",
-        [66] = "Protection",
-        [70] = "Retribution",
-        --Priest
-        [256] = "Discipline",
-        [257] = "Holy",
-        [258] = "Shadow",
-        --Rogue
-        [259] = "Assassination",
-        [260] = "Outlaw",
-        [261] = "Subtlety",
-        --Shaman
-        [262] = "Elemental",
-        [263] = "Enhancement",
-        [264] = "Restoration",
-        --Warlock
-        [265] = "Affliction",
-        [266] = "Demonology",
-        [267] = "Destruction",
-        --Warrior
-        [71] = "Arms",
-        [72] = "Fury",
-        [73] = "Protection",
-    }
-
     local className, classFilename, classId = UnitClass("player")
     local currentSpec = GetSpecialization()
     local id, name, description, icon, background, role
@@ -467,66 +468,66 @@ function MaxDps:UpdateSpellsAndTalents()
         id, name, description, icon, background, role = GetSpecializationInfoForClassID(classId, currentSpec)
     end
 
-    if MaxDps:IsRetailWow() and MaxDps.classSpellData and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
+    if MaxDps:IsRetailWow() and MaxDps.classSpellData and id and MaxDps.idtoclass and MaxDps.idtoclass[classId] and MaxDps.idtospec and MaxDps.idtospec[id] then
         -- Insert Racials
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["Berserking"] = 26297
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["HyperOrganicLightOriginator"] = 312924
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["BloodFury"] = 20572
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["Shadowmeld"] = 58984
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["FerocityoftheFrostwolf"] = 274741
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["MightoftheBlackrock"] = 274742
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ZealoftheBurningBlade"] = 274740
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["RictusoftheLaughingSkull"] = 274739
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["AncestralCall"] = 274738
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ArcanePulse"] = 260369
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["Fireblood"] = 273104
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["Haymaker"] = 287712
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["RocketBarrage"] = 69041
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["Berserking"] = 26297
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["HyperOrganicLightOriginator"] = 312924
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["BloodFury"] = 20572
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["Shadowmeld"] = 58984
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["FerocityoftheFrostwolf"] = 274741
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["MightoftheBlackrock"] = 274742
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["ZealoftheBurningBlade"] = 274740
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["RictusoftheLaughingSkull"] = 274739
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["AncestralCall"] = 274738
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["ArcanePulse"] = 260369
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["Fireblood"] = 273104
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["Haymaker"] = 287712
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["RocketBarrage"] = 69041
         -- TWW Trinkets
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["house_of_cards"] = 466681
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["tome_of_lights_devotion"] = 443535
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["bestinslots"] = 473402
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["treacherous_transmitter"] = 449954
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["mad_queens_mandate"] = 443124
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["skardyns_grace"] = 92099
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["signet_of_the_priory"] = 443531
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["junkmaestros_mega_magnet"] = 1219661
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["geargrinders_spare_keys"] = 471059
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["grim_codex"] = 345739
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ravenous_honey_buzzer"] = 448904
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["spymasters_web"] = 444959
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["imperfect_ascendancy_serum"] = 455482
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["neural_synapse_enhancer"] = 300612
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["aberrant_spellforge"] = 445619
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["nymues_unraveling_spindle"] = 422956
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["flarendos_pilot_light"] = 471142
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["algethar_puzzle_box"] = 383781
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ingenious_mana_battery"] = 300968
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["high_speakers_accretion"] = 443415
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["gladiators_badge"] = 277185
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["hyperthread_wristwraps"] = 300142
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["burst_of_knowledge"] = 469925
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["ratfang_toxin"] = 1216604
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["funhouse_lens"] = 1213432
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["elementium_pocket_anvil"] = 401306
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["beacon_to_the_beyond"] = 402583
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["manic_grieftorch"] = 377463
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["time_thiefs_gambit"] = 417534
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["mirror_of_fractured_tomorrows"] = 418527
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["unyielding_netherprism"] = 1233556
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["spellstrike_warplance"] = 1243411
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["cursed_stone_idol"] = 1242326
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["skarmorak_shard"] = 443407
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["arazs_ritual_forge"] = 1232802
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["sunblood_amethyst"] = 343393
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["lily_of_the_eternal_weave"] = 1244029
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["mereldars_toll"] = 450561
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["soulletting_ruby"] = 345801
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["quickwick_candlestick"] = 455451
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["perfidious_projector"] = 1244636
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["blastmaster3000"] = 1214941
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["house_of_cards"] = 466681
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["tome_of_lights_devotion"] = 443535
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["bestinslots"] = 473402
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["treacherous_transmitter"] = 449954
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["mad_queens_mandate"] = 443124
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["skardyns_grace"] = 92099
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["signet_of_the_priory"] = 443531
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["junkmaestros_mega_magnet"] = 1219661
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["geargrinders_spare_keys"] = 471059
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["grim_codex"] = 345739
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["ravenous_honey_buzzer"] = 448904
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["spymasters_web"] = 444959
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["imperfect_ascendancy_serum"] = 455482
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["neural_synapse_enhancer"] = 300612
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["aberrant_spellforge"] = 445619
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["nymues_unraveling_spindle"] = 422956
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["flarendos_pilot_light"] = 471142
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["algethar_puzzle_box"] = 383781
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["ingenious_mana_battery"] = 300968
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["high_speakers_accretion"] = 443415
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["gladiators_badge"] = 277185
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["hyperthread_wristwraps"] = 300142
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["burst_of_knowledge"] = 469925
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["ratfang_toxin"] = 1216604
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["funhouse_lens"] = 1213432
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["elementium_pocket_anvil"] = 401306
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["beacon_to_the_beyond"] = 402583
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["manic_grieftorch"] = 377463
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["time_thiefs_gambit"] = 417534
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["mirror_of_fractured_tomorrows"] = 418527
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["unyielding_netherprism"] = 1233556
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["spellstrike_warplance"] = 1243411
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["cursed_stone_idol"] = 1242326
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["skarmorak_shard"] = 443407
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["arazs_ritual_forge"] = 1232802
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["sunblood_amethyst"] = 343393
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["lily_of_the_eternal_weave"] = 1244029
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["mereldars_toll"] = 450561
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["soulletting_ruby"] = 345801
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["quickwick_candlestick"] = 455451
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["perfidious_projector"] = 1244636
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["blastmaster3000"] = 1214941
         --
-        MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]
+        MaxDps.SpellTable = MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]
         for spellName,spellID in pairs(MaxDps.SpellTable) do
             local origSpellData = spellID and C_Spell.GetSpellInfo(spellID)
             local origSpellName = origSpellData and origSpellData.name
@@ -540,74 +541,74 @@ function MaxDps:UpdateSpellsAndTalents()
             end
         end
     end
-    if MaxDps:IsCataWow() and MaxDps.classSpellData and idtoclass and idtoclass[classId] then
+    if MaxDps:IsCataWow() and MaxDps.classSpellData and MaxDps.idtoclass and MaxDps.idtoclass[classId] then
         -- Insert Racials
-        --MaxDpsSpellTable[idtoclass[classId]][name]["Berserking"] = 26297
-        --MaxDpsSpellTable[idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
-        --MaxDpsSpellTable[idtoclass[classId]][name]["BloodFury"] = 20572
-        --MaxDpsSpellTable[idtoclass[classId]][name]["Shadowmeld"] = 58984
-        --MaxDpsSpellTable[idtoclass[classId]][name]["FerocityoftheFrostwolf"] = 274741
-        --MaxDpsSpellTable[idtoclass[classId]][name]["MightoftheBlackrock"] = 274742
-        --MaxDpsSpellTable[idtoclass[classId]][name]["ZealoftheBurningBlade"] = 274740
-        --MaxDpsSpellTable[idtoclass[classId]][name]["RictusoftheLaughingSkull"] = 274739
-        --MaxDpsSpellTable[idtoclass[classId]][name]["AncestralCall"] = 274738
-        --MaxDpsSpellTable[idtoclass[classId]][name]["ArcanePulse"] = 260369
-        --MaxDpsSpellTable[idtoclass[classId]][name]["Fireblood "] = 273104
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["Berserking"] = 26297
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["BloodFury"] = 20572
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["Shadowmeld"] = 58984
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["FerocityoftheFrostwolf"] = 274741
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["MightoftheBlackrock"] = 274742
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["ZealoftheBurningBlade"] = 274740
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["RictusoftheLaughingSkull"] = 274739
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["AncestralCall"] = 274738
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["ArcanePulse"] = 260369
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["Fireblood "] = 273104
         --
         --Insert Potions
-        MaxDps.classSpellData[idtoclass[classId]]["VolcanicPotion"] = 58091
-        MaxDps.classSpellData[idtoclass[classId]]["GolembloodPotion"] = 58146
-        MaxDps.classSpellData[idtoclass[classId]]["TolvirPotion"] = 58145
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]]["VolcanicPotion"] = 58091
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]]["GolembloodPotion"] = 58146
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]]["TolvirPotion"] = 58145
         --
-        MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]]
+        MaxDps.SpellTable = MaxDps.classSpellData[MaxDps.idtoclass[classId]]
     end
     if MaxDps:IsClassicWow() or MaxDps:IsTBCWow() then
         -- Insert Racials
-        --MaxDpsSpellTable[idtoclass[classId]][name]["Berserking"] = 26297
-        --MaxDpsSpellTable[idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
-        --MaxDpsSpellTable[idtoclass[classId]][name]["BloodFury"] = 20572
-        --MaxDpsSpellTable[idtoclass[classId]][name]["Shadowmeld"] = 58984
-        --MaxDpsSpellTable[idtoclass[classId]][name]["FerocityoftheFrostwolf"] = 274741
-        --MaxDpsSpellTable[idtoclass[classId]][name]["MightoftheBlackrock"] = 274742
-        --MaxDpsSpellTable[idtoclass[classId]][name]["ZealoftheBurningBlade"] = 274740
-        --MaxDpsSpellTable[idtoclass[classId]][name]["RictusoftheLaughingSkull"] = 274739
-        --MaxDpsSpellTable[idtoclass[classId]][name]["AncestralCall"] = 274738
-        --MaxDpsSpellTable[idtoclass[classId]][name]["ArcanePulse"] = 260369
-        --MaxDpsSpellTable[idtoclass[classId]][name]["Fireblood "] = 273104
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["Berserking"] = 26297
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["BloodFury"] = 20572
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["Shadowmeld"] = 58984
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["FerocityoftheFrostwolf"] = 274741
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["MightoftheBlackrock"] = 274742
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["ZealoftheBurningBlade"] = 274740
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["RictusoftheLaughingSkull"] = 274739
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["AncestralCall"] = 274738
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["ArcanePulse"] = 260369
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["Fireblood "] = 273104
         --
         --Insert Potions
-        --MaxDpsSpellTable[idtoclass[classId]]["VolcanicPotion"] = 58091
-        --MaxDpsSpellTable[idtoclass[classId]]["GolembloodPotion"] = 58146
-        --MaxDpsSpellTable[idtoclass[classId]]["TolvirPotion"] = 58145
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]]["VolcanicPotion"] = 58091
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]]["GolembloodPotion"] = 58146
+        --MaxDpsSpellTable[MaxDps.idtoclass[classId]]["TolvirPotion"] = 58145
         --
 
         MaxDps.SpellTable = {}
     end
-    if MaxDps:IsMistsWow() and MaxDps.classSpellData and id and idtoclass and idtoclass[classId] and idtospec and idtospec[id] then
+    if MaxDps:IsMistsWow() and MaxDps.classSpellData and id and MaxDps.idtoclass and MaxDps.idtoclass[classId] and MaxDps.idtospec and MaxDps.idtospec[id] then
         MaxDps.SpellTable = {}
         --for tabIndex = 1, GetNumSpellTabs() do
         --    local _, texture, offset, numSpells = GetSpellTabInfo(tabIndex)
         --    for spellIndex = offset + 1, offset + numSpells do
         --        local spellName, spellSubName = GetSpellBookItemName(spellIndex, "spell")
         --        local spellType, spellID = GetSpellBookItemInfo(spellIndex, "spell")
-        --        if spellType == "SPELL" and (classId and id and idtoclass[classId] and idtospec[id]) then
-        --            if not MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] then
-        --                MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] = spellID
+        --        if spellType == "SPELL" and (classId and id and MaxDps.idtoclass[classId] and MaxDps.idtospec[id]) then
+        --            if not MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]][FormatItemorSpell(spellName)] then
+        --                MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]][FormatItemorSpell(spellName)] = spellID
         --            end
-        --            if MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)]
-        --            and MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] ~= spellID then
-        --                MaxDps.classSpellData[idtoclass[classId]][idtospec[id]][FormatItemorSpell(spellName)] = spellID
+        --            if MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]][FormatItemorSpell(spellName)]
+        --            and MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]][FormatItemorSpell(spellName)] ~= spellID then
+        --                MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]][FormatItemorSpell(spellName)] = spellID
         --            end
         --        end
         --    end
         --end
 
         -- Insert Potions
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["VirmensBite"] = 105697
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["PotionoftheJadeSerpent"] = 105702
-        MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]["PotionofMoguPower"] = 105706
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["VirmensBite"] = 105697
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["PotionoftheJadeSerpent"] = 105702
+        MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]["PotionofMoguPower"] = 105706
 
-        MaxDps.SpellTable = MaxDps.classSpellData[idtoclass[classId]][idtospec[id]]
+        MaxDps.SpellTable = MaxDps.classSpellData[MaxDps.idtoclass[classId]][MaxDps.idtospec[id]]
     end
     --MaxDps.SpellInfoTable = {}
 end
