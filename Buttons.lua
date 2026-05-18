@@ -431,7 +431,7 @@ function MaxDps:AddStandardButton(button)
         end
     end
     -- End pet bar code
-    if button and button.viewerFrame and button.GetSpellID and not InCombatLockdown() then
+    if button and button.viewerFrame and button.GetSpellID then
         local spellID = button.GetSpellID(button)
         if not MaxDps:issecretvalue(spellID) then
             self:AddButton(spellID, button)
