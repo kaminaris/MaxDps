@@ -849,6 +849,10 @@ function MaxDps:InitRotations(skipPrint)
     local version = GetAddOnMetadata("MaxDps", "Version") or ""
     if not skipPrint then
         self:Print(self.Colors.Info .. version .. ' Initializing rotations', "info")
+        local isA, message = C_AssistedCombat.IsAvailable()
+        if MaxDps:IsRetailWow() and not isA then
+            self:Print(self.Colors.Error .. tostring(isA) .. " " .. tostring(message), "error")
+        end
     end
     self:CountTier()
 
