@@ -741,7 +741,7 @@ function MaxDps:InvokeNextSpell()
             self.Spell = res
         else
             if not self.Error then
-                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "info")
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "error")
             end
             self:Print(self.Colors.Error .. res, "error")
             self.Error = true
@@ -750,7 +750,7 @@ function MaxDps:InvokeNextSpell()
         local ok, res = xpcall(self.NextSpell, err, self)
         if not ok then
             if not self.Error then
-                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "info")
+                self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "error")
             end
             self.Error = true
         end
