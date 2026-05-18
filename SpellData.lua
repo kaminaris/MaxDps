@@ -4210,6 +4210,8 @@ ns.classSpellData = {
 ["DoubleJump"] = 196055,
 ["FelEruption"] = 211881,
 },
+["Devourer"] = {
+},
 },
 ["Evoker"] = {
 ["Devastation"] = {
