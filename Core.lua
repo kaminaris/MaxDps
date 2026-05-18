@@ -724,6 +724,7 @@ local function err(s)
     geterrorhandler()(s) --luacheck: ignore
 end
 
+local NACError = false
 function MaxDps:InvokeNextSpell()
     -- invoke spell check
     local oldSkill = self.Spell
@@ -783,7 +784,12 @@ function MaxDps:InvokeNextSpell()
             --    end
             --end
             local nextSpell = C_AssistedCombat.GetNextCastSpell(false)
-            self.Spell = C_AssistedCombat.IsAvailable() and nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
+            local isA, message = C_AssistedCombat.IsAvailable()
+            if MaxDpsOptions and MaxDpsOptions.global and MaxDpsOptions.global.debugMode and not NACError then
+                self:Print(self.Colors.Error .. tostring(isA) .. " " .. tostring(message), "error")
+                NACError = true
+            end
+            self.Spell = nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
             if self.Spell and MaxDps and MaxDps.FrameData and MaxDps.FrameData.ACSpells and not MaxDps.FrameData.ACSpells[self.Spell] then
                 MaxDps.FrameData.ACSpells[self.Spell] = true
             end
