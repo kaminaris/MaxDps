@@ -848,7 +848,25 @@ end
 function MaxDps:InitRotations(skipPrint)
     local version = GetAddOnMetadata("MaxDps", "Version") or ""
     if not skipPrint then
-        self:Print(self.Colors.Info .. version .. ' Initializing rotations', "info")
+        local gameVersion
+        if MaxDps:IsClassicWow() then
+            gameVersion = "Classic"
+        elseif MaxDps:IsTBCWow() then
+            gameVersion = "TBC"
+        elseif MaxDps:IsSoDWow() then
+            gameVersion = "SoD"
+        elseif MaxDps:IsWrathWow() then
+            gameVersion = "Wrath"
+        elseif MaxDps:IsCataWow() then
+            gameVersion = "Cata"
+        elseif MaxDps:IsMistsWow() then
+            gameVersion = "Mists"
+        elseif MaxDps:IsRetailWow() then
+            gameVersion = "Retail"
+        else
+            gameVersion = "Unknown Version"
+        end
+        self:Print(self.Colors.Info .. version .. " (" .. gameVersion .. ")" .. ' Initializing rotations', "info")
         local isA, message = C_AssistedCombat.IsAvailable()
         if MaxDps:IsRetailWow() and not isA then
             self:Print(self.Colors.Error .. tostring(isA) .. " " .. tostring(message), "error")
