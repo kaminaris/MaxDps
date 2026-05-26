@@ -30,13 +30,12 @@ Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
 Libs\LibRangeCheck-3.0\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 #@version-classic@
-Libs\LibClassicSpecs\LibClassicSpecs.lua
+# Libs\LibClassicSpecs\LibClassicSpecs.lua
 #@end-version-classic@
 #@version-bcc@
 Libs\LibClassicSpecs\LibClassicSpecs.lua
 #@end-version-bcc@
 #@version-cata@
-Libs\LibClassicSpecs\LibClassicSpecs.lua
 #@end-version-cata@
 
 Cooldowns.lua
