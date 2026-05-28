@@ -337,6 +337,7 @@ local function GetAllSpellsFromMacro(macroID)
     return spells
 end
 
+local hooked = false
 function MaxDps:AddStandardButton(button)
     local btype = button:GetAttribute('type')
     if btype then
@@ -436,6 +437,35 @@ function MaxDps:AddStandardButton(button)
         if not MaxDps:issecretvalue(spellID) then
             self:AddButton(spellID, button)
         end
+    end
+    if button and button.index and button.action then
+        local actionType, id = GetActionInfo(button.index)
+        if actionType == "flyout" then
+            local slots = select(3, GetFlyoutInfo(id))
+            for i=1,slots do
+                local flyoutSpellID = GetFlyoutSlotInfo(id, i)
+                if flyoutSpellID then
+                    self:AddButton(flyoutSpellID, button)
+                end
+            end
+        end
+    end
+    if not hooked then
+        hooked = true
+        hooksecurefunc(SpellFlyout, "Toggle", function(self)
+            -- Flyout is now open or closed; check if it's open
+            if self:IsShown() then
+                for i = 1, 20 do
+                    local btn = _G["SpellFlyoutPopupButton"..i]
+                    if btn and btn.spellID and btn:IsShown() then
+                        MaxDps:AddButton(btn.spellID, btn)
+                        if MaxDps.Spell and btn.spellID and (MaxDps.Spell == btn.spellID) then
+                            MaxDps:GlowSpell(btn.spellID)
+                        end
+                    end
+                end
+            end
+        end)
     end
 end
 
