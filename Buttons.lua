@@ -450,22 +450,24 @@ function MaxDps:AddStandardButton(button)
             end
         end
     end
-    if not hooked then
-        hooked = true
-        hooksecurefunc(SpellFlyout, "Toggle", function(self)
-            -- Flyout is now open or closed; check if it's open
-            if self:IsShown() then
-                for i = 1, 20 do
-                    local btn = _G["SpellFlyoutPopupButton"..i]
-                    if btn and btn.spellID and btn:IsShown() then
-                        MaxDps:AddButton(btn.spellID, btn)
-                        if MaxDps.Spell and btn.spellID and (MaxDps.Spell == btn.spellID) then
-                            MaxDps:GlowSpell(btn.spellID)
+    if MaxDps:IsRetailWow() then
+        if not hooked then
+            hooked = true
+            hooksecurefunc(SpellFlyout, "Toggle", function(self)
+                -- Flyout is now open or closed; check if it's open
+                if self:IsShown() then
+                    for i = 1, 20 do
+                        local btn = _G["SpellFlyoutPopupButton"..i]
+                        if btn and btn.spellID and btn:IsShown() then
+                            MaxDps:AddButton(btn.spellID, btn)
+                            if MaxDps.Spell and btn.spellID and (MaxDps.Spell == btn.spellID) then
+                                MaxDps:GlowSpell(btn.spellID)
+                            end
                         end
                     end
                 end
-            end
-        end)
+            end)
+        end
     end
 end
 
