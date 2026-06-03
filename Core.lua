@@ -371,8 +371,11 @@ function MaxDps:OnEnable()
     --self:RegisterBucketEvent('ACTIONBAR_UPDATE_STATE', 1, 'ButtonFetch')
     self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'ButtonFetch')
     self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', 'ButtonFetch')
-    if not MaxDps:IsTBCWow() and not MaxDps:IsRetailWow() then
+    if C_EventUtils.IsEventValid('LEARNED_SPELL_IN_TAB') then
         self:RegisterEvent('LEARNED_SPELL_IN_TAB', 'ButtonFetch')
+    end
+    if C_EventUtils.IsEventValid('LEARNED_SPELL_IN_SKILL_LINE') then
+        self:RegisterEvent('LEARNED_SPELL_IN_SKILL_LINE', 'ButtonFetch')
     end
     self:RegisterEvent('CHARACTER_POINTS_CHANGED', 'ButtonFetch')
     self:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED', 'ButtonFetch')
