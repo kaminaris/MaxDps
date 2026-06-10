@@ -747,7 +747,9 @@ function MaxDps:InvokeNextSpell()
             if not self.Error then
                 self:Print(self.Colors.Error .. "MaxDps Encountered an error, please report on Discord, including game version eg.Classic Retail Etc, And Class/Spec. Thanks!", "error")
             end
-            self:Print(self.Colors.Error .. res, "error")
+            if res then
+                self:Print(self.Colors.Error .. res, "error")
+            end
             self.Error = true
         end
     else
