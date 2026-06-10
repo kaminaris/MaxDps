@@ -846,33 +846,39 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 
     if updateInfo and updateInfo.removedAuraInstanceIDs then
         for _, auraInstanceID in ipairs(updateInfo.removedAuraInstanceIDs) do
-            for id, aura in pairs(self.PlayerAuras) do
-                if auraInstanceID == aura.auraID then
-                    self.PlayerAuras[id] = nil
+            if guid == playerGUID then
+                for spellid, aura in pairs(self.PlayerAuras) do
+                    if auraInstanceID == aura.auraID then
+                        self.PlayerAuras[spellid] = nil
+                    end
                 end
             end
-            for id, aura in pairs(self.TargetAuras) do
-                if auraInstanceID == aura.auraID then
-                    self.TargetAuras[id] = nil
+            if guid == targetGUID then
+                for spellid, aura in pairs(self.TargetAuras) do
+                    if auraInstanceID == aura.auraID then
+                        self.TargetAuras[spellid] = nil
+                    end
                 end
             end
             if guid and self.ActiveDots[guid] then
-                for auraID,auraTable in pairs(self.ActiveDots[guid]) do
+                for auraID, _ in pairs(self.ActiveDots[guid]) do -- auraID,auraTable
                     if auraID == auraInstanceID then
                         self.ActiveDots[guid][auraID] = nil
                     end
                 end
             end
-            for id, aura in pairs(self.TargetDispels) do
-                if auraInstanceID == aura.auraID then
-                    self.TargetDispels[id] = nil
+            if guid == targetGUID then
+                for spellid, aura in pairs(self.TargetDispels) do
+                    if auraInstanceID == aura.auraID then
+                        self.TargetDispels[spellid] = nil
+                    end
                 end
             end
         end
     end
     if guid and self.ActiveDots[guid] then
         local numAuras = 0
-        for id, info in pairs(self.ActiveDots[guid]) do
+        for _, _ in pairs(self.ActiveDots[guid]) do
             numAuras = numAuras + 1
         end
         if numAuras == 0 then
@@ -883,7 +889,10 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 end
 
 if not MaxDps:IsRetailWow() then
-    local collectAurasframe = CreateFrame("Frame")
+    local collectAurasframe
+    if not collectAurasframe then
+        collectAurasframe = CreateFrame("Frame")
+    end
     collectAurasframe:SetScript("OnEvent", function(self, event, unitTarget, updateInfo)
         if event == "UNIT_AURA" then
             MaxDps:CollectAuras(unitTarget, updateInfo)
