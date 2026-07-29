@@ -2211,28 +2211,31 @@ function MaxDps:ThreatCounter()
     local units = {}
 
     for _, unit in ipairs(self.visibleNameplates) do
-        local npcId = Select(6, StringSplit('-', UnitGUID(unit)))
-        npcId = npcId and tonumber(npcId)
-        if UnitThreatSituation('player', unit) ~= nil then
-            if not npcId or (npcId and not specialTargetsIgnore[npcId]) then
-                count = count + 1
-                TableInsert(units, unit)
-            end
-        else
-            --if npcId then
-            --    print(UnitName(unit) .. " not included with id " .. npcId .. " " .. tostring(UnitAffectingCombat(unit)) .. " " .. tostring(UnitIsEnemy('player', unit)))
-            --end
-            -- Risen Soul, Tormented Soul, Lost Soul
-            -- Retail Manaforge Omega: Forgeweaver: Arcane Manifestation(242586), Arcane Collector(240905)
-            -- Retail: pvp training dummies (219250)
-            -- Also add units that are enemys but don't show threat status
-            -- this still discludes friendly units and neutrals
-            -- don't include UnitIsEnemy('player', unit) or here or we will include mobs not in combat
-            if (specialThreatUnits[npcId]) then
-            -- (npcId == 148716 or npcId == 148893 or npcId == 148894 or npcId == 242586 or npcId == 240905 or npcId == 219250) then
+        local unitGUID = unit and UnitGUID(unit)
+        if unitGUID then
+            local npcId = Select(6, StringSplit('-', unitGUID))
+            npcId = npcId and tonumber(npcId)
+            if UnitThreatSituation('player', unit) ~= nil then
                 if not npcId or (npcId and not specialTargetsIgnore[npcId]) then
                     count = count + 1
                     TableInsert(units, unit)
+                end
+            else
+                --if npcId then
+                --    print(UnitName(unit) .. " not included with id " .. npcId .. " " .. tostring(UnitAffectingCombat(unit)) .. " " .. tostring(UnitIsEnemy('player', unit)))
+                --end
+                -- Risen Soul, Tormented Soul, Lost Soul
+                -- Retail Manaforge Omega: Forgeweaver: Arcane Manifestation(242586), Arcane Collector(240905)
+                -- Retail: pvp training dummies (219250)
+                -- Also add units that are enemys but don't show threat status
+                -- this still discludes friendly units and neutrals
+                -- don't include UnitIsEnemy('player', unit) or here or we will include mobs not in combat
+                if (specialThreatUnits[npcId]) then
+                -- (npcId == 148716 or npcId == 148893 or npcId == 148894 or npcId == 242586 or npcId == 240905 or npcId == 219250) then
+                    if not npcId or (npcId and not specialTargetsIgnore[npcId]) then
+                        count = count + 1
+                        TableInsert(units, unit)
+                    end
                 end
             end
         end
