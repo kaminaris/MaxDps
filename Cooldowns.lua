@@ -283,7 +283,7 @@ ns.classCooldowns = {
         },
     },
     HUNTER = {
-        BeastMastery = {
+        ["Beast Mastery"] = {
             offensive = {
                 --["Bestial Wrath"] = 19574,
                 ["Call of the Wild"] = 359844,
@@ -808,7 +808,7 @@ ns.classInterrupts = {
     },
 
     HUNTER = {
-        BeastMastery = {
+        ["Beast Mastery"] = {
             ["Counter Shot"] = 147362,
         },
         Marksmanship = {
