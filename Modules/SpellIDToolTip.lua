@@ -2,6 +2,10 @@
 local MyAddon = LibStub("AceAddon-3.0"):NewAddon("MaxDpsHookDemo", "AceHook-3.0")
 local UnitAura = C_UnitAuras and C_UnitAuras.GetAuraDataByIndex or UnitAura -- use C_UnitAuras if available
 
+if MaxDps and MaxDps:IsRetailWow() then
+    return
+end
+
 local function TooltipHasIDLine()
     for i = 1, GameTooltip:NumLines() do
         local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
