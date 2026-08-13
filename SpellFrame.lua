@@ -278,9 +278,6 @@ function MaxDps:UpdateSpellFrame(spellID)
             local currentSpec = GetSpecialization()
             local specIndex = GetSpecializationInfo(currentSpec)
             local specName = specIndex and MaxDps.idtospec[specIndex]
-            if specName == "Beast Mastery" then
-                specName = "BeastMastery"
-            end
             local d = 1
             for i in pairs(MaxDps.classCooldowns[class][specName].defensive) do
                 if MaxDps and MaxDps.Spells and MaxDps.Spells[spellID] then
@@ -296,9 +293,6 @@ function MaxDps:UpdateSpellFrame(spellID)
             local currentSpec = GetSpecialization()
             local specIndex = GetSpecializationInfo(currentSpec)
             local specName = specIndex and MaxDps.idtospec[specIndex]
-            if specName == "Beast Mastery" then
-                specName = "BeastMastery"
-            end
             local d = 1
             for i in pairs(MaxDps.classCooldowns[class][specName].offensive) do
                 if MaxDps and MaxDps.Spells and MaxDps.Spells[spellID] then
@@ -364,9 +358,6 @@ function MaxDps:UpdateSpellFrame(spellID)
             local currentSpec = GetSpecialization()
             local specIndex = GetSpecializationInfo(currentSpec)
             local specName = specIndex and MaxDps.idtospec[specIndex]
-            if specName == "Beast Mastery" then
-                specName = "BeastMastery"
-            end
             local index = 1
             for _, spellID in pairs(MaxDps.classCooldowns[class][specName].defensive) do
                 if MaxDps:CheckSpellUsable(spellID) then
@@ -417,9 +408,6 @@ function MaxDps:UpdateSpellFrame(spellID)
             local currentSpec = GetSpecialization()
             local specIndex = GetSpecializationInfo(currentSpec)
             local specName = specIndex and MaxDps.idtospec[specIndex]
-            if specName == "Beast Mastery" then
-                specName = "BeastMastery"
-            end
             local index = 1
             for _, spellID in pairs(MaxDps.classCooldowns[class][specName].offensive) do
                 if MaxDps:CheckSpellUsable(spellID) then
