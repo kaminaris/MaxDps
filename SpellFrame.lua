@@ -117,24 +117,30 @@ local function CreateExtraFrames(type, number)
     --f:SetSize(20, 20) -- example size
     f:SetSize(cfg.size.x/2, cfg.size.y/2)
 
+    local w = cfg.size.x / 2
+    local h = cfg.size.y / 2
+
+    local xPad = w * 0.25
+    local yPad = h
+
     if number == 1 then
         -- First frame anchors to the main frame
         if type == "consumable" then
-            f:SetPoint("LEFT", parent, "RIGHT", 5, 12)
+            f:SetPoint("LEFT", parent, "RIGHT", xPad, yPad)
         elseif type == "defensive" then
-            f:SetPoint("RIGHT", parent, "LEFT", -5, 12)
+            f:SetPoint("RIGHT", parent, "LEFT", -xPad, yPad)
         elseif type == "offensive" then
-            f:SetPoint("RIGHT", parent, "LEFT", -5, -12)
+            f:SetPoint("RIGHT", parent, "LEFT", -xPad, -yPad)
         elseif type == "trinket" then
-            f:SetPoint("LEFT", parent, "RIGHT", 5, -12)
+            f:SetPoint("LEFT", parent, "RIGHT", xPad, -yPad)
         end
     else
         local prev = _G["MaxDpsSpellFrame" .. type .. (number - 1)]
         if prev then
             if type == "defensive" or type == "offensive" then
-                f:SetPoint("LEFT", prev, "LEFT", -cfg.size.y/2, 0)
+                f:SetPoint("LEFT", prev, "LEFT", -w, 0)
             else
-                f:SetPoint("LEFT", prev, "RIGHT", 5, 0)
+                f:SetPoint("LEFT", prev, "RIGHT", xPad, 0)
             end
         end
     end
