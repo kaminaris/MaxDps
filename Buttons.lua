@@ -277,6 +277,13 @@ function MaxDps:HideGlow(button, id)
 end
 
 function MaxDps:AddButton(spellId, button)
+    -- Don't Add One Button
+    if button and button.AssistedCombatRotationFrame then
+        return
+    end
+    if spellId and spellId == 1229376 then
+        return
+    end
     if spellId then
         if self.Spells[spellId] == nil then
             self.Spells[spellId] = {}
