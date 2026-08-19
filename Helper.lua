@@ -201,7 +201,8 @@ MaxDps.PlayerAuras = setmetatable({}, auraMetaTable)
 MaxDps.TargetAuras = setmetatable({}, auraMetaTable)
 MaxDps.PlayerCooldowns = setmetatable({}, {
     __index = function(table, key)
-        return MaxDps:CooldownConsolidated(key, MaxDps.FrameData.timeShift)
+        local ti = MaxDps and MaxDps.FrameData and MaxDps.FrameData.timeShift or 0
+        return MaxDps:CooldownConsolidated(key, ti)
     end
 })
 --local activeDotsMetaTable = {
@@ -357,239 +358,8 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
         end
         for _, aura in pairs(playerUnitauraInfo) do
             if guid == playerGUID then
-                self.PlayerAuras[aura.spellId] = {
-                    name           = aura.name,
-                    up             = true,
-                    upMath         = 1,
-                    count          = aura.applications > 0 and aura.applications or 1,
-                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-                    --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-                    duration       = aura.duration >0 and aura.duration or math.huge,
-                    --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
-                    maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    --value          = aura.points[1] or 1,
-                    spellId        = aura.spellId,
-                    auraID         = aura.auraInstanceID
-                }
-                spellDurationCache[aura.spellId] = aura.duration
-                setmetatable(self.PlayerAuras[aura.spellId], {
-                    __index = function(_, key)
-                        if key == "remains" then
-                            return calculateRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "refreshable" then
-                            return calculateRefreshable(self.PlayerAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
-                        end
-                        if key == "value" then
-                            return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "cast_time" then
-                            return calculateCastTime(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "tick_time_remains" then
-                            return calculateTickTimeRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                    end
-                })
-            end
-        end
-        for _, aura in pairs(targetUnitauraInfo) do
-            if guid == targetGUID then
-                self.TargetAuras[aura.spellId] = {
-                    name           = aura.name,
-                    up             = true,
-                    upMath         = 1,
-                    count          = aura.applications > 0 and aura.applications or 1,
-                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-                    --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-                    duration       = aura.duration >0 and aura.duration or math.huge,
-                    --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
-                    maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    --value          = aura.points[1] or 1,
-                    spellId        = aura.spellId,
-                    auraID         = aura.auraInstanceID
-                }
-                spellDurationCache[aura.spellId] = aura.duration
-                setmetatable(self.TargetAuras[aura.spellId], {
-                    __index = function(_, key)
-                        if key == "remains" then
-                            return calculateRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "refreshable" then
-                            return calculateRefreshable(self.TargetAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
-                        end
-                        if key == "value" then
-                            return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "cast_time" then
-                            return calculateCastTime(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "tick_time_remains" then
-                            return calculateTickTimeRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                    end
-                })
-            end
-        end
-        for _, aura in pairs(unitauraInfo) do
-            if guid and not self.ActiveDots[guid] then
-                self.ActiveDots[guid] = {}
-            end
-            self.ActiveDots[guid][aura.auraInstanceID] = {
-                name           = aura.name,
-                up             = true,
-                upMath         = 1,
-                count          = aura.applications > 0 and aura.applications or 1,
-                expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-                --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-                duration       = aura.duration >0 and aura.duration or math.huge,
-                --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
-                maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                --value          = aura.points[1] or 1,
-                spellId        = aura.spellId,
-                auraID         = aura.auraInstanceID
-            }
-            spellDurationCache[aura.spellId] = aura.duration
-            setmetatable(self.ActiveDots[guid][aura.auraInstanceID], {
-                __index = function(_, key)
-                    if key == "remains" then
-                        return calculateRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
-                    end
-                    if key == "refreshable" then
-                        return calculateRefreshable(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate refreshable for ID 123
-                    end
-                    if key == "value" then
-                        return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
-                    end
-                    if key == "cast_time" then
-                        return calculateCastTime(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
-                    end
-                    if key == "tick_time_remains" then
-                        return calculateTickTimeRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
-                    end
-                end
-            })
-        end
-        for _, aura in pairs(targetDispelUnitAuraInfo) do
-            if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
-                self.TargetDispels[aura.spellId] = {
-                    name           = aura.name,
-                    up             = true,
-                    upMath         = 1,
-                    count          = aura.applications > 0 and aura.applications or 1,
-                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-                    --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-                    duration       = aura.duration >0 and aura.duration or math.huge,
-                    --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
-                    maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    --value          = aura.points[1] or 1,
-                    spellId        = aura.spellId,
-                    auraID         = aura.auraInstanceID
-                }
-                spellDurationCache[aura.spellId] = aura.duration
-                setmetatable(self.TargetDispels[aura.spellId], {
-                    __index = function(_, key)
-                        if key == "remains" then
-                            return calculateRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "refreshable" then
-                            return calculateRefreshable(self.TargetDispels[aura.spellId]) -- Dynamically calculate refreshable for ID 123
-                        end
-                        if key == "value" then
-                            return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "cast_time" then
-                            return calculateCastTime(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "tick_time_remains" then
-                            return calculateTickTimeRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                    end
-                })
-            end
-        end
-    end
-
-    if updateInfo and updateInfo.addedAuras then
-        for _, aura in pairs(updateInfo.addedAuras) do
-            if guid == playerGUID and aura.isHelpful then
-                self.PlayerAuras[aura.spellId] = {
-                    name           = aura.name,
-                    up             = true,
-                    upMath         = 1,
-                    count          = aura.applications > 0 and aura.applications or 1,
-                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-                    --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-                    duration       = aura.duration >0 and aura.duration or math.huge,
-                    --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
-                    maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    --value          = aura.points[1] or 1,
-                    spellId        = aura.spellId,
-                    auraID         = aura.auraInstanceID
-                }
-                spellDurationCache[aura.spellId] = aura.duration
-                setmetatable(self.PlayerAuras[aura.spellId], {
-                    __index = function(_, key)
-                        if key == "remains" then
-                            return calculateRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "refreshable" then
-                            return calculateRefreshable(self.PlayerAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
-                        end
-                        if key == "value" then
-                            return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "cast_time" then
-                            return calculateCastTime(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "tick_time_remains" then
-                            return calculateTickTimeRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                    end
-                })
-            end
-            if guid == targetGUID and aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
-                self.TargetAuras[aura.spellId] = {
-                    name           = aura.name,
-                    up             = true,
-                    upMath         = 1,
-                    count          = aura.applications > 0 and aura.applications or 1,
-                    expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
-                    --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
-                    duration       = aura.duration >0 and aura.duration or math.huge,
-                    --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
-                    maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
-                    --value          = aura.points[1] or 1,
-                    spellId        = aura.spellId,
-                    auraID         = aura.auraInstanceID
-                }
-                spellDurationCache[aura.spellId] = aura.duration
-                setmetatable(self.TargetAuras[aura.spellId], {
-                    __index = function(_, key)
-                        if key == "remains" then
-                            return calculateRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "refreshable" then
-                            return calculateRefreshable(self.TargetAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
-                        end
-                        if key == "value" then
-                            return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "cast_time" then
-                            return calculateCastTime(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                        if key == "tick_time_remains" then
-                            return calculateTickTimeRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
-                        end
-                    end
-                })
-            end
-            if aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
-                if guid and not self.ActiveDots[guid] then
-                    self.ActiveDots[guid] = {}
-                end
-                if guid then
-                    self.ActiveDots[guid][aura.auraInstanceID] = {
+                if type(aura) == "table" then
+                    self.PlayerAuras[aura.spellId] = {
                         name           = aura.name,
                         up             = true,
                         upMath         = 1,
@@ -604,29 +374,74 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                         auraID         = aura.auraInstanceID
                     }
                     spellDurationCache[aura.spellId] = aura.duration
-                    setmetatable(self.ActiveDots[guid][aura.auraInstanceID], {
+                    setmetatable(self.PlayerAuras[aura.spellId], {
                         __index = function(_, key)
                             if key == "remains" then
-                                return calculateRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                return calculateRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
                             if key == "refreshable" then
-                                return calculateRefreshable(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate refreshable for ID 123
+                                return calculateRefreshable(self.PlayerAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
                             end
                             if key == "value" then
-                                return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
                             if key == "cast_time" then
-                                return calculateCastTime(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                return calculateCastTime(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
                             if key == "tick_time_remains" then
-                                return calculateTickTimeRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                return calculateTickTimeRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
                             end
                         end
                     })
                 end
             end
-            if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
-                self.TargetDispels[aura.spellId] = {
+        end
+        for _, aura in pairs(targetUnitauraInfo) do
+            if guid == targetGUID then
+                if type(aura) == "table" then
+                    self.TargetAuras[aura.spellId] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = 1,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                        --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                        duration       = aura.duration >0 and aura.duration or math.huge,
+                        --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                        maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
+                        --value          = aura.points[1] or 1,
+                        spellId        = aura.spellId,
+                        auraID         = aura.auraInstanceID
+                    }
+                    spellDurationCache[aura.spellId] = aura.duration
+                    setmetatable(self.TargetAuras[aura.spellId], {
+                        __index = function(_, key)
+                            if key == "remains" then
+                                return calculateRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "refreshable" then
+                                return calculateRefreshable(self.TargetAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                        end
+                    })
+                end
+            end
+        end
+        for _, aura in pairs(unitauraInfo) do
+            if guid and not self.ActiveDots[guid] then
+                self.ActiveDots[guid] = {}
+            end
+            if type(aura) == "table" then
+                self.ActiveDots[guid][aura.auraInstanceID] = {
                     name           = aura.name,
                     up             = true,
                     upMath         = 1,
@@ -641,25 +456,221 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
                     auraID         = aura.auraInstanceID
                 }
                 spellDurationCache[aura.spellId] = aura.duration
-                setmetatable(self.TargetDispels[aura.spellId], {
+                setmetatable(self.ActiveDots[guid][aura.auraInstanceID], {
                     __index = function(_, key)
                         if key == "remains" then
-                            return calculateRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            return calculateRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                         end
                         if key == "refreshable" then
-                            return calculateRefreshable(self.TargetDispels[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            return calculateRefreshable(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate refreshable for ID 123
                         end
                         if key == "value" then
-                            return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                         end
                         if key == "cast_time" then
-                            return calculateCastTime(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            return calculateCastTime(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                         end
                         if key == "tick_time_remains" then
-                            return calculateTickTimeRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            return calculateTickTimeRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
                         end
                     end
                 })
+            end
+        end
+        for _, aura in pairs(targetDispelUnitAuraInfo) do
+            if type(aura) == "table" then
+                if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
+                    self.TargetDispels[aura.spellId] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = 1,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                        --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                        duration       = aura.duration >0 and aura.duration or math.huge,
+                        --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                        maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
+                        --value          = aura.points[1] or 1,
+                        spellId        = aura.spellId,
+                        auraID         = aura.auraInstanceID
+                    }
+                    spellDurationCache[aura.spellId] = aura.duration
+                    setmetatable(self.TargetDispels[aura.spellId], {
+                        __index = function(_, key)
+                            if key == "remains" then
+                                return calculateRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "refreshable" then
+                                return calculateRefreshable(self.TargetDispels[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                        end
+                    })
+                end
+            end
+        end
+    end
+
+    if updateInfo and updateInfo.addedAuras then
+        for _, aura in pairs(updateInfo.addedAuras) do
+            if type(aura) == "table" then
+                if guid == playerGUID and aura.isHelpful then
+                    self.PlayerAuras[aura.spellId] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = 1,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                        --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                        duration       = aura.duration >0 and aura.duration or math.huge,
+                        --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                        maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
+                        --value          = aura.points[1] or 1,
+                        spellId        = aura.spellId,
+                        auraID         = aura.auraInstanceID
+                    }
+                    spellDurationCache[aura.spellId] = aura.duration
+                    setmetatable(self.PlayerAuras[aura.spellId], {
+                        __index = function(_, key)
+                            if key == "remains" then
+                                return calculateRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "refreshable" then
+                                return calculateRefreshable(self.PlayerAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.PlayerAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                        end
+                    })
+                end
+                if guid == targetGUID and aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
+                    self.TargetAuras[aura.spellId] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = 1,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                        --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                        duration       = aura.duration >0 and aura.duration or math.huge,
+                        --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                        maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
+                        --value          = aura.points[1] or 1,
+                        spellId        = aura.spellId,
+                        auraID         = aura.auraInstanceID
+                    }
+                    spellDurationCache[aura.spellId] = aura.duration
+                    setmetatable(self.TargetAuras[aura.spellId], {
+                        __index = function(_, key)
+                            if key == "remains" then
+                                return calculateRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "refreshable" then
+                                return calculateRefreshable(self.TargetAuras[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.TargetAuras[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                        end
+                    })
+                end
+                if aura.isHarmful and aura.sourceUnit and ( UnitGUID(aura.sourceUnit) == UnitGUID("player") ) then
+                    if guid and not self.ActiveDots[guid] then
+                        self.ActiveDots[guid] = {}
+                    end
+                    if guid then
+                        self.ActiveDots[guid][aura.auraInstanceID] = {
+                            name           = aura.name,
+                            up             = true,
+                            upMath         = 1,
+                            count          = aura.applications > 0 and aura.applications or 1,
+                            expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                            --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                            duration       = aura.duration >0 and aura.duration or math.huge,
+                            --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                            maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
+                            --value          = aura.points[1] or 1,
+                            spellId        = aura.spellId,
+                            auraID         = aura.auraInstanceID
+                        }
+                        spellDurationCache[aura.spellId] = aura.duration
+                        setmetatable(self.ActiveDots[guid][aura.auraInstanceID], {
+                            __index = function(_, key)
+                                if key == "remains" then
+                                    return calculateRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                end
+                                if key == "refreshable" then
+                                    return calculateRefreshable(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate refreshable for ID 123
+                                end
+                                if key == "value" then
+                                    return calculateValue(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                end
+                                if key == "cast_time" then
+                                    return calculateCastTime(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                end
+                                if key == "tick_time_remains" then
+                                    return calculateTickTimeRemains(self.ActiveDots[guid][aura.auraInstanceID]) -- Dynamically calculate remains for ID 123
+                                end
+                            end
+                        })
+                    end
+                end
+                if guid == targetGUID and UnitIsEnemy('player',unitTarget) and aura.isHelpful then
+                    self.TargetDispels[aura.spellId] = {
+                        name           = aura.name,
+                        up             = true,
+                        upMath         = 1,
+                        count          = aura.applications > 0 and aura.applications or 1,
+                        expirationTime = (aura.expirationTime >0 and aura.expirationTime or math.huge),
+                        --remains        = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime(),
+                        duration       = aura.duration >0 and aura.duration or math.huge,
+                        --refreshable    = (aura.expirationTime >0 and aura.expirationTime or math.huge) - GetTime() < 0.3 * aura.duration,
+                        maxStacks      = aura.maxCharges and aura.maxCharges > 0 and aura.maxCharges or 1,
+                        --value          = aura.points[1] or 1,
+                        spellId        = aura.spellId,
+                        auraID         = aura.auraInstanceID
+                    }
+                    spellDurationCache[aura.spellId] = aura.duration
+                    setmetatable(self.TargetDispels[aura.spellId], {
+                        __index = function(_, key)
+                            if key == "remains" then
+                                return calculateRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "refreshable" then
+                                return calculateRefreshable(self.TargetDispels[aura.spellId]) -- Dynamically calculate refreshable for ID 123
+                            end
+                            if key == "value" then
+                                return calculateValue(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "cast_time" then
+                                return calculateCastTime(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                            if key == "tick_time_remains" then
+                                return calculateTickTimeRemains(self.TargetDispels[aura.spellId]) -- Dynamically calculate remains for ID 123
+                            end
+                        end
+                    })
+                end
             end
         end
     end
@@ -667,7 +678,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
     if updateInfo and updateInfo.updatedAuraInstanceIDs then
         for _, auraInstanceID in ipairs(updateInfo.updatedAuraInstanceIDs) do
             local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(unitTarget, auraInstanceID)
-            if aura then
+            if aura and type(aura) == "table" then
                 if guid == playerGUID and aura.isHelpful then
                     self.PlayerAuras[aura.spellId] = {
                         name           = aura.name,
