@@ -204,6 +204,24 @@ local function GetSpellKeybind(spellID)
     return ""
 end
 
+local function FindSpellOnActionBar(spellID)
+    for slot = 1, 120 do
+        local type, id = GetActionInfo(slot)
+        local searchName = C_Spell.GetSpellName(spellID)
+        local slotName = C_Spell.GetSpellName(id)
+        if type == "spell" and (id == spellID or searchName == slotName) then
+            return slot
+        end
+    end
+end
+
+local function GetKeybindForSpell(spellID)
+    local slot = FindSpellOnActionBar(spellID)
+    if not slot then return nil end
+
+    return GetBindingKey("ACTIONBUTTON"..slot)
+end
+
 ------------------------------------------------------------
 -- Update Logic
 ------------------------------------------------------------
@@ -249,11 +267,20 @@ function MaxDps:UpdateSpellFrame(spellID)
         MaxDpsSpellFrame:SetSize(cfg.size.x, cfg.size.x)
     end
 
-    local key = ShortenKeybind(GetSpellKeybind(spellID))
-    if key and key ~= "" and string.byte(key) ~= 226 then
-        MaxDpsSpellFrame.bindText:SetText(key)
+    if MaxDps:IsRetailWow() then
+        local key = ShortenKeybind(GetSpellKeybind(spellID))
+        if key and key ~= "" and string.byte(key) ~= 226 then
+            MaxDpsSpellFrame.bindText:SetText(key)
+        else
+            MaxDpsSpellFrame.bindText:SetText("")
+        end
     else
-        MaxDpsSpellFrame.bindText:SetText("")
+        local key = ShortenKeybind(GetKeybindForSpell(spellID))
+        if key and key ~= "" and string.byte(key) ~= 226 then
+            MaxDpsSpellFrame.bindText:SetText(key)
+        else
+            MaxDpsSpellFrame.bindText:SetText("")
+        end
     end
 
     --local start, duration = GetSpellCooldown(spellID)
