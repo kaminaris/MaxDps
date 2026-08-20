@@ -205,12 +205,17 @@ local function GetSpellKeybind(spellID)
 end
 
 local function FindSpellOnActionBar(spellID)
+    if not spellID then
+        return nil
+    end
     for slot = 1, 120 do
         local type, id = GetActionInfo(slot)
-        local searchName = C_Spell.GetSpellName(spellID)
-        local slotName = C_Spell.GetSpellName(id)
-        if type == "spell" and (id == spellID or searchName == slotName) then
-            return slot
+        local searchName = spellID and C_Spell.GetSpellName(spellID)
+        if id then
+            local slotName = id and C_Spell.GetSpellName(id)
+            if type == "spell" and (searchName and slotName) and (id == spellID or searchName == slotName) then
+                return slot
+            end
         end
     end
 end

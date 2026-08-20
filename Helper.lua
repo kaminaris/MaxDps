@@ -201,7 +201,10 @@ MaxDps.PlayerAuras = setmetatable({}, auraMetaTable)
 MaxDps.TargetAuras = setmetatable({}, auraMetaTable)
 MaxDps.PlayerCooldowns = setmetatable({}, {
     __index = function(table, key)
-        local ti = MaxDps and MaxDps.FrameData and MaxDps.FrameData.timeShift or 0
+        local ti = 0
+        if MaxDps and MaxDps.FrameData and MaxDps.FrameData.timeShift then
+            ti = MaxDps.FrameData.timeShift
+        end
         return MaxDps:CooldownConsolidated(key, ti)
     end
 })
@@ -440,7 +443,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
             if guid and not self.ActiveDots[guid] then
                 self.ActiveDots[guid] = {}
             end
-            if type(aura) == "table" then
+            if guid and type(aura) == "table" then
                 self.ActiveDots[guid][aura.auraInstanceID] = {
                     name           = aura.name,
                     up             = true,
