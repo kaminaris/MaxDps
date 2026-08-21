@@ -798,7 +798,6 @@ function MaxDps:InvokeNextSpell()
             if self.Spell and MaxDps and MaxDps.FrameData and MaxDps.FrameData.ACSpells and not MaxDps.FrameData.ACSpells[self.Spell] then
                 MaxDps.FrameData.ACSpells[self.Spell] = true
             end
-            AssistedCombatManager.updateRate = MaxDps.db.global.interval or 0.1
             if not InCombatLockdown() then
                 SetCVar("assistedCombatIconUpdateRate", MaxDps.db.global.interval)
             end
