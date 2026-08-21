@@ -208,7 +208,7 @@ local function FindSpellOnActionBar(spellID)
     if not spellID then
         return nil
     end
-    for slot = 1, 120 do
+    for slot = 1, 180 do
         local type, id = GetActionInfo(slot)
         local searchName = spellID and C_Spell.GetSpellName(spellID)
         if id then
@@ -223,8 +223,28 @@ end
 local function GetKeybindForSpell(spellID)
     local slot = FindSpellOnActionBar(spellID)
     if not slot then return nil end
+    local button = ((slot - 1) % 12) + 1
+    if slot <= 12 then
+        return GetBindingKey("ACTIONBUTTON"..button)
+    elseif slot <= 24 then
+        return GetBindingKey("MULTIACTIONBAR1BUTTON"..button)
+    elseif slot <= 36 then
+        return GetBindingKey("MULTIACTIONBAR3BUTTON"..button)
+    elseif slot <= 48 then
+        return GetBindingKey("MULTIACTIONBAR4BUTTON"..button)
+    elseif slot <= 60 then
+        return GetBindingKey("MULTIACTIONBAR2BUTTON"..button)
+    elseif slot <= 72 then
+        return GetBindingKey("MULTIACTIONBAR1BUTTON"..button)
+    elseif slot <= 156 then
+        return GetBindingKey("MULTIACTIONBAR5BUTTON"..button)
+    elseif slot <= 168 then
+        return GetBindingKey("MULTIACTIONBAR6BUTTON"..button)
+    elseif slot <= 180 then
+        return GetBindingKey("MULTIACTIONBAR7BUTTON"..button)
+    end
 
-    return GetBindingKey("ACTIONBUTTON"..slot)
+    return nil
 end
 
 ------------------------------------------------------------
