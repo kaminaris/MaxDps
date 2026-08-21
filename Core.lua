@@ -798,7 +798,13 @@ function MaxDps:InvokeNextSpell()
             if self.Spell and MaxDps and MaxDps.FrameData and MaxDps.FrameData.ACSpells and not MaxDps.FrameData.ACSpells[self.Spell] then
                 MaxDps.FrameData.ACSpells[self.Spell] = true
             end
-            AssistedCombatManager.updateRate = MaxDps.db.global.interval or 0.1
+            -- Writing AssistedCombatManager.updateRate directly taints the field, and Blizzard's
+            -- ActionBarButtonAssistedCombatRotationFrameMixin:OnUpdate reads it back through
+            -- GetUpdateRate() on every tick. That taints the whole update, which then calls
+            -- OnActionBarSlotChanged -> UpdateAction -> SetCooldown with secret values and throws
+            -- "Secret values are only allowed during untainted execution".
+            -- Setting the CVar is enough on its own: Blizzard registers a CVar callback that runs
+            -- ProcessCVars and assigns updateRate from secure code.
             if not InCombatLockdown() then
                 SetCVar("assistedCombatIconUpdateRate", MaxDps.db.global.interval)
             end
