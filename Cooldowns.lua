@@ -428,6 +428,7 @@ ns.classCooldowns = {
                 ["Invoke Xuen, the White Tiger"] = 123904,
                 ["Bonedust Brew"] = 386276,
                 --["Strike of the Windlord"] = 392983,
+                ["Zenith"] = 1249625,
             },
             defensive = {
                 ["Touch of Karma"] = 122470,
