@@ -99,7 +99,7 @@ loader:SetScript("OnEvent", function(self, event, name)
     local text = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     text:SetPoint("BOTTOMRIGHT", -2, 2)
     local font, _, flags = text:GetFont()
-    text:SetFont(font, 24, flags)
+    text:SetFont(font, 24, "OUTLINE")
     text:SetTextColor(1, 1, 1)
     f.bindText = text
 
