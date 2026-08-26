@@ -642,6 +642,26 @@ function Window:GetWindowConfig()
 					end
 				},
 			},
+			[10] = {
+				y = {
+					type   = 'dropdown',
+					label  = 'text position',
+					column = 6,
+					options = {
+                        {text = 'Top Left', value = 'TOPLEFT'},
+                        {text = 'Top Right', value = 'TOPRIGHT'},
+                        {text = 'Bottom Left', value = 'BOTTOMLEFT'},
+                        {text = 'Bottom Right', value = 'BOTTOMRIGHT'},
+                        {text = 'Center', value = 'CENTER'},
+					}
+	                ,
+					initialValue = MaxDps.db.global.spellFrame.textPos,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.textPos = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
 		},
 	}
 	else
@@ -735,6 +755,26 @@ function Window:GetWindowConfig()
 					initialValue = MaxDps.db.global.spellFrame.pos.y,
 					onValueChanged = function(_, value)
 						MaxDps.db.global.spellFrame.pos.y = value
+						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
+					end
+				},
+			},
+			[10] = {
+				y = {
+					type   = 'dropdown',
+					label  = 'text position',
+					column = 6,
+					options = {
+                        {text = 'Top Left', value = 'TOPLEFT'},
+                        {text = 'Top Right', value = 'TOPRIGHT'},
+                        {text = 'Bottom Left', value = 'BOTTOMLEFT'},
+                        {text = 'Bottom Right', value = 'BOTTOMRIGHT'},
+                        {text = 'Center', value = 'CENTER'},
+					}
+	                ,
+					initialValue = MaxDps.db.global.spellFrame.textPos,
+					onValueChanged = function(_, value)
+						MaxDps.db.global.spellFrame.textPos = value
 						--MaxDps:UpdateSpellFrame(MaxDps.Spell or 116)
 					end
 				},
