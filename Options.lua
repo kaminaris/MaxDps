@@ -95,6 +95,7 @@ MaxDps.defaultOptions = {
 			spellID = 116,
 			pos = {x=0, y=0},
 			size = {x=48, y=48},
+			textPos = "BOTTOMRIGHT",
 			x = 0,
 			y = 0,
         }
@@ -317,6 +318,19 @@ function MaxDps:AddToBlizzardOptions()
 	local spellFrameSizey = StdUi:SliderWithBox(optionsFrame, 100, 48, MaxDps.db.global.spellFrame.size.y or 0, -2000, 2000)
 	StdUi:AddLabel(optionsFrame, spellFrameSizey, 'y Position')
 	spellFrameSizey.OnValueChanged = function(_, val) MaxDps.db.global.spellFrame.size.y = val end
+
+	local spellFrametextPos = {
+		{text = 'Top Left', value = 'TOPLEFT'},
+		{text = 'Top Right', value = 'TOPRIGHT'},
+		{text = 'Bottom Left', value = 'BOTTOMLEFT'},
+		{text = 'Bottom Right', value = 'BOTTOMRIGHT'},
+		{text = 'Center', value = 'CENTER'},
+	}
+	local SFtextPos = StdUi:Dropdown(optionsFrame, 200, 24, spellFrametextPos, MaxDps.db.global.spellFrame.textPos)
+	StdUi:AddLabel(optionsFrame, SFtextPos, 'Spell Frame Text Position', 'TOP')
+	SFtextPos.OnValueChanged = function(_, val)
+		MaxDps.db.global.spellFrame.textPos = val
+	end
 
 	--- Pixel Glow options
 

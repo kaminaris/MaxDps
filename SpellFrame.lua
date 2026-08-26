@@ -15,6 +15,7 @@ loader:SetScript("OnEvent", function(self, event, name)
     cfg.pos = cfg.pos or { x = 0, y = 0 }
     cfg.size = cfg.size or { x = 48, y = 48 }
     cfg.isMovable =  cfg.isMovable or false
+    cfg.textPos =  cfg.textPos or "BOTTOMRIGHT"
 
     ------------------------------------------------------------
     -- Frame
@@ -97,7 +98,7 @@ loader:SetScript("OnEvent", function(self, event, name)
     cd:SetAllPoints()
 
     local text = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    text:SetPoint("BOTTOMRIGHT", -2, 2)
+    text:SetPoint(cfg.textPos, -2, 2)
     local font, _, flags = text:GetFont()
     text:SetFont(font, 24, "OUTLINE")
     text:SetTextColor(1, 1, 1)
@@ -147,7 +148,7 @@ local function CreateExtraFrames(type, number)
     f.icon = f:CreateTexture(nil, "ARTWORK")
     f.icon:SetAllPoints()
     local text = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    text:SetPoint("BOTTOMRIGHT", -2, 2)
+    text:SetPoint(cfg.textPos, -2, 2)
     local font, _, flags = text:GetFont()
     text:SetFont(font, 12, "OUTLINE")
     text:SetTextColor(1, 1, 1)
