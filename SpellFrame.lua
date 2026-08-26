@@ -149,7 +149,7 @@ local function CreateExtraFrames(type, number)
     local text = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     text:SetPoint("BOTTOMRIGHT", -2, 2)
     local font, _, flags = text:GetFont()
-    text:SetFont(font, 12, flags)
+    text:SetFont(font, 12, "OUTLINE")
     text:SetTextColor(1, 1, 1)
     f.bindText = text
     f:Hide() -- hide by default
