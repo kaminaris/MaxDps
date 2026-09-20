@@ -3278,6 +3278,46 @@ function MaxDps:FindDeBuffAuraData(spellID)
     return aura
 end
 
+local function createButton()
+    return function(button)
+        button:SetSize(16, 16)
+        button:EnableMouse(false)
+        button:SetCancelAuraButtons('RightButtonUp')
+        local Icon = button:CreateTexture(nil, 'ARTWORK')
+        Icon:SetAllPoints()
+        button:SetIcon(Icon)
+        local Time = button:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+        Time:SetPoint('TOPLEFT', 1, -1)
+        Time:SetJustifyH('LEFT')
+        Time:SetSize(8,8)
+        button:SetDurationText(Time)
+        local cooldown = button.cooldown or CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+        cooldown:SetAllPoints()
+        cooldown:SetAlpha(1)
+        cooldown:SetHideCountdownNumbers(true)
+        cooldown:SetDrawEdge(false)
+        cooldown:SetDrawSwipe(true)
+        cooldown:SetReverse(true)
+        cooldown:Show()
+        button.cooldown = cooldown
+        button:SetDurationCooldown(cooldown)
+        local text = button.text
+        if not text then
+            local tframe = CreateFrame("frame", nil, button)
+            text = tframe:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            button.text = text
+            text.tframe = tframe
+            tframe:SetAllPoints()
+        end
+        local level = button:GetFrameLevel()
+        text.tframe:SetFrameLevel(level+2)
+        text:ClearAllPoints()
+        text:SetPoint("BOTTOMRIGHT", 0, 0)
+        text:Show()
+        button:SetApplicationCount(text, {})
+    end
+end
+
 function MaxDps:SetupAuraContainer(spellIDTable, AuraIDTable)
     if not MaxDps:IsRetailWow() then return end
     if not spellIDTable or type(spellIDTable) ~= "table" then return end
