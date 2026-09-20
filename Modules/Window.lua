@@ -259,9 +259,258 @@ function Window:GetWindowConfig()
 		}
 	}
 
-	local optionsLayout = {
-		database = MaxDps.db.global,
-		rows     = {
+	local optionsLayout
+	if MaxDps:IsRetailWow() then
+	    optionsLayout = {
+	    	database = MaxDps.db.global,
+	    	rows     = {
+			{
+				general = {
+					type  = 'header',
+					label = 'General',
+				}
+			},
+			{
+				enabled       = {
+					type   = 'checkbox',
+					label  = 'Enable addon',
+					column = 6,
+					order  = 1,
+					onChange = function(_, flag)
+						MaxDps.db.global.enabled = flag
+						MaxDps[(MaxDps.db.global.enabled and "EnableRotation" or "DisableRotation")](MaxDps)
+					end
+				},
+				cdOnlyMode       = {
+					type   = 'checkbox',
+					label  = 'Enable CD Only Mode',
+					column = 6,
+					order  = 2
+				},
+
+			},
+			{
+				onCombatEnter = {
+					type   = 'checkbox',
+					label  = 'Enable on combat enter',
+					column = 6,
+					order  = 3
+				},
+				disableConsumables = {
+					type   = 'checkbox',
+					label  = 'Disable consumables',
+					column = 6,
+					order  = 4
+				},
+			},
+            {
+				enableDefensives = {
+					type   = 'checkbox',
+					label  = 'Enable Defensives',
+					column = 6,
+					order  = 5
+				},
+				enableCooldowns = {
+					type   = 'checkbox',
+					label  = 'Enable Cooldowns',
+					column = 6,
+					order  = 5
+				},
+			},
+            {
+				enableNewAuraSystem = {
+					type   = 'checkbox',
+					label  = 'Enable New Aura System',
+					column = 6,
+					order  = 5
+				},
+			},
+			{
+				disableButtonGlow = {
+					type     = 'checkbox',
+					label    = 'Disable blizzard button glow',
+					column   = 6,
+					order    = 1,
+					onChange = function(_, flag)
+						MaxDps.db.global.disableButtonGlow = flag
+						MaxDps:UpdateButtonGlow()
+					end
+				},
+				forceSingle       = {
+					type   = 'checkbox',
+					label  = 'Force single target mode',
+					column = 6,
+					order  = 2
+				}
+			},
+			{
+				forceTargetAmount       = {
+					type   = 'checkbox',
+					label  = 'Enable forcing the number of targets',
+					column = 6,
+					order  = 1
+				},
+				forceTargetAmountCount   = {
+					type      = 'slider',
+					label     = 'Number of targets to force the rotation to use',
+					min       = 1,
+					max       = 10,
+					precision = 0,
+					column    = 6,
+					order     = 2,
+				},
+			},
+			{
+				interval   = {
+					type      = 'slider',
+					label     = 'Update Interval',
+					min       = 0.01,
+					max       = 2,
+					precision = 2,
+					column    = 6,
+					order     = 1,
+				},
+				loadModule = {
+					type    = 'button',
+					text    = 'Load current class module',
+					column  = 6,
+					order   = 2,
+					onClick = function()
+						MaxDps:InitRotations()
+					end
+				}
+			},
+			{
+				debugHeader = {
+					type  = 'header',
+					label = 'Debug options',
+				}
+			},
+			{
+				debugMode    = {
+					type   = 'checkbox',
+					label  = 'Enable debug mode',
+					column = 6,
+					order  = 1
+				},
+				disabledInfo = {
+					type   = 'dropdown',
+					label  = 'Chat Message Level',
+					column = 6,
+					order  = 2,
+					options  = MaxDps.PrintLevel,
+					onChange = function(_, val)
+						MaxDps.db.global.disabledInfo = val
+					end
+				}
+			},
+			{
+				overlay = {
+					type  = 'header',
+					label = 'Overlay options',
+				}
+			},
+			{
+				texture       = {
+					type     = 'dropdown',
+					label    = 'Texture',
+					column   = 5,
+					order    = 1,
+					options  = MaxDps.Textures,
+					onChange = function(_, val)
+						--Window.:SetTexture(val)
+						MaxDps:ApplyOverlayChanges()
+					end
+				},
+				textureIcon   = {
+					type    = 'texture',
+					width   = 34,
+					height  = 34,
+					texture = MaxDps.db.global.texture,
+					column  = 1,
+					order   = 2,
+				},
+				customTexture = {
+					type           = 'editBox',
+					label          = 'Overlay options',
+					column         = 6,
+					order          = 3,
+					initialValue   = strtrim(MaxDps.db.global.customTexture or ''),
+					onValueChanged = function(_, val)
+						MaxDps.db.global.customTexture = strtrim(val or '')
+						MaxDps:ApplyOverlayChanges()
+					end
+				}
+			},
+			{
+				highlightColor = {
+					type     = 'color',
+					label    = 'Highlight color',
+					column   = 6,
+					order    = 1,
+					onChange = function()
+						MaxDps:ApplyOverlayChanges()
+					end
+				},
+				cooldownColor  = {
+					type     = 'color',
+					label    = 'Cooldown color',
+					column   = 6,
+					order    = 2,
+					onChange = function()
+						MaxDps:ApplyOverlayChanges()
+					end
+				}
+			},
+			{
+				sizeMult = {
+					type     = 'slider',
+					label    = 'Size Multiplier',
+					min      = 0.5,
+					max      = 2,
+					column   = 6,
+					order    = 1,
+					onChange = function()
+						MaxDps:ApplyOverlayChanges()
+					end
+				},
+			},
+			{
+				overlay = {
+					type  = 'header',
+					label = 'Custom Glow',
+				}
+			},
+			{
+				customGlow     = {
+					type     = 'checkbox',
+					label    = 'Use Custom Glow',
+					column   = 6,
+					order    = 1,
+					onChange = function()
+						MaxDps:ApplyOverlayChanges()
+					end
+				},
+				customGlowType = {
+					type     = 'dropdown',
+					label    = 'Custom Glow Type',
+					column   = 6,
+					order    = 2,
+					options  = {
+						{ text = 'Pixel', value = 'pixel' },
+						{ text = 'Particle', value = 'particle' },
+					},
+					onChange = function()
+						MaxDps:ApplyOverlayChanges()
+					end
+				}
+			},
+	    	}
+	    }
+	else
+	    optionsLayout = {
+	    	database = MaxDps.db.global,
+	    	rows     = {
 			{
 				general = {
 					type  = 'header',
@@ -495,8 +744,9 @@ function Window:GetWindowConfig()
 					end
 				}
 			},
-		}
-	}
+	    	}
+	    }
+	end
 
 	local spellFrameLayout
 	if MaxDps:IsRetailWow() then

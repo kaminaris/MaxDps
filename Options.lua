@@ -53,6 +53,7 @@ MaxDps.defaultOptions = {
 		disableButtonGlow = false,
 		enableDefensives = false,
 		enableCooldowns = true,
+		enableNewAuraSystem = true,
 
 		customGlow = false,
 		customGlowType = 'pixel',
@@ -188,6 +189,10 @@ function MaxDps:AddToBlizzardOptions()
 	local enableCooldowns = StdUi:Checkbox(optionsFrame, 'Enable Cooldowns', 200, 24)
 	enableCooldowns:SetChecked(MaxDps.db.global.enableCooldowns)
 	enableCooldowns.OnValueChanged = function(_, flag) MaxDps.db.global.enableCooldowns = flag end
+
+	local enableNewAuraSystem = StdUi:Checkbox(optionsFrame, 'Enable New Aura System', 200, 24)
+	enableNewAuraSystem:SetChecked(MaxDps.db.global.enableNewAuraSystem)
+	enableNewAuraSystem.OnValueChanged = function(_, flag) MaxDps.db.global.enableNewAuraSystem = flag end
 
 	local loadModuleBtn = StdUi:Button(optionsFrame, nil, 24, 'Load current class module')
 	loadModuleBtn:SetScript('OnClick', function() MaxDps:InitRotations() end)
@@ -359,6 +364,9 @@ function MaxDps:AddToBlizzardOptions()
 	optionsFrame:AddRow():AddElements(enabled, cdOnlyMode, { column = 'even' })
 	optionsFrame:AddRow():AddElements(onCombatEnter, disableConsumables, { column = 'even' })
 	optionsFrame:AddRow():AddElements(enableDefensives, enableCooldowns, { column = 'even' })
+	if MaxDps:IsRetailWow() then
+	    optionsFrame:AddRow():AddElements(enableNewAuraSystem, enableNewAuraSystem, { column = 'even' })
+	end
 	optionsFrame:AddRow():AddElements(disableButtonGlow, forceSingle, { column = 'even' })
 	optionsFrame:AddRow():AddElements(forceTargetAmount,forceTargetAmountCount, { column = 'even' })
 	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, { column = 'even' })
