@@ -703,6 +703,8 @@ ns.classCooldowns = {
                 ["Soulburn"] = 385899,
                 ["Implosion"] = 196277,
                 ["Summon Doomguard"] = 1276672,
+                ["Grimoire: Imp Lord"] = 1276452,
+                ["Grimoire: Fel Ravager"] = 1276467,
             },
             defensive = {
                 ["Unending Resolve"] = 104773,
