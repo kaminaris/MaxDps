@@ -335,30 +335,7 @@ function Window:GetWindowConfig()
 						MaxDps.db.global.disableButtonGlow = flag
 						MaxDps:UpdateButtonGlow()
 					end
-				},
-				forceSingle       = {
-					type   = 'checkbox',
-					label  = 'Force single target mode',
-					column = 6,
-					order  = 2
 				}
-			},
-			{
-				forceTargetAmount       = {
-					type   = 'checkbox',
-					label  = 'Enable forcing the number of targets',
-					column = 6,
-					order  = 1
-				},
-				forceTargetAmountCount   = {
-					type      = 'slider',
-					label     = 'Number of targets to force the rotation to use',
-					min       = 1,
-					max       = 10,
-					precision = 0,
-					column    = 6,
-					order     = 2,
-				},
 			},
 			{
 				interval   = {

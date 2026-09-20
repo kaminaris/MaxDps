@@ -368,7 +368,9 @@ function MaxDps:AddToBlizzardOptions()
 	    optionsFrame:AddRow():AddElements(enableNewAuraSystem, enableNewAuraSystem, { column = 'even' })
 	end
 	optionsFrame:AddRow():AddElements(disableButtonGlow, forceSingle, { column = 'even' })
-	optionsFrame:AddRow():AddElements(forceTargetAmount,forceTargetAmountCount, { column = 'even' })
+	if not MaxDps:IsRetailWow() then
+	    optionsFrame:AddRow():AddElements(forceTargetAmount,forceTargetAmountCount, { column = 'even' })
+	end
 	optionsFrame:AddRow():AddElements(interval, loadModuleBtn, { column = 'even' })
 	optionsFrame:AddRow():AddElement(debug)
 	optionsFrame:AddRow():AddElements(debugMode, disabledInfo, { column = 'even' })
