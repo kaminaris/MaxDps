@@ -3358,7 +3358,11 @@ function MaxDps:SetupAuraContainer(spellIDTable, AuraIDTable)
                               candidateFilters = candidateFilters
                             }
                         )
-                        MaxDps.SpellContainers[spellID]["MaxDpsAuraGroup_" .. tostring(spellID)]:UpdateAllAuras()
+                        local container = MaxDps.SpellContainers and MaxDps.SpellContainers[spellID]
+                        local auraGroup = container and container["MaxDpsAuraGroup_" .. tostring(spellID)]
+                        if auraGroup and auraGroup.UpdateAllAuras then
+                            auraGroup:UpdateAllAuras()
+                        end
                     end
                 end
             end
