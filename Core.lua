@@ -799,6 +799,14 @@ function MaxDps:InvokeNextSpell()
             if self.Spells and self.Spells[1271967] and self.Spell == 77575 then
                 self.Spell = 1271967
             end
+            -- Shield of the Righteous for Holy Paladin
+            if self.ClassId == 2 and self.Spec == 1  then
+                local HolyPowerPT = Enum.PowerType.HolyPower
+                local HolyPower = UnitPower('player', HolyPowerPT)
+                if HolyPower == 5 then
+                    self.Spell = 415091
+                end
+            end
             if self.Spell and MaxDps and MaxDps.FrameData and MaxDps.FrameData.ACSpells and not MaxDps.FrameData.ACSpells[self.Spell] then
                 MaxDps.FrameData.ACSpells[self.Spell] = true
             end
