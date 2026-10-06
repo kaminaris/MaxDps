@@ -795,6 +795,10 @@ function MaxDps:InvokeNextSpell()
                 NACError = true
             end
             self.Spell = nextSpell and MaxDps:CheckSpellUsable(nextSpell,C_Spell.GetSpellName(nextSpell)) and nextSpell or 0
+            -- Work around Blightfall for UH DK
+            if self.Spells and self.Spells[1271967] and self.Spell == 77575 then
+                self.Spell = 1271967
+            end
             if self.Spell and MaxDps and MaxDps.FrameData and MaxDps.FrameData.ACSpells and not MaxDps.FrameData.ACSpells[self.Spell] then
                 MaxDps.FrameData.ACSpells[self.Spell] = true
             end
