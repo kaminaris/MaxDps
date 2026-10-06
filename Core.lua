@@ -447,6 +447,16 @@ function MaxDps:TalentsUpdated()
     local currentState = self.rotationEnabled
     self:DisableRotation(true)
     self:UpdateSpellsAndTalents()
+    for i=1,40 do
+        local frameo = _G["MaxDpsSpellFrameoffensive" .. i]
+        if frameo then
+            frameo:Hide()
+        end
+        local framed = _G["MaxDpsSpellFramedefensive" .. i]
+        if framed then
+            framed:Hide()
+        end
+    end
     -- Changing from "not self.db.global.onCombatEnter and not self.rotationEnabled"
     -- Regardles of onCombatEnter setting if the rotation was active keep it active
     -- Or in this case since we are modifiying spells temp disable then reenable
