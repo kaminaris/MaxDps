@@ -30,6 +30,7 @@ local C_AzeriteEssence = C_AzeriteEssence
 local FindSpellOverrideByID = FindSpellOverrideByID
 local UnitCastingInfo = UnitCastingInfo
 local GetItemCooldown = C_Item and C_Item.GetItemCooldown or C_Container and C_Container.GetItemCooldown or GetItemCooldown
+local GetItemInfo = C_Item and C_Item.GetItemInfo or GetItemInfo
 local GetItemSpell = C_Item and C_Item.GetItemSpell or GetItemSpell
 local GetTime = GetTime
 local GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown and C_Spell.GetSpellCooldown or GetSpellCooldown
