@@ -904,7 +904,7 @@ function MaxDps:CollectAuras(unitTarget, updateInfo)
 
 end
 
-if not MaxDps:IsRetailWow() then
+if not MaxDps:IsRetailWow() and not MaxDps:IsForeverWow() then
     local collectAurasframe
     if not collectAurasframe then
         collectAurasframe = CreateFrame("Frame")
@@ -2134,7 +2134,7 @@ function MaxDps:FindSpellInSpellbook(spellId)
         MaxDps.Spellbook = {}
     end
     local spellName
-    if MaxDps:IsRetailWow() then
+    if MaxDps:IsRetailWow() or MaxDps:IsForeverWow() then
         local spellInfo = GetSpellInfo(spellId)
         spellName = spellInfo.name
     else
@@ -3032,7 +3032,7 @@ end
 
 function MaxDps:HasGlyphEnabled(spellID)
     if not spellID then return false end
-    if not MaxDps:IsRetailWow() then
+    if not MaxDps:IsRetailWow() and not MaxDps:IsForeverWow() then
         for i = 1, GetNumGlyphSockets() do
             local enabled, glyphType, glyphTooltipIndex, glyphSpellID, icon, glyphID = GetGlyphSocketInfo(i)
             if ( enabled ) then
@@ -3110,7 +3110,7 @@ local function incoming_damage_3()
     end
 end
 
-if not MaxDps:IsRetailWow() then
+if not MaxDps:IsRetailWow() and not MaxDps:IsForeverWow() then
     -- Register the event listeners
     local incomingDamageFrame = CreateFrame("Frame")
     incomingDamageFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -3321,7 +3321,7 @@ local function createButton(height, width)
 end
 
 function MaxDps:SetupAuraContainer(spellIDTable, AuraIDTable)
-    if not MaxDps:IsRetailWow() then return end
+    if not MaxDps:IsRetailWow() and not MaxDps:IsForeverWow() then return end
     if not spellIDTable or type(spellIDTable) ~= "table" then return end
     if not AuraIDTable or type(AuraIDTable) ~= "table" then return end
     for spellID in pairs(spellIDTable) do

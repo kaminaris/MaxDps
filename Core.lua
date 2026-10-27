@@ -28,6 +28,7 @@ local WOW_PROJECT_WRATH_CLASSIC = WOW_PROJECT_WRATH_CLASSIC
 local WOW_PROJECT_CATACLYSM_CLASSIC = WOW_PROJECT_CATACLYSM_CLASSIC
 local WOW_PROJECT_MISTS_CLASSIC = WOW_PROJECT_MISTS_CLASSIC
 local WOW_PROJECT_MAINLINE = WOW_PROJECT_MAINLINE
+local WOW_PROJECT_CAMELOT = WOW_PROJECT_CAMELOT
 local LE_EXPANSION_LEVEL_CURRENT = LE_EXPANSION_LEVEL_CURRENT
 local LE_EXPANSION_BURNING_CRUSADE =  LE_EXPANSION_BURNING_CRUSADE
 local LE_EXPANSION_WRATH_OF_THE_LICH_KING = LE_EXPANSION_WRATH_OF_THE_LICH_KING
@@ -72,6 +73,10 @@ end
 
 function MaxDps:IsMistsWow()
     return WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC and LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_MISTS_OF_PANDARIA
+end
+
+function MaxDps:IsForeverWow()
+    return WOW_PROJECT_ID == WOW_PROJECT_CAMELOT
 end
 
 function MaxDps:IsRetailWow()
@@ -405,7 +410,7 @@ function MaxDps:OnEnable()
                 if IsPlayerSpell(spellId) then
                     TableInsert(self.spellHistory, 1, spellId)
                 end
-                if MaxDps:IsRetailWow() then
+                if MaxDps:IsRetailWow() or MaxDps:IsForeverWow() then
                     if not self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] then
                         self.spellHistoryTime[FormatItemorSpell(C_Spell.GetSpellName(spellId))] = {}
                     end
@@ -575,7 +580,7 @@ function MaxDps:UpdateSpellsAndTalents()
         --
         MaxDps.SpellTable = MaxDps.classSpellData[MaxDps.idtoclass[classId]]
     end
-    if MaxDps:IsClassicWow() or MaxDps:IsTBCWow() then
+    if MaxDps:IsClassicWow() or MaxDps:IsTBCWow() or MaxDps:IsForeverWow() then
         -- Insert Racials
         --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["Berserking"] = 26297
         --MaxDpsSpellTable[MaxDps.idtoclass[classId]][name]["HyperOrganicLightOriginator"] = 312924
@@ -705,7 +710,7 @@ function MaxDps:PrepareFrameData()
     end
 
     self.FrameData.activeDot = self.ActiveDots
-    if not MaxDps:IsRetailWow() then
+    if not MaxDps:IsRetailWow() and not MaxDps:IsForeverWow() then
         self.FrameData.timeShift, self.FrameData.currentSpell, self.FrameData.gcdRemains = MaxDps:EndCast()
     end
     self.FrameData.gcd = self:GlobalCooldown()
@@ -716,10 +721,10 @@ function MaxDps:PrepareFrameData()
     self.FrameData.covenant = self.CovenantInfo
     self.FrameData.runeforge = self.LegendaryBonusIds
     self.FrameData.spellHistory = self.spellHistory
-    if not MaxDps:IsRetailWow() then
+    if not MaxDps:IsRetailWow() and not MaxDps:IsForeverWow() then
         self.FrameData.timeToDie = self:GetTimeToDie()
     end
-    if MaxDps:IsRetailWow() and not self.FrameData.ACSpells then
+    if MaxDps:IsRetailWow() and not self.FrameData.ACSpells or MaxDps:IsForeverWow() and not self.FrameData.ACSpells then
         self.FrameData.ACSpells = {}
         if C_AssistedCombat and C_AssistedCombat.GetRotationSpells then
             for _,spellid in pairs(C_AssistedCombat.GetRotationSpells()) do
@@ -749,7 +754,7 @@ function MaxDps:InvokeNextSpell()
 
     -- Removed backward compatibility
     --self.Spell = self.NextSpell()
-    if not MaxDps:IsRetailWow() then
+    if not MaxDps:IsRetailWow() and not MaxDps:IsForeverWow() then
         local ok, res = xpcall(self.NextSpell, err, self)
         if ok then
             self.Spell = res
@@ -889,12 +894,14 @@ function MaxDps:InitRotations(skipPrint)
             gameVersion = "Mists"
         elseif MaxDps:IsRetailWow() then
             gameVersion = "Retail"
+        elseif MaxDps:IsForeverWow() then
+            gameVersion = "Forever"
         else
             gameVersion = "Unknown Version"
         end
         self:Print(self.Colors.Info .. version .. " (" .. gameVersion .. ")" .. ' Initializing rotations', "info")
         local isA, message = C_AssistedCombat.IsAvailable()
-        if MaxDps:IsRetailWow() and not isA then
+        if MaxDps:IsRetailWow() and not isA or MaxDps:IsForeverWow() and not isA then
             self:Print(self.Colors.Error .. tostring(isA) .. " " .. tostring(message), "error")
         end
     end

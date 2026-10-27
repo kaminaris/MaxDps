@@ -918,7 +918,7 @@ end
 function MaxDps:GlowIndependent(spellId, id, texture, color, alpha, type)
     if self.Spells[spellId] ~= nil then
         for _, button in pairs(self.Spells[spellId]) do
-            if MaxDps:IsRetailWow() and
+            if MaxDps:IsRetailWow() or MaxDps:IsForeverWow() and
             (type == "defensive" and self.db.global.enableDefensives or type == "cooldown" and self.db.global.enableCooldowns) then
                 self:Glow(button, id, texture, nil, color, alpha)
             elseif self.db.global.enableCooldowns then
@@ -1009,7 +1009,7 @@ function MaxDps:GlowCooldown(spellId, condition, color)
 	    [72] = "Fury",
 	    [73] = "Protection",
     }
-    if MaxDps:IsRetailWow() and self.db.global.cdOnlyMode then
+    if MaxDps:IsRetailWow() and self.db.global.cdOnlyMode or MaxDps:IsForeverWow() and self.db.global.cdOnlyMode then
         if (C_AssistedCombat and C_AssistedCombat.GetRotationSpells()) or (AssistedCombatManager and AssistedCombatManager.rotationSpells) then
             local spells = AssistedCombatManager and AssistedCombatManager.rotationSpells or C_AssistedCombat.GetRotationSpells()
             if AssistedCombatManager and AssistedCombatManager.rotationSpells then
@@ -1025,7 +1025,7 @@ function MaxDps:GlowCooldown(spellId, condition, color)
             end
         end
     end
-    if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
+    if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() or MaxDps:IsForeverWow() then
         local id = GetSpecializationInfo(GetSpecialization())
         if spellId == nil then
             self:Print(
@@ -1231,7 +1231,7 @@ function MaxDps:GlowSpell(spellId)
         foundspell = true
     end
 
-    if (MaxDps:IsRetailWow() and not foundspell) or (MaxDps:IsClassicWow() or MaxDps:IsTBCWow()) then
+    if (MaxDps:IsRetailWow() and not foundspell) or (MaxDps:IsForeverWow() and not foundspell) or (MaxDps:IsClassicWow() or MaxDps:IsTBCWow()) then
         C_Spell.RequestLoadSpellData(spellId)
         local searchName = GetSpellName and GetSpellName(spellId) or GetSpellInfo(spellId)
         for spellid,v in pairs(self.Spells) do
