@@ -9,6 +9,7 @@
 ## Interface-Wrath: 30403
 ## Interface-Cata: 40402
 ## Interface-Mists: 50504
+## Interface-Forever: 16001
 ## SavedVariables: MaxDpsOptions
 ## OptionalDependencies: Bartender4, ElvUI, ButtonForge, SVUI_ActionBars, G15Buttons, SyncUI, LUI, Dominos, DiabolicUI, Neuron, LibRangeCheck-3.0
 ## X-Curse-Project-ID: 91970
