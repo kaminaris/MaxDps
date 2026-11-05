@@ -182,6 +182,8 @@ end
 
 function MaxDps.IsSpellOnCooldown(spellID, ignoregcd)
     if not (spellID and C_Spell and C_Spell.GetSpellCooldownDuration) then return false end
+    if not (spellID and C_Spell and C_Spell.IsSpellUsable and C_Spell.IsSpellUsable(spellID)) then return true end
+    if not (MaxDps and MaxDps.Spells and MaxDps.Spells[spellID]) then return true end
     -- pcall like every sibling read: this runs inside the queue build, where a throw on
     -- an odd id blanks the queue instead of degrading one entry.
     local ok, dur = pcall(C_Spell.GetSpellCooldownDuration, spellID, ignoregcd)
