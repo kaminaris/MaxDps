@@ -40,7 +40,7 @@ Tier.lua
 Options.lua
 Buttons.lua
 Helper.lua
-TimeToDie.lua
+TimeToDie.lua [AllowLoadGameType vanilla, tbc, cata]
 Modules/Custom.lua
 Modules/Window.lua
 Modules/Profiler.lua
