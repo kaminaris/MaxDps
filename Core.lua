@@ -901,7 +901,7 @@ function MaxDps:InitRotations(skipPrint)
         end
         self:Print(self.Colors.Info .. version .. " (" .. gameVersion .. ")" .. ' Initializing rotations', "info")
         local isA, message = C_AssistedCombat.IsAvailable()
-        if MaxDps:IsRetailWow() and not isA or MaxDps:IsForeverWow() and not isA then
+        if MaxDps:IsRetailWow() and not isA then
             self:Print(self.Colors.Error .. tostring(isA) .. " " .. tostring(message), "error")
         end
     end
