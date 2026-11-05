@@ -24,7 +24,19 @@ local GetSpecializationInfoForClassID =  GetSpecializationInfoForClassID
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 
 function Custom:GetClassIcon(classTag)
-    local x1, x2, y1, y2 = unpack(CLASS_ICON_TCOORDS[classTag])
+    -- 1. Ensure the string is uppercase and handle a potential nil input safely
+    local lookupTag = string.upper(classTag or "")
+    
+    -- 2. Safely grab the coordinate array from the global table
+    local coords = CLASS_ICON_TCOORDS[lookupTag]
+
+    -- 3. Fallback: If the tag is invalid, return empty string or a default asset
+    if not coords then 
+        return "" 
+    end
+
+    -- 4. Safely unpack now that we know 'coords' is a valid table
+    local x1, x2, y1, y2 = unpack(coords)
 
     return format(
         '|TInterface\\TARGETINGFRAME\\UI-CLASSES-CIRCLES:14:14:0:0:256:256:%u:%u:%u:%u|t',
@@ -44,27 +56,32 @@ function Custom:OnEnable()
 
     for i = 1, MaxDps.IsClassicWow() and 11 or GetNumClasses() do -- Classic only returns 9 but Druid is 11
         local classDisplayName, classTag, classId = GetClassInfo(i)
-        if not ((i==6 or i==10) and MaxDps.IsClassicWow()) then -- Skip DK 6 and Monk 10 in Classic but continue to Druid 11
-            TableInsert(self.classList, {
-                text  = self:GetClassIcon(classTag) .. ' ' .. classDisplayName,
-                value = classId
-            })
+        if classId then
+            if not ((i==6 or i==10) and MaxDps.IsClassicWow()) then -- Skip DK 6 and Monk 10 in Classic but continue to Druid 11
+                --print('MaxDps: Found class ' .. classDisplayName .. ' (' .. classTag .. ') with ID ' .. classId)
+                if classDisplayName and classTag and classId then
+                    TableInsert(self.classList, {
+                        text  = self:GetClassIcon(classTag) .. ' ' .. classDisplayName,
+                        value = classId
+                    })
+                end
 
-            local specNum = GetNumSpecializationsForClassID(classId)
-            for sI = 0, specNum do
-                local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI)
-                if specName then
-                    specName = '|T' .. specIcon .. ':0|t ' .. specName
-                    if not self.Specs[classId] then
-                        self.Specs[classId] = {}
+                local specNum = GetNumSpecializationsForClassID(classId)
+                for sI = 0, specNum do
+                    local _, specName, _, specIcon = GetSpecializationInfoForClassID(classId, sI)
+                    if specName then
+                        specName = '|T' .. specIcon .. ':0|t ' .. specName
+                        if not self.Specs[classId] then
+                            self.Specs[classId] = {}
+                        end
+
+                        self.Specs[classId][sI] = specName
+
+                        if not self.specList[classId] then
+                            self.specList[classId] = {}
+                        end
+                        TableInsert(self.specList[classId], { text = specName, value = sI })
                     end
-
-                    self.Specs[classId][sI] = specName
-
-                    if not self.specList[classId] then
-                        self.specList[classId] = {}
-                    end
-                    TableInsert(self.specList[classId], { text = specName, value = sI })
                 end
             end
         end

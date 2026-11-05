@@ -754,7 +754,7 @@ function MaxDps:InvokeNextSpell()
 
     -- Removed backward compatibility
     --self.Spell = self.NextSpell()
-    if not MaxDps:IsRetailWow() and not MaxDps:IsForeverWow() then
+    if not MaxDps:IsRetailWow() then
         local ok, res = xpcall(self.NextSpell, err, self)
         if ok then
             self.Spell = res
