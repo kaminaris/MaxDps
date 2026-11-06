@@ -182,7 +182,7 @@ local TRACKED_RESCAN = 5
 
 function MaxDps.IsTrackedAuraActive(spellID)
     if not spellID then return nil end
-    local origSpellName = C_Spell.GetSpellName(spellBookItemInfo.spellID)
+    local origSpellName = C_Spell.GetSpellName(spellID)
     local spells = spellBookCache[origSpellName]
     local highestSpellRank = nil
     if spells and #spells > 0 then
