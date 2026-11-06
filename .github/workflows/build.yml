@@ -57,4 +57,4 @@ jobs:
       - name: Package Forever Classic
         uses: BigWigsMods/packager@master
         with:
-          args: -g forever -m .pkgmeta-classic
+          args: -g forever -m .pkgmeta-forever
