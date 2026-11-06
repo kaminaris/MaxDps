@@ -198,27 +198,32 @@ local function makeWatcher(spellID)
         watcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
         watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
             if unit == "player" and spellId == S(origSpellName, spellID) then
-                watcherExpire = MaxDps.DOTS[spellID] and GetTime() + MaxDps.DOTS[spellID] or 9
-                local UnitGUID = UnitGUID("target") or 1
-                if not MaxDps.CooldownViewerWatcher then MaxDps.CooldownViewerWatcher = {} end
-                if not MaxDps.CooldownViewerWatcher[UnitGUID] then MaxDps.CooldownViewerWatcher[UnitGUID] = {} end
-                if not watcherExpires[UnitGUID] then
-                    watcherExpires[UnitGUID] = {}
+                watcherExpire = MaxDps.DOTS[spellID] and GetTime() + MaxDps.DOTS[spellID] or C_Spell.IsSpellHelpful(spellID) and GetTime() + 60 or 9
+                local UID = UnitGUID("target") or 1
+                if C_Spell.IsSpellHelpful(spellID) then
+                    UID = UnitGUID("player") or 1
                 end
-                watcherExpires[UnitGUID][spellID] = watcherExpire
-                MaxDps.CooldownViewerWatcher[UnitGUID][spellID] = watcher
-                for guid, spells in pairs(watcherExpires) do
-                    for spellID, watcherExpire in pairs(spells) do
-                        if GetTime() - watcherExpire > 60 then
-                            watcherExpires[guid][spellID] = nil
-                            if MaxDps.CooldownViewerWatcher[guid] and MaxDps.CooldownViewerWatcher[guid][spellID] then
-                                local watcherT = MaxDps.CooldownViewerWatcher[guid][spellID]
-                                if watcherT and watcherT.UnregisterEvent then
-                                    watcherT:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-                                    watcherT:SetScript("OnEvent", nil)
-                                    watcherT = nil
+                if not MaxDps.CooldownViewerWatcher then MaxDps.CooldownViewerWatcher = {} end
+                if not MaxDps.CooldownViewerWatcher[UID] then MaxDps.CooldownViewerWatcher[UID] = {} end
+                if not watcherExpires[UID] then
+                    watcherExpires[UID] = {}
+                end
+                watcherExpires[UID][spellID] = watcherExpire
+                MaxDps.CooldownViewerWatcher[UID][spellID] = watcher
+                if not C_Spell.IsSpellHelpful(spellID) then
+                    for guid, spells in pairs(watcherExpires) do
+                        for spellID, watcherExpire in pairs(spells) do
+                            if GetTime() - watcherExpire > 60 then
+                                watcherExpires[guid][spellID] = nil
+                                if MaxDps.CooldownViewerWatcher[guid] and MaxDps.CooldownViewerWatcher[guid][spellID] then
+                                    local watcherT = MaxDps.CooldownViewerWatcher[guid][spellID]
+                                    if watcherT and watcherT.UnregisterEvent then
+                                        watcherT:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+                                        watcherT:SetScript("OnEvent", nil)
+                                        watcherT = nil
+                                    end
+                                    MaxDps.CooldownViewerWatcher[guid][spellID] = nil
                                 end
-                                MaxDps.CooldownViewerWatcher[guid][spellID] = nil
                             end
                         end
                     end
@@ -262,9 +267,12 @@ function MaxDps.IsTrackedAuraActive(spellID)
         entry.cooldownIDs = nil
     end
     if entry.cooldownIDs == nil then entry.resolvedAt = GetTime() end
-    local UnitGUID = UnitGUID("target") or 1
+    local UID = UnitGUID("target") or 1
+    if C_Spell.IsSpellHelpful(spellID) then
+        UID = UnitGUID("player") or 1
+    end
 
-    return ViewerBuffActive(entry) or (watcherExpires[UnitGUID] and watcherExpires[UnitGUID][spellID] and GetTime() < watcherExpires[UnitGUID][spellID])
+    return ViewerBuffActive(entry) or (watcherExpires[UID] and watcherExpires[UID][spellID] and GetTime() < watcherExpires[UID][spellID])
 end
 
 local scratchCooldown
