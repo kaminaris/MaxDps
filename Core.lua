@@ -484,7 +484,7 @@ function MaxDps:UpdateSpellsAndTalents()
     local id, name, description, icon, background, role
     if MaxDps:IsRetailWow() or MaxDps:IsMistsWow() then
         id, name, description, icon, background, role = GetSpecializationInfo(currentSpec)
-    else
+    elseif classId and currentSpec and GetSpecializationInfoForClassID then
         --id, name, description, icon, background, role = GetSpecializationInfoForSpecID(currentSpec)
         id, name, description, icon, background, role = GetSpecializationInfoForClassID(classId, currentSpec)
     end
