@@ -283,6 +283,9 @@ function MaxDps:EnableRotation(skipPrint)
     self:UpdateButtonGlow()
 
     self:CheckTalents()
+    if MaxDps.IsForeverWow() and MaxDps.CacheSpells then
+        MaxDps.CacheSpells()
+    end
     self:CheckIsPlayerMelee()
     if MaxDps:IsRetailWow() then
         self:GetAzeriteTraits()
