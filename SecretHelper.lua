@@ -10,6 +10,7 @@ local overrideCacheTime = -1
 
 
 local spellBookCache = {}
+local spellNameDuration = {}
 
 function MaxDps.CacheSpells()
     --wipe(spellBookCache)
@@ -42,6 +43,9 @@ function MaxDps.CacheSpells()
         end
 
         skillLineIndex = skillLineIndex + 1
+    end
+    for id,duration in pairs(MaxDps.SHORT_BUFFS)do
+        spellNameDuration[C_Spell.GetSpellName(id)] = duration
     end
 end
 
@@ -198,7 +202,7 @@ local function makeWatcher(spellID)
         watcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
         watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
             if unit == "player" and spellId == S(origSpellName, spellID) then
-                watcherExpire = MaxDps.DOTS[spellID] and GetTime() + MaxDps.DOTS[spellID] or C_Spell.IsSpellHelpful(spellID) and GetTime() + 60 or 9
+                watcherExpire = MaxDps.DOTS[spellID] and GetTime() + MaxDps.DOTS[spellID] or C_Spell.IsSpellHelpful(spellID) and  spellNameDuration[origSpellName] and GetTime() + spellNameDuration[origSpellName] or C_Spell.IsSpellHelpful(spellID) and GetTime() + 60 or 9
                 local UID = UnitGUID("target") or 1
                 if C_Spell.IsSpellHelpful(spellID) then
                     UID = UnitGUID("player") or 1
