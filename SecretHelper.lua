@@ -199,16 +199,37 @@ local function makeWatcher(spellID)
         watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
             if unit == "player" and spellId == S(origSpellName, spellID) then
                 watcherExpire = MaxDps.DOTS[spellID] and GetTime() + MaxDps.DOTS[spellID] or 9
-                watcherExpires[spellID] = watcherExpire
+                local UnitGUID = UnitGUID("target") or 1
+                if not MaxDps.CooldownViewerWatcher then MaxDps.CooldownViewerWatcher = {} end
+                if not MaxDps.CooldownViewerWatcher[UnitGUID] then MaxDps.CooldownViewerWatcher[UnitGUID] = {} end
+                if not watcherExpires[UnitGUID] then
+                    watcherExpires[UnitGUID] = {}
+                end
+                watcherExpires[UnitGUID][spellID] = watcherExpire
+                MaxDps.CooldownViewerWatcher[UnitGUID][spellID] = watcher
+                for guid, spells in pairs(watcherExpires) do
+                    for spellID, watcherExpire in pairs(spells) do
+                        if GetTime() - watcherExpire > 60 then
+                            watcherExpires[guid][spellID] = nil
+                            if MaxDps.CooldownViewerWatcher[guid] and MaxDps.CooldownViewerWatcher[guid][spellID] then
+                                local watcherT = MaxDps.CooldownViewerWatcher[guid][spellID]
+                                if watcherT and watcherT.UnregisterEvent then
+                                    watcherT:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+                                    watcherT:SetScript("OnEvent", nil)
+                                    watcherT = nil
+                                end
+                                MaxDps.CooldownViewerWatcher[guid][spellID] = nil
+                            end
+                        end
+                    end
+                end
             end
         end)
-        MaxDps.CooldownViewerWatcher[spellID] = watcher
     end
 end
 
 function MaxDps.IsTrackedAuraActive(spellID)
     if not spellID then return nil end
-    makeWatcher(spellID)
     local origSpellName = C_Spell.GetSpellName(spellID)
     local spells = spellBookCache[origSpellName]
     local highestSpellRank = nil
@@ -219,6 +240,7 @@ function MaxDps.IsTrackedAuraActive(spellID)
     if highestSpellRank then
         spellID = highestSpellRank
     end
+    makeWatcher(spellID)
     --if spells and #spells > 0 then
     --    local highestSpellID = spells[1]
     --    for i = 2, #spells do
@@ -240,8 +262,9 @@ function MaxDps.IsTrackedAuraActive(spellID)
         entry.cooldownIDs = nil
     end
     if entry.cooldownIDs == nil then entry.resolvedAt = GetTime() end
+    local UnitGUID = UnitGUID("target") or 1
 
-    return ViewerBuffActive(entry) or (watcherExpires[spellID] and GetTime() < watcherExpires[spellID])
+    return ViewerBuffActive(entry) or (watcherExpires[UnitGUID] and watcherExpires[UnitGUID][spellID] and GetTime() < watcherExpires[UnitGUID][spellID])
 end
 
 local scratchCooldown
@@ -266,7 +289,9 @@ end
 function MaxDps.IsSpellOnCooldown(spellID, ignoregcd)
     if not (spellID and C_Spell and C_Spell.GetSpellCooldownDuration) then return false end
     if not (spellID and C_Spell and C_Spell.IsSpellUsable and C_Spell.IsSpellUsable(spellID)) then return true end
-    if not (MaxDps and MaxDps.Spells and MaxDps.Spells[spellID]) then return true end
+    local origSpellName = C_Spell.GetSpellName(spellID)
+    local spells = spellBookCache[origSpellName]
+    if not spells or #spells == 0 then return true end
     -- pcall like every sibling read: this runs inside the queue build, where a throw on
     -- an odd id blanks the queue instead of degrading one entry.
     local ok, dur = pcall(C_Spell.GetSpellCooldownDuration, spellID, ignoregcd)
