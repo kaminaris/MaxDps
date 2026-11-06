@@ -180,8 +180,35 @@ end
 local trackedEntries = {}
 local TRACKED_RESCAN = 5
 
+local function S(name, fallback)
+    if C_Spell and C_Spell.GetSpellInfo then
+        local ok, info = pcall(C_Spell.GetSpellInfo, name)
+        if ok and info and info.spellID then return info.spellID end
+    end
+    return fallback
+end
+
+local watcherExpires = {}
+local function makeWatcher(spellID)
+    local origSpellName = C_Spell.GetSpellName(spellID)
+    if not MaxDps.CooldownViewerWatcher then MaxDps.CooldownViewerWatcher = {} end
+    if not MaxDps.CooldownViewerWatcher[spellID] then
+        local watcherExpire = 0
+        local watcher = CreateFrame("Frame")
+        watcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+        watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
+            if unit == "player" and spellId == S(origSpellName, spellID) then
+                watcherExpire = MaxDps.DOTS[spellID] and GetTime() + MaxDps.DOTS[spellID] or 9
+                watcherExpires[spellID] = watcherExpire
+            end
+        end)
+        MaxDps.CooldownViewerWatcher[spellID] = watcher
+    end
+end
+
 function MaxDps.IsTrackedAuraActive(spellID)
     if not spellID then return nil end
+    makeWatcher(spellID)
     local origSpellName = C_Spell.GetSpellName(spellID)
     local spells = spellBookCache[origSpellName]
     local highestSpellRank = nil
@@ -214,7 +241,7 @@ function MaxDps.IsTrackedAuraActive(spellID)
     end
     if entry.cooldownIDs == nil then entry.resolvedAt = GetTime() end
 
-    return ViewerBuffActive(entry)
+    return ViewerBuffActive(entry) or (watcherExpires[spellID] and GetTime() < watcherExpires[spellID])
 end
 
 local scratchCooldown
