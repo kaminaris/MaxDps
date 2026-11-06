@@ -8,6 +8,43 @@ local C_Spell_GetOverrideSpell          = C_Spell and C_Spell.GetOverrideSpell
 local overrideSpellCache = {}
 local overrideCacheTime = -1
 
+
+local spellBookCache = {}
+
+function MaxDps.CacheSpells()
+    --wipe(spellBookCache)
+
+    local skillLineIndex = 1
+
+    while true do
+        local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(skillLineIndex)
+
+        if not skillLineInfo then
+            break
+        end
+
+        for slot = skillLineInfo.itemIndexOffset + 1,
+                    skillLineInfo.itemIndexOffset + skillLineInfo.numSpellBookItems do
+
+            local itemInfo = C_SpellBook.GetSpellBookItemInfo(
+                slot,
+                Enum.SpellBookSpellBank.Player
+            )
+
+            if itemInfo and itemInfo.spellID then
+                local spellName = C_Spell.GetSpellName(itemInfo.spellID)
+
+                if spellName then
+                    spellBookCache[spellName] = spellBookCache[spellName] or {}
+                    table.insert(spellBookCache[spellName], itemInfo.spellID)
+                end
+            end
+        end
+
+        skillLineIndex = skillLineIndex + 1
+    end
+end
+
 function MaxDps.GetDisplaySpellID(spellID)
     -- <= 0 covers items (negative by our convention) and the queue's wait sentinel:
     -- neither has an override, and the C call's behavior on such ids is not something
@@ -145,6 +182,25 @@ local TRACKED_RESCAN = 5
 
 function MaxDps.IsTrackedAuraActive(spellID)
     if not spellID then return nil end
+    local origSpellName = C_Spell.GetSpellName(spellBookItemInfo.spellID)
+    local spells = spellBookCache[origSpellName]
+    local highestSpellRank = nil
+    if spells and #spells > 0 then
+        local lastSpellID = spells[#spells]
+        highestSpellRank = lastSpellID
+    end
+    if highestSpellRank then
+        spellID = highestSpellRank
+    end
+    --if spells and #spells > 0 then
+    --    local highestSpellID = spells[1]
+    --    for i = 2, #spells do
+    --        if spells[i] > highestSpellID then
+    --            highestSpellID = spells[i]
+    --        end
+    --    end
+    --    spellID = highestSpellID
+    --end
 
     local entry = trackedEntries[spellID]
     if not entry then
