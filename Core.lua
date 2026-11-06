@@ -963,9 +963,9 @@ function MaxDps:InitRotations(skipPrint)
     self.ClassId = classId
     self.Spec = spec
     if MaxDps:IsForeverWow() then
-        local LCS = LibStub("LibSpecialization", true)
-        if LCS then
-            local specid = LibSpecialization.MySpecialization()
+        local LS = LibStub("LibSpecialization", true)
+        if LS then
+            local specid = LS.MySpecialization()
             if specid then
                 self.Spec = idtoindex[specid]
             end
