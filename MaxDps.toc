@@ -31,6 +31,7 @@ Libs\ForAllIndentsAndPurposes.lua
 Libs\StdUi\StdUi.xml
 Libs\LibRangeCheck-3.0\LibRangeCheck-3.0\LibRangeCheck-3.0.lua
 Libs\LibClassicSpecs\LibClassicSpecs.lua [AllowLoadGameType vanilla, tbc, cata]
+Libs\LibSpecialization\LibSpecialization\LibSpecialization.lua [ExcludeLoadGameType standard, mists, cata, wrath, tbc, vanilla]
 
 Cooldowns.lua
 SpellData.lua

@@ -876,6 +876,53 @@ function MaxDps:InvokeNextSpell()
     end
 end
 
+local idtoindex = {
+    -- Mage
+    [11582] = 1, -- Arcane
+    [11594] = 2, -- Fire
+    [11601] = 3, -- Frost
+
+    -- Druid
+    [11328] = 1, -- Balance
+    [11347] = 2, -- Feral
+    [11340] = 4, -- Restoration
+
+    -- Hunter
+    [11372] = 1, -- Beast Mastery
+    [11371] = 2, -- Marksmanship
+    [11370] = 3, -- Survival
+
+    -- Paladin
+    [11486] = 1, -- Holy
+    [11541] = 2, -- Protection
+    [11559] = 3, -- Retribution
+
+    -- Priest
+    [11608] = 1, -- Discipline
+    [11615] = 2, -- Holy
+    [11622] = 3, -- Shadow
+
+    -- Rogue
+    [11580] = 1, -- Assassination
+    [11573] = 2, -- Combat/Outlaw
+    [11572] = 3, -- Subtlety
+
+    -- Shaman
+    [11326] = 1, -- Elemental
+    [11363] = 2, -- Enhancement
+    [11362] = 3, -- Restoration
+
+    -- Warlock
+    [11629] = 1, -- Affliction
+    [11636] = 2, -- Demonology
+    [11637] = 3, -- Destruction
+
+    -- Warrior
+    [11650] = 1, -- Arms
+    [11657] = 2, -- Fury
+    [11670] = 3, -- Protection
+}
+
 function MaxDps:InitRotations(skipPrint)
     local version = GetAddOnMetadata("MaxDps", "Version") or ""
     if not skipPrint then
@@ -912,6 +959,15 @@ function MaxDps:InitRotations(skipPrint)
 
     self.ClassId = classId
     self.Spec = spec
+    if MaxDps:IsForeverWow() then
+        local LCS = LibStub("LibSpecialization", true)
+        if LCS then
+            local specid = LibSpecialization.MySpecialization()
+            if specid then
+                self.Spec = idtoindex[specid]
+            end
+        end
+    end
     self.customRotationEabled = false
 
     if not self.Custom then
