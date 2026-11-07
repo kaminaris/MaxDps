@@ -264,7 +264,13 @@ function MaxDps.IsTrackedAuraActive(spellID)
         UID = UnitGUID("player") or 1
     end
 
-    return ViewerBuffActive(entry) or (watcherExpires[UID] and watcherExpires[UID][spellID] and GetTime() < watcherExpires[UID][spellID])
+    local enabled = GetCVar("cooldownViewerEnabled")
+    local viewerBuff = ViewerBuffActive(entry)
+    if enabled == "1" and viewerBuff then
+        return ViewerBuffActive(entry)
+    else
+        return ViewerBuffActive(entry) or (watcherExpires[UID] and watcherExpires[UID][spellID] and GetTime() < watcherExpires[UID][spellID])
+    end
 end
 
 local scratchCooldown
