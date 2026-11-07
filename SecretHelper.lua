@@ -195,8 +195,7 @@ end
 local watcherExpires = {}
 local function makeWatcher(spellID)
     local origSpellName = C_Spell.GetSpellName(spellID)
-    if not MaxDps.CooldownViewerWatcher then MaxDps.CooldownViewerWatcher = {} end
-    if not MaxDps.CooldownViewerWatcher[spellID] then
+    if not MaxDps.CooldownViewerWatcher then
         local watcherExpire = 0
         local watcher = CreateFrame("Frame")
         watcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -207,27 +206,16 @@ local function makeWatcher(spellID)
                 if C_Spell.IsSpellHelpful(spellID) then
                     UID = UnitGUID("player") or 1
                 end
-                if not MaxDps.CooldownViewerWatcher then MaxDps.CooldownViewerWatcher = {} end
-                if not MaxDps.CooldownViewerWatcher[UID] then MaxDps.CooldownViewerWatcher[UID] = {} end
                 if not watcherExpires[UID] then
                     watcherExpires[UID] = {}
                 end
                 watcherExpires[UID][spellID] = watcherExpire
-                MaxDps.CooldownViewerWatcher[UID][spellID] = watcher
+                MaxDps.CooldownViewerWatcher = watcher
                 if not C_Spell.IsSpellHelpful(spellID) then
                     for guid, spells in pairs(watcherExpires) do
                         for spellID, watcherExpire in pairs(spells) do
                             if GetTime() - watcherExpire > 60 then
                                 watcherExpires[guid][spellID] = nil
-                                if MaxDps.CooldownViewerWatcher[guid] and MaxDps.CooldownViewerWatcher[guid][spellID] then
-                                    local watcherT = MaxDps.CooldownViewerWatcher[guid][spellID]
-                                    if watcherT and watcherT.UnregisterEvent then
-                                        watcherT:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-                                        watcherT:SetScript("OnEvent", nil)
-                                        watcherT = nil
-                                    end
-                                    MaxDps.CooldownViewerWatcher[guid][spellID] = nil
-                                end
                             end
                         end
                     end
