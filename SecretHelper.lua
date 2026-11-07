@@ -11,6 +11,7 @@ local overrideCacheTime = -1
 
 local spellBookCache = {}
 local spellNameDuration = {}
+local spellNameTrackedID = {}
 
 function MaxDps.CacheSpells()
     --wipe(spellBookCache)
@@ -46,6 +47,21 @@ function MaxDps.CacheSpells()
     end
     for id,duration in pairs(MaxDps.SHORT_BUFFS)do
         spellNameDuration[C_Spell.GetSpellName(id)] = duration
+    end
+
+    local cooldownIDs = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBuff, true)
+    --DevTools_Dump(cooldownIDs)
+    if cooldownIDs then
+        for i, id in ipairs(cooldownIDs) do
+            local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(id)
+            if info and info.spellID  then
+                local name = C_Spell.GetSpellName(info.spellID)
+                if name then
+                    --print("Name: ", C_Spell.GetSpellName(info.spellID), "ID: ", info.spellID)
+                    spellNameTrackedID[name] = info.spellID
+                end
+            end
+        end
     end
 end
 
@@ -236,6 +252,9 @@ function MaxDps.IsTrackedAuraActive(spellID)
     end
     if highestSpellRank then
         spellID = highestSpellRank
+    end
+    if spellNameTrackedID and spellNameTrackedID[origSpellName] then
+        spellID = spellNameTrackedID[origSpellName]
     end
     makeWatcher(spellID)
     --if spells and #spells > 0 then
