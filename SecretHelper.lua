@@ -312,11 +312,15 @@ function MaxDps.IsDurationObjectActive(durObj)
 end
 
 function MaxDps.IsSpellOnCooldown(spellID, ignoregcd)
-    if not (spellID and C_Spell and C_Spell.GetSpellCooldownDuration) then return false end
-    if not (spellID and C_Spell and C_Spell.IsSpellUsable and C_Spell.IsSpellUsable(spellID)) then return true end
     local origSpellName = C_Spell.GetSpellName(spellID)
     local spells = spellBookCache[origSpellName]
     if not spells or #spells == 0 then return true end
+    local lastSpellID = spells[#spells]
+    if lastSpellID then
+        spellID = lastSpellID
+    end
+    if not (spellID and C_Spell and C_Spell.GetSpellCooldownDuration) then return false end
+    if not (spellID and C_Spell and C_Spell.IsSpellUsable and C_Spell.IsSpellUsable(spellID)) then return true end
     -- pcall like every sibling read: this runs inside the queue build, where a throw on
     -- an odd id blanks the queue instead of degrading one entry.
     local ok, dur = pcall(C_Spell.GetSpellCooldownDuration, spellID, ignoregcd)
