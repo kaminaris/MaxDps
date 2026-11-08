@@ -2229,8 +2229,8 @@ function MaxDps:ThreatCounter()
     for _, unit in ipairs(self.visibleNameplates) do
         local unitGUID = unit and UnitGUID(unit)
         if unitGUID then
-            local npcId = Select(6, StringSplit('-', unitGUID))
-            if not MaxDps.issecretvalue(npcId) then
+            if not MaxDps.issecretvalue(unitGUID) then
+                local npcId = Select(6, StringSplit('-', unitGUID))
                 npcId = npcId and tonumber(npcId)
                 if UnitThreatSituation('player', unit) ~= nil then
                     if not npcId or (npcId and not specialTargetsIgnore[npcId]) then
@@ -2349,70 +2349,49 @@ function MaxDps:SmartAoe(itemId)
         return self.db.global.forceTargetAmountCount
     end
 
-    --local _, instanceType = IsInInstance()
-    --local count, units
-    local _, units = self:ThreatCounter()
+    local tCount, units = self:ThreatCounter()
     local originalCount
 
-    --local itemToCheck = itemId or 18904
-
-    -- 5 man content, we count battleground also as small party
-    --if self.isMelee then
-    --	-- 8 yards range
-    --	itemToCheck = itemId or 61323
-    --elseif instanceType == 'pvp' or instanceType == 'party' then
-    --	-- 30 yards range
-    --	itemToCheck = itemId or 7734
-    --elseif instanceType == 'arena' and instanceType == 'raid' then
-    --	-- 35 yards range
-    --	itemToCheck = itemId or 18904
-    --end
-
     local count = 0
-    --if not IsInInstance() then
-    --    for i = 1, #units do
-    --    	-- 8 yards range check IsItemInRange blocked on retail in instance since 10.2
-    --    	if IsItemInRange(itemToCheck, units[i]) then
-    --    		count = count + 1
-    --    	end
-    --    end
-    --end
-    --if IsInInstance() then
-    for i = 1, #units do
-        if MaxDps.isMelee then
-            local range = LibRangeCheck:GetRange(units[i], true)
-            if range and range <= 15 then
-                count = count + 1
-            end
-        else
-            local range = LibRangeCheck:GetRange(units[i], true)
-            if range and range  <= 30 then
-                count = count + 1
+    if units and #units > 0 then
+        for i = 1, #units do
+            if MaxDps.isMelee then
+                local range = LibRangeCheck:GetRange(units[i], true)
+                if range and range <= 15 then
+                    count = count + 1
+                end
+            else
+                local range = LibRangeCheck:GetRange(units[i], true)
+                if range and range  <= 30 then
+                    count = count + 1
+                end
             end
         end
-    end
-    --end
+        --end
 
-    if WeakAuras then
-        WeakAuras.ScanEvents('MAXDPS_TARGET_COUNT', count)
-    end
+        if WeakAuras then
+            WeakAuras.ScanEvents('MAXDPS_TARGET_COUNT', count)
+        end
 
-    if encounterID and singleTargetEncounters and singleTargetEncounters[encounterID] then
-        originalCount = count
-        if count <= singleTargetEncounters[encounterID] then
+        if encounterID and singleTargetEncounters and singleTargetEncounters[encounterID] then
+            originalCount = count
+            if count <= singleTargetEncounters[encounterID] then
+                count = 1
+            end
+            if count >= singleTargetEncounters[encounterID] then
+                count = count - singleTargetEncounters[encounterID] + 1
+            end
+            if count < 0 then
+                count = originalCount
+            end
+        end
+
+        local UnitTHP = UnitHealth("target")
+        if count == 0 and UnitExists("target") and (not MaxDps:issecretvalue(UnitTHP) and UnitTHP or 0) > 0 and UnitCanAttack("player","target") == true then
             count = 1
         end
-        if count >= singleTargetEncounters[encounterID] then
-            count = count - singleTargetEncounters[encounterID] + 1
-        end
-        if count < 0 then
-            count = originalCount
-        end
-    end
-
-    local UnitTHP = UnitHealth("target")
-    if count == 0 and UnitExists("target") and (not MaxDps:issecretvalue(UnitTHP) and UnitTHP or 0) > 0 and UnitCanAttack("player","target") == true then
-        count = 1
+    else
+        return tCount
     end
 
     return count
