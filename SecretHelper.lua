@@ -208,7 +208,7 @@ local function S(name, fallback)
     return fallback
 end
 
-local watcherExpires = {}
+MaxDps.watcherExpires = {}
 local function makeWatcher(spellID)
     local origSpellName = C_Spell.GetSpellName(spellID)
     if not MaxDps.CooldownViewerWatcher then
@@ -222,16 +222,18 @@ local function makeWatcher(spellID)
                 if C_Spell.IsSpellHelpful(spellID) then
                     UID = UnitGUID("player") or 1
                 end
-                if not watcherExpires[UID] then
-                    watcherExpires[UID] = {}
+                if not MaxDps.watcherExpires[UID] then
+                    MaxDps.watcherExpires[UID] = {}
                 end
-                watcherExpires[UID][spellID] = watcherExpire
-                MaxDps.CooldownViewerWatcher = watcher
+                MaxDps.watcherExpires[UID][spellID] = watcherExpire
+                if not MaxDps.CooldownViewerWatcher then
+                    MaxDps.CooldownViewerWatcher = watcher
+                end
                 if not C_Spell.IsSpellHelpful(spellID) then
-                    for guid, spells in pairs(watcherExpires) do
+                    for guid, spells in pairs(MaxDps.watcherExpires) do
                         for spellID, watcherExpire in pairs(spells) do
                             if GetTime() - watcherExpire > 60 then
-                                watcherExpires[guid][spellID] = nil
+                                MaxDps.watcherExpires[guid][spellID] = nil
                             end
                         end
                     end
@@ -285,10 +287,12 @@ function MaxDps.IsTrackedAuraActive(spellID)
 
     local enabled = GetCVar("cooldownViewerEnabled")
     local viewerBuff = ViewerBuffActive(entry)
+    --print(MaxDps.watcherExpires[UID] and MaxDps.watcherExpires[UID][spellID] and GetTime() < MaxDps.watcherExpires[UID][spellID])
+    --print(ViewerBuffActive(entry))
     if enabled == "1" and viewerBuff then
         return ViewerBuffActive(entry)
     else
-        return ViewerBuffActive(entry) or (watcherExpires[UID] and watcherExpires[UID][spellID] and GetTime() < watcherExpires[UID][spellID])
+        return ViewerBuffActive(entry) or (MaxDps.watcherExpires[UID] and MaxDps.watcherExpires[UID][spellID] and GetTime() < MaxDps.watcherExpires[UID][spellID])
     end
 end
 
@@ -325,6 +329,17 @@ function MaxDps.IsSpellOnCooldown(spellID, ignoregcd)
     -- an odd id blanks the queue instead of degrading one entry.
     local ok, dur = pcall(C_Spell.GetSpellCooldownDuration, spellID, ignoregcd)
     return ok and DurationObjectActive(dur) or false
+end
+
+local clearAuraTableFrame
+if MaxDps:IsForeverWow() then
+    if not clearAuraTableFrame then
+        clearAuraTableFrame = CreateFrame("Frame")
+    end
+    clearAuraTableFrame:SetScript("OnEvent", function(self, event, unitTarget, updateInfo)
+        MaxDps.watcherExpires = {}
+    end)
+    clearAuraTableFrame:RegisterEvent("PLAYER_DEAD")
 end
 
 function MaxDps.Power(resource, isPercent)
