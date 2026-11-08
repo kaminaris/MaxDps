@@ -223,6 +223,7 @@ local function makeWatcher(spellID)
         watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
             if unit == "player" and spellId == S(origSpellName, spellID) then
                 watcherExpire = MaxDps.DOTS[spellID] and GetTime() + MaxDps.DOTS[spellID]
+                or MaxDps.DOTSName[origSpellName] and GetTime() + MaxDps.DOTSName[origSpellName]
                 or C_Spell.IsSpellHelpful(spellID) and  spellNameDuration[origSpellName] and GetTime() + spellNameDuration[origSpellName]
                 or C_Spell.IsSpellHelpful(spellID) and GetTime() + 60
                 or GetTime() + 9
