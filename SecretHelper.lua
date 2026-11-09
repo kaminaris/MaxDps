@@ -227,10 +227,8 @@ local function makeWatcher(spellID)
                 or C_Spell.IsSpellHelpful(spellID) and  spellNameDuration[origSpellName] and GetTime() + spellNameDuration[origSpellName]
                 or C_Spell.IsSpellHelpful(spellID) and GetTime() + 60
                 or GetTime() + 9
-                local UID = UnitGUID("target") or 1
-                if C_Spell.IsSpellHelpful(spellID) then
-                    UID = UnitGUID("player") or 1
-                end
+                local targetGUID = UnitGUID("target")
+                local UID = not MaxDps.issecretvalue(targetGUID) and targetGUID or (C_Spell.IsSpellHelpful(spellID) and "player") or "target"
                 if not MaxDps.watcherExpires[UID] then
                     MaxDps.watcherExpires[UID] = {}
                 end
@@ -289,10 +287,8 @@ function MaxDps.IsTrackedAuraActive(spellID)
         entry.cooldownIDs = nil
     end
     if entry.cooldownIDs == nil then entry.resolvedAt = GetTime() end
-    local UID = UnitGUID("target") or 1
-    if C_Spell.IsSpellHelpful(spellID) then
-        UID = UnitGUID("player") or 1
-    end
+    local targetGUID = UnitGUID("target")
+    local UID = not MaxDps.issecretvalue(targetGUID) and targetGUID or (C_Spell.IsSpellHelpful(spellID) and "player") or "target"
 
     local enabled = GetCVar("cooldownViewerEnabled")
     local viewerBuff = ViewerBuffActive(entry)
