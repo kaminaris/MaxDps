@@ -30426,4 +30426,8 @@ ns.SHORT_BUFFS = {
     [1311015] = 8,  -- Templar's Bulwark (8s)
     [1311649] = 30,  -- Seal of Fury (30s)
     [1317257] = 3,  -- Strider Kick (3s)
+    [8075] = 300,  -- Strength of Earth Totem (5min)
+    [8835] = 300,  -- Grace of Air Totem (5min)
+    [3599] = 30,  -- Searing Totem (30s)
+    [8190] = 20,  -- Magma Totem (20s)
 }
