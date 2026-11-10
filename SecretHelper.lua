@@ -221,26 +221,29 @@ local function makeWatcher(spellID)
         local watcher = CreateFrame("Frame")
         watcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
         watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
-            if unit == "player" and spellId == S(origSpellName, spellID) then
-                watcherExpire = MaxDps.DOTS[spellID] and GetTime() + MaxDps.DOTS[spellID]
+            local canCompare = C_Secrets.CanCompareUnitTokens(unit, "player")
+            local sameUnit = canCompare and UnitIsUnit(unit, "player") or false
+            if sameUnit then
+                watcherExpire = MaxDps.DOTS[spellId] and GetTime() + MaxDps.DOTS[spellId]
                 or MaxDps.DOTSName[origSpellName] and GetTime() + MaxDps.DOTSName[origSpellName]
-                or C_Spell.IsSpellHelpful(spellID) and  spellNameDuration[origSpellName] and GetTime() + spellNameDuration[origSpellName]
-                or C_Spell.IsSpellHelpful(spellID) and GetTime() + 60
+                or C_Spell.IsSpellHelpful(spellId) and  spellNameDuration[origSpellName] and GetTime() + spellNameDuration[origSpellName]
+                or C_Spell.IsSpellHelpful(spellId) and GetTime() + 60
                 or GetTime() + 9
                 local targetGUID = UnitGUID("target")
-                local UID = not MaxDps.issecretvalue(targetGUID) and targetGUID or (C_Spell.IsSpellHelpful(spellID) and "player") or "target"
+                local UID = not MaxDps.issecretvalue(targetGUID) and targetGUID or (C_Spell.IsSpellHelpful(spellId) and "player") or "target"
                 if not MaxDps.watcherExpires[UID] then
                     MaxDps.watcherExpires[UID] = {}
                 end
-                MaxDps.watcherExpires[UID][spellID] = watcherExpire
+                MaxDps.watcherExpires[UID][spellId] = watcherExpire
                 if not MaxDps.CooldownViewerWatcher then
                     MaxDps.CooldownViewerWatcher = watcher
                 end
-                if not C_Spell.IsSpellHelpful(spellID) then
-                    for guid, spells in pairs(MaxDps.watcherExpires) do
-                        for spellID, watcherExpire in pairs(spells) do
-                            if GetTime() - watcherExpire > 60 then
-                                MaxDps.watcherExpires[guid][spellID] = nil
+
+                for guid, spells in pairs(MaxDps.watcherExpires) do
+                    for ID, Expire in pairs(spells) do
+                        if not C_Spell.IsSpellHelpful(ID) then
+                            if GetTime() - Expire > 60 then
+                                MaxDps.watcherExpires[guid][ID] = nil
                             end
                         end
                     end
