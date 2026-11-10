@@ -220,7 +220,11 @@ local function makeWatcher(spellID)
                 local UID
                 if targetGUID and not MaxDps.issecretvalue(targetGUID) then
                     UID = targetGUID
-                elseif C_Spell.IsSpellHelpful(spellId) then
+                elseif C_Spell.IsSpellHelpful(spellId) or
+                spellId == 8075 or
+                spellId == 8835 or
+                spellId == 3599 or
+                spellId == 8190 then
                     UID = "player"
                 else
                     UID = "target"
