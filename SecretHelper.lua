@@ -15,7 +15,6 @@ local spellNameTrackedID = {}
 MaxDps.DOTSName = {}
 
 function MaxDps.CacheSpells()
-    --wipe(spellBookCache)
 
     local skillLineIndex = 1
 
@@ -52,14 +51,12 @@ function MaxDps.CacheSpells()
     end
 
     local cooldownIDs = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBuff, true)
-    --DevTools_Dump(cooldownIDs)
     if cooldownIDs then
         for i, id in ipairs(cooldownIDs) do
             local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(id)
             if info and info.spellID  then
                 local name = C_Spell.GetSpellName(info.spellID)
                 if name then
-                    --print("Name: ", C_Spell.GetSpellName(info.spellID), "ID: ", info.spellID)
                     spellNameTrackedID[name] = info.spellID
                 end
             end
@@ -71,9 +68,6 @@ function MaxDps.CacheSpells()
 end
 
 function MaxDps.GetDisplaySpellID(spellID)
-    -- <= 0 covers items (negative by our convention) and the queue's wait sentinel:
-    -- neither has an override, and the C call's behavior on such ids is not something
-    -- we guess at (project rule). Identity is the correct answer for both.
     if not spellID or spellID <= 0 then return spellID end
     if not C_Spell_GetOverrideSpell then return spellID end
 
@@ -88,19 +82,12 @@ function MaxDps.GetDisplaySpellID(spellID)
     end
 
     local override = C_Spell_GetOverrideSpell(spellID)
-    -- Never resolve INTO a passive: the client's override data can map a castable onto
-    -- a passive talent's id (the id is real; it is just not a button). Every consumer
-    -- of this function wants "the id to DISPLAY/cast", so a passive override is always
-    -- wrong - keep the castable input id instead.
     local result = spellID
     if override and override ~= 0 and override ~= spellID and not (IsPassiveID and IsPassiveID(override)) then
         result = override
     end
-    -- Forever ranks: any rank of a curated list resolves to the rank actually pressed. The
-    -- ONE place that choice is made, so every list (rotation, defensives, gap closers,
-    -- interrupts) shows the button's rank and finds its hotkey.
     result = PressedRank and PressedRank(result) or result
-    overrideSpellCache[spellID] = result   -- "no override" is cached as well
+    overrideSpellCache[spellID] = result
     return result
 end
 
@@ -295,8 +282,6 @@ function MaxDps.IsTrackedAuraActive(spellID)
 
     local enabled = GetCVar("cooldownViewerEnabled")
     local viewerBuff = ViewerBuffActive(entry)
-    --print(MaxDps.watcherExpires[UID] and MaxDps.watcherExpires[UID][spellID] and GetTime() < MaxDps.watcherExpires[UID][spellID])
-    --print(ViewerBuffActive(entry))
     if enabled == "1" and viewerBuff then
         return ViewerBuffActive(entry)
     else
@@ -309,7 +294,7 @@ local function DurationObjectActive(durObj)
     if durObj == nil then return false end
     if not scratchCooldown then
         local holder = CreateFrame("Frame", nil, UIParent)
-        holder:Hide()  -- parent hidden -> the probe frame never renders
+        holder:Hide()
         scratchCooldown = CreateFrame("Cooldown", nil, holder, "CooldownFrameTemplate")
     end
     if not scratchCooldown.SetCooldownFromDurationObject then return false end
@@ -333,8 +318,6 @@ function MaxDps.IsSpellOnCooldown(spellID, ignoregcd)
     end
     if not (spellID and C_Spell and C_Spell.GetSpellCooldownDuration) then return false end
     if not (spellID and C_Spell and C_Spell.IsSpellUsable and C_Spell.IsSpellUsable(spellID)) then return true end
-    -- pcall like every sibling read: this runs inside the queue build, where a throw on
-    -- an odd id blanks the queue instead of degrading one entry.
     local ok, dur = pcall(C_Spell.GetSpellCooldownDuration, spellID, ignoregcd)
     return ok and DurationObjectActive(dur) or false
 end
