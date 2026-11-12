@@ -387,38 +387,39 @@ function MaxDps.Near(yards)
 end
 
 function MaxDps.Starved()
-    local _, insufficientPower
-    local _, _, classId = UnitClass("target") -- "Mage", "MAGE", 8
-    local checkSpell
-    if classId == 1 then -- Warrior
-        checkSpell = 100 --  Charge
+    local insufficientPower
+    local _, _, classId = UnitClass("player") -- "Mage", "MAGE", 8
+    if not MaxDps.issecretvalue(classId) and not IsInInstance() then
+        if classId == 1 then -- Warrior
+            MaxDps.checkStarvedSpell = 100 --  Charge
+        end
+        if classId == 2 then -- Paladin
+            MaxDps.checkStarvedSpell = 639 --  Holy Light
+        end
+        if classId == 3 then -- Hunter
+            MaxDps.checkStarvedSpell = 2973 --  Raptor Strike
+        end
+        if classId == 4 then
+            MaxDps.checkStarvedSpell = 1752 --  Sinister Strike
+        end
+        if classId == 5 then -- Priest
+            MaxDps.checkStarvedSpell = 585 --  Smite
+        end
+        if classId == 7 then -- Shaman
+            MaxDps.checkStarvedSpell = 403 --  Lightning Bolt
+        end
+        if classId == 8 then -- Mage
+            MaxDps.checkStarvedSpell = 116 --  Frostbolt
+        end
+        if classId == 9 then -- Warlock
+            MaxDps.checkStarvedSpell = 686 --  Shadow Bolt
+        end
+        if classId == 11 then -- Druid
+            MaxDps.checkStarvedSpell = 5176 --  Wrath
+        end
     end
-    if classId == 2 then -- Paladin
-        checkSpell = 639 --  Holy Light
-    end
-    if classId == 3 then -- Hunter
-        checkSpell = 2973 --  Raptor Strike
-    end
-    if classId == 4 then
-        checkSpell = 1752 --  Sinister Strike
-    end
-    if classId == 5 then -- Priest
-        checkSpell = 585 --  Smite
-    end
-    if classId == 7 then -- Shaman
-        checkSpell = 403 --  Lightning Bolt
-    end
-    if classId == 8 then -- Mage
-        checkSpell = 116 --  Frostbolt
-    end
-    if classId == 9 then -- Warlock
-        checkSpell = 686 --  Shadow Bolt
-    end
-    if classId == 11 then -- Druid
-        checkSpell = 5176 --  Wrath
-    end
-    if checkSpell then
-        _, insufficientPower = C_Spell.IsSpellUsable(checkSpell)
+    if MaxDps.checkStarvedSpell then
+        _, insufficientPower = C_Spell.IsSpellUsable(MaxDps.checkStarvedSpell)
         if insufficientPower then
             return true
         end
