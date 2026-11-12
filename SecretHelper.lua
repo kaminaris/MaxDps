@@ -294,7 +294,11 @@ function MaxDps.IsTrackedAuraActive(spellID)
     local UID
     if targetGUID and not MaxDps.issecretvalue(targetGUID) then
         UID = targetGUID
-    elseif C_Spell.IsSpellHelpful(spellID) then
+    elseif C_Spell.IsSpellHelpful(spellID) or
+    spellID == 8075 or
+    spellID == 8835 or
+    spellID == 3599 or
+    spellID == 8190 then
         UID = "player"
     else
         UID = "target"
