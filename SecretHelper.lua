@@ -218,25 +218,22 @@ local function makeWatcher(spellID)
                 or GetTime() + 9
                 local targetGUID = not C_Secrets.ShouldUnitIdentityBeSecret("target") and UnitGUID("target")
                 local UID
-                if targetGUID and not MaxDps.issecretvalue(targetGUID) then
-                    UID = targetGUID
-                elseif C_Spell.IsSpellHelpful(spellId) or
+                if C_Spell.IsSpellHelpful(spellId) or
                 spellId == 8075 or
                 spellId == 8835 or
                 spellId == 3599 or
                 spellId == 8190 then
                     UID = "player"
+                elseif targetGUID and not MaxDps:issecretvalue(targetGUID) then
+                    UID = targetGUID
                 else
                     UID = "target"
                 end
-                if not MaxDps.issecretvalue(UID) then
+                if not MaxDps:issecretvalue(UID) then
                     if not MaxDps.watcherExpires[UID] then
                         MaxDps.watcherExpires[UID] = {}
                     end
                     MaxDps.watcherExpires[UID][spellId] = watcherExpire
-                    if not MaxDps.CooldownViewerWatcher then
-                        MaxDps.CooldownViewerWatcher = watcher
-                    end
                 end
 
                 for guid, spells in pairs(MaxDps.watcherExpires) do
@@ -250,6 +247,9 @@ local function makeWatcher(spellID)
                 end
             end
         end)
+        if not MaxDps.CooldownViewerWatcher then
+            MaxDps.CooldownViewerWatcher = watcher
+        end
     end
 end
 
@@ -292,14 +292,14 @@ function MaxDps.IsTrackedAuraActive(spellID)
     if entry.cooldownIDs == nil then entry.resolvedAt = GetTime() end
     local targetGUID = UnitGUID("target")
     local UID
-    if targetGUID and not MaxDps.issecretvalue(targetGUID) then
-        UID = targetGUID
-    elseif C_Spell.IsSpellHelpful(spellID) or
+    if C_Spell.IsSpellHelpful(spellID) or
     spellID == 8075 or
     spellID == 8835 or
     spellID == 3599 or
     spellID == 8190 then
         UID = "player"
+    elseif targetGUID and not MaxDps:issecretvalue(targetGUID) then
+        UID = targetGUID
     else
         UID = "target"
     end
@@ -342,6 +342,7 @@ function MaxDps.IsSpellOnCooldown(spellID, ignoregcd)
     end
     if not (spellID and C_Spell and C_Spell.GetSpellCooldownDuration) then return false end
     if not (spellID and C_Spell and C_Spell.IsSpellUsable and C_Spell.IsSpellUsable(spellID)) then return true end
+    --if not (spellID and C_SpellBook and C_SpellBook.IsSpellKnown and C_SpellBook.IsSpellKnown(spellID)) then return true end
     local ok, dur = pcall(C_Spell.GetSpellCooldownDuration, spellID, ignoregcd)
     return ok and DurationObjectActive(dur) or false
 end
@@ -358,18 +359,33 @@ if MaxDps:IsForeverWow() then
 end
 
 function MaxDps.Power(resource, isPercent)
-    if resource == "mana" or resource == "energy" or resource == "rage" then
-        return math.huge
+    if resource == "mana" then
+        resource = "Mana"
     end
-    if resource ~= "combo_points" then
-        return 1
+    if resource == "energy" then
+        resource = "Energy"
+    end
+    if resource == "rage" then
+        resource = "Rage"
+    end
+    if resource == "combo_points" then
+        resource = "ComboPoints"
     end
     local powerTypes = Enum and Enum.PowerType
-    local powerType = powerTypes and powerTypes.ComboPoints or 4
+    local powerType = powerTypes and powerTypes[resource]
     local current = UnitPower("player", powerType)
-    if isPercent == false then return current end
-    local maximum = UnitPowerMax("player", powerType)
-    return maximum > 0 and current / maximum * 100 or 0
+    if not MaxDps:issecretvalue(current) then
+        if not isPercent then return current end
+        local maximum = UnitPowerMax("player", powerType)
+        return maximum > 0 and current / maximum * 100 or 0
+    else
+        if resource == "Mana" or resource == "Energy" or resource == "rage" then
+            return math.huge
+        end
+        if resource ~= "ComboPoints" then
+            return 1
+        end
+    end
 end
 
 function MaxDps.Stacks(_unit, spellID, _filter)
@@ -393,7 +409,7 @@ end
 function MaxDps.Starved()
     local insufficientPower
     local _, _, classId = UnitClass("player") -- "Mage", "MAGE", 8
-    if not MaxDps.issecretvalue(classId) and not IsInInstance() then
+    if not MaxDps:issecretvalue(classId) then
         if classId == 1 then -- Warrior
             MaxDps.checkStarvedSpell = 100 --  Charge
         end
