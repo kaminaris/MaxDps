@@ -2229,7 +2229,7 @@ function MaxDps:ThreatCounter()
     for _, unit in ipairs(self.visibleNameplates) do
         local unitGUID = unit and UnitGUID(unit)
         if unitGUID then
-            if not MaxDps.issecretvalue(unitGUID) and not MaxDps:IsForeverWow() then
+            if not MaxDps:issecretvalue(unitGUID) then
                 local npcId = Select(6, StringSplit('-', unitGUID))
                 npcId = npcId and tonumber(npcId)
                 if UnitThreatSituation('player', unit) ~= nil then
