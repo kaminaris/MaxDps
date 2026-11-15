@@ -47,7 +47,10 @@ function MaxDps.CacheSpells()
     end
     for id,duration in pairs(MaxDps.SHORT_BUFFS) do
         C_Spell.RequestLoadSpellData(id)
-        spellNameDuration[C_Spell.GetSpellName(id)] = duration
+        local name = C_Spell.GetSpellName(id)
+        if name then
+            spellNameDuration[name] = duration
+        end
     end
 
     local cooldownIDs = C_CooldownViewer.GetCooldownViewerCategorySet(Enum.CooldownViewerCategory.TrackedBuff, true)
@@ -63,7 +66,10 @@ function MaxDps.CacheSpells()
         end
     end
     for spellID, duration in pairs(MaxDps.DOTS) do
-        MaxDps.DOTSName[C_Spell.GetSpellName(spellID)] = duration
+        local name = C_Spell.GetSpellName(spellID)
+        if name then
+            MaxDps.DOTSName[name] = duration
+        end
     end
 end
 
@@ -201,60 +207,95 @@ local function S(name, fallback)
 end
 
 MaxDps.watcherExpires = {}
-local function makeWatcher(spellID)
-    local origSpellName = C_Spell.GetSpellName(spellID)
-    if not MaxDps.CooldownViewerWatcher then
-        local watcherExpire = 0
-        local watcher = CreateFrame("Frame")
-        watcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-        watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
-            local canCompare = C_Secrets.CanCompareUnitTokens(unit, "player")
-            local sameUnit = not C_Secrets.ShouldUnitIdentityBeSecret(unit) and canCompare and UnitIsUnit(unit, "player") or false
-            if sameUnit then
-                watcherExpire = MaxDps.DOTS[spellId] and GetTime() + MaxDps.DOTS[spellId]
-                or MaxDps.DOTSName[origSpellName] and GetTime() + MaxDps.DOTSName[origSpellName]
-                or C_Spell.IsSpellHelpful(spellId) and  spellNameDuration[origSpellName] and GetTime() + spellNameDuration[origSpellName]
-                or C_Spell.IsSpellHelpful(spellId) and GetTime() + 60
-                or GetTime() + 9
-                local targetGUID = not C_Secrets.ShouldUnitIdentityBeSecret("target") and UnitGUID("target")
-                local UID
-                if C_Spell.IsSpellHelpful(spellId) or
-                spellId == 8075 or
-                spellId == 8835 or
-                spellId == 3599 or
-                spellId == 8190 then
-                    UID = "player"
-                elseif targetGUID and not MaxDps:issecretvalue(targetGUID) then
-                    UID = targetGUID
-                else
-                    UID = "target"
-                end
-                if not MaxDps:issecretvalue(UID) then
-                    if not MaxDps.watcherExpires[UID] then
-                        MaxDps.watcherExpires[UID] = {}
-                    end
-                    MaxDps.watcherExpires[UID][spellId] = watcherExpire
-                end
 
-                for guid, spells in pairs(MaxDps.watcherExpires) do
-                    for ID, Expire in pairs(spells) do
-                        if not C_Spell.IsSpellHelpful(ID) then
-                            if GetTime() - Expire > 60 then
-                                MaxDps.watcherExpires[guid][ID] = nil
-                            end
-                        end
-                    end
+local function IsHelpfulSpell(spellID)
+    if not (C_Spell and C_Spell.IsSpellHelpful) then return false end
+    local ok, helpful = pcall(C_Spell.IsSpellHelpful, spellID)
+    -- On Forever the result can be restricted, so only a real boolean true counts.
+    if not ok or MaxDps:issecretvalue(helpful) then return false end
+    return helpful == true
+end
+
+local function IsSelfBuff(spellID, spellName)
+    -- DOTS are applied to the target, everything in SHORT_BUFFS is applied to the player.
+    if MaxDps.DOTS[spellID] or (spellName and MaxDps.DOTSName[spellName]) then
+        return false
+    end
+    if spellName and spellNameDuration[spellName] then
+        return true
+    end
+    return IsHelpfulSpell(spellID)
+end
+
+local function WatcherUnitKey(spellID, spellName)
+    if IsSelfBuff(spellID, spellName) then
+        return "player"
+    end
+
+    local targetGUID
+    if not C_Secrets.ShouldUnitIdentityBeSecret("target") then
+        targetGUID = UnitGUID("target")
+    end
+    if targetGUID and not MaxDps:issecretvalue(targetGUID) then
+        return targetGUID
+    end
+    return "target"
+end
+
+local function WatcherDuration(spellID, spellName)
+    local duration = MaxDps.DOTS[spellID]
+        or (spellName and MaxDps.DOTSName[spellName])
+        or (spellName and spellNameDuration[spellName])
+    if duration then
+        return duration
+    end
+    return IsHelpfulSpell(spellID) and 60 or 9
+end
+
+local function makeWatcher()
+    if MaxDps.CooldownViewerWatcher then return end
+
+    local watcher = CreateFrame("Frame")
+    watcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+    watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
+        if not spellId or MaxDps:issecretvalue(spellId) then return end
+        local canCompare = C_Secrets.CanCompareUnitTokens(unit, "player")
+        local sameUnit = not C_Secrets.ShouldUnitIdentityBeSecret(unit) and canCompare and UnitIsUnit(unit, "player") or false
+        if not sameUnit then return end
+
+        -- The watcher is shared by every tracked spell, so the spell name has to come
+        -- from the cast itself instead of being captured when the frame is created.
+        local spellName = C_Spell.GetSpellName(spellId)
+        local watcherExpire = GetTime() + WatcherDuration(spellId, spellName)
+        local UID = WatcherUnitKey(spellId, spellName)
+        if MaxDps:issecretvalue(UID) then return end
+
+        local expires = MaxDps.watcherExpires[UID]
+        if not expires then
+            expires = {}
+            MaxDps.watcherExpires[UID] = expires
+        end
+        -- Store by name as well so different ranks of the same spell match the reader.
+        expires[spellId] = watcherExpire
+        if spellName then
+            expires[spellName] = watcherExpire
+        end
+
+        local now = GetTime()
+        for _, spells in pairs(MaxDps.watcherExpires) do
+            for key, expire in pairs(spells) do
+                if now > expire + 60 then
+                    spells[key] = nil
                 end
             end
-        end)
-        if not MaxDps.CooldownViewerWatcher then
-            MaxDps.CooldownViewerWatcher = watcher
         end
-    end
+    end)
+    MaxDps.CooldownViewerWatcher = watcher
 end
 
 function MaxDps.IsTrackedAuraActive(spellID)
     if not spellID then return nil end
+    local origSpellID = spellID
     local origSpellName = C_Spell.GetSpellName(spellID)
     local spells = spellBookCache[origSpellName]
     local highestSpellRank = nil
@@ -268,7 +309,7 @@ function MaxDps.IsTrackedAuraActive(spellID)
     if spellNameTrackedID and spellNameTrackedID[origSpellName] then
         spellID = spellNameTrackedID[origSpellName]
     end
-    makeWatcher(spellID)
+    makeWatcher()
     --if spells and #spells > 0 then
     --    local highestSpellID = spells[1]
     --    for i = 2, #spells do
@@ -290,27 +331,21 @@ function MaxDps.IsTrackedAuraActive(spellID)
         entry.cooldownIDs = nil
     end
     if entry.cooldownIDs == nil then entry.resolvedAt = GetTime() end
-    local targetGUID = UnitGUID("target")
-    local UID
-    if C_Spell.IsSpellHelpful(spellID) or
-    spellID == 8075 or
-    spellID == 8835 or
-    spellID == 3599 or
-    spellID == 8190 then
-        UID = "player"
-    elseif targetGUID and not MaxDps:issecretvalue(targetGUID) then
-        UID = targetGUID
-    else
-        UID = "target"
+
+    if ViewerBuffActive(entry) then
+        return true
     end
 
-    local enabled = GetCVar("cooldownViewerEnabled")
-    local viewerBuff = ViewerBuffActive(entry)
-    if enabled == "1" and viewerBuff then
-        return ViewerBuffActive(entry)
-    else
-        return ViewerBuffActive(entry) or (not IsInInstance() and MaxDps.watcherExpires[UID] and MaxDps.watcherExpires[UID][spellID] and GetTime() < MaxDps.watcherExpires[UID][spellID])
+    -- The watcher stores casts by name (and id), so ranks and tracked spell ids
+    -- resolve to the same entry as the cast that was actually performed.
+    local UID = WatcherUnitKey(origSpellID, origSpellName)
+    local expires = MaxDps.watcherExpires[UID]
+    if not expires then return nil end
+    local expire = (origSpellName and expires[origSpellName]) or expires[origSpellID]
+    if expire and GetTime() < expire then
+        return true
     end
+    return nil
 end
 
 local scratchCooldown
