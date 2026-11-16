@@ -233,7 +233,7 @@ local function makeWatcher()
                     if not MaxDps.watcherExpires[UID] then
                         MaxDps.watcherExpires[UID] = {}
                     end
-                    MaxDps.watcherExpires[UID][spellId] = watcherExpire
+                    MaxDps.watcherExpires[UID][origSpellName] = watcherExpire
                 end
 
                 for guid, spells in pairs(MaxDps.watcherExpires) do
@@ -309,7 +309,7 @@ function MaxDps.IsTrackedAuraActive(spellID)
     if enabled == "1" and viewerBuff then
         return ViewerBuffActive(entry)
     else
-        return ViewerBuffActive(entry) or (not IsInInstance() and MaxDps.watcherExpires[UID] and MaxDps.watcherExpires[UID][spellID] and GetTime() < MaxDps.watcherExpires[UID][spellID])
+        return ViewerBuffActive(entry) or (not IsInInstance() and MaxDps.watcherExpires[UID] and MaxDps.watcherExpires[UID][origSpellName] and GetTime() < MaxDps.watcherExpires[UID][origSpellName])
     end
 end
 
