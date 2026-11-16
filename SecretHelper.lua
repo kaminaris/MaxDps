@@ -201,13 +201,13 @@ local function S(name, fallback)
 end
 
 MaxDps.watcherExpires = {}
-local function makeWatcher(spellID)
-    local origSpellName = C_Spell.GetSpellName(spellID)
+local function makeWatcher()
     if not MaxDps.CooldownViewerWatcher then
         local watcherExpire = 0
         local watcher = CreateFrame("Frame")
         watcher:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
         watcher:SetScript("OnEvent", function(_, _, unit, _, spellId)
+            local origSpellName = C_Spell.GetSpellName(spellId)
             local canCompare = C_Secrets.CanCompareUnitTokens(unit, "player")
             local sameUnit = not C_Secrets.ShouldUnitIdentityBeSecret(unit) and canCompare and UnitIsUnit(unit, "player") or false
             if sameUnit then
@@ -268,7 +268,7 @@ function MaxDps.IsTrackedAuraActive(spellID)
     if spellNameTrackedID and spellNameTrackedID[origSpellName] then
         spellID = spellNameTrackedID[origSpellName]
     end
-    makeWatcher(spellID)
+    makeWatcher()
     --if spells and #spells > 0 then
     --    local highestSpellID = spells[1]
     --    for i = 2, #spells do
