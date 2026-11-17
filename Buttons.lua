@@ -834,6 +834,27 @@ function MaxDps:FetchBlizzard()
             end
         end
     end
+
+    local positions = {"Top", "Bottom", "Left", "Right"}
+    local barTypes  = {"Top", "Bottom", "Left", "Right", "Stance", "Possess"}
+
+    for _, pos in ipairs(positions) do
+        for _, bar in ipairs(barTypes) do
+            for i = 1, 8 do
+                local name = string.format(
+                    "GamepadMainActionBarFramePageUnit%sCenteredAnchor%sBarActionButton%d",
+                    pos,
+                    bar,
+                    i
+                )
+
+                local button = _G[name]
+                if button then
+                    self:AddStandardButton(button)
+                end
+            end
+        end
+    end
 end
 
 function MaxDps:FetchG15Buttons()
