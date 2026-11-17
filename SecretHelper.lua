@@ -201,6 +201,7 @@ local function S(name, fallback)
 end
 
 MaxDps.watcherExpires = {}
+MaxDps.watcherStacks = {}
 local function makeWatcher()
     if not MaxDps.CooldownViewerWatcher then
         local watcherExpire = 0
@@ -234,6 +235,25 @@ local function makeWatcher()
                         MaxDps.watcherExpires[UID] = {}
                     end
                     MaxDps.watcherExpires[UID][origSpellName] = watcherExpire
+                    if MaxDps.DOTS[spellId] then
+                        local now = GetTime()
+                        local duration = MaxDps.DOTS[spellId]
+
+                        MaxDps.watcherStacks[UID] = MaxDps.watcherStacks[UID] or {}
+
+                        local dot = MaxDps.watcherStacks[UID][origSpellName]
+
+                        if not dot or (now - dot.lastCast) > duration then
+                            dot = {
+                                lastCast = now,
+                                count = 1
+                            }
+                            MaxDps.watcherStacks[UID][origSpellName] = dot
+                        else
+                            dot.count = dot.count + 1
+                            dot.lastCast = now
+                        end
+                    end
                 end
 
                 for guid, spells in pairs(MaxDps.watcherExpires) do
@@ -388,12 +408,34 @@ function MaxDps.Power(resource, isPercent)
     end
 end
 
-function MaxDps.Stacks(_unit, spellID, _filter)
-    if MaxDps.IsTrackedAuraActive(spellID) then
-        return 1
+function MaxDps.Stacks(_unit, spellID, filter)
+    local targetGUID = UnitGUID("target")
+    local UID
+    if C_Spell.IsSpellHelpful(spellID) or
+    spellID == 8075 or
+    spellID == 8835 or
+    spellID == 3599 or
+    spellID == 8190 then
+        UID = "player"
+    elseif targetGUID and not MaxDps:issecretvalue(targetGUID) then
+        UID = targetGUID
     else
-        return 0
+        UID = "target"
     end
+    local spellName = C_Spell.GetSpellName(spellID)
+
+    local tracked =
+        UID and
+        spellName and
+        MaxDps.watcherStacks[UID] and
+        MaxDps.watcherStacks[UID][spellName]
+
+    if tracked then
+        return tracked.count
+    end
+
+    -- Fallback to aura-based detection
+    return MaxDps.IsTrackedAuraActive(spellID) and 1 or 0
 end
 
 function MaxDps.Near(yards)
