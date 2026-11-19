@@ -503,6 +503,10 @@ function MaxDps:Fetch(event)
         self:FetchButtonForge()
     end
 
+    if IsAddOnLoaded('DaylightUI') then
+        self:FetchDaylightUI()
+    end
+
     -- ElvUI uses LibActionButton but not for stance bar
     if IsAddOnLoaded('ElvUI') then
         self:FetchElvUI()
@@ -570,6 +574,22 @@ function MaxDps:Bartender4()
         local button = _G["BT4Pet" .. 'Button' .. i] and _G["BT4Pet" .. 'Button' .. i] or nil
         if button then
             self:AddStandardButton(button)
+        end
+    end
+end
+
+function MaxDps:FetchDaylightUI()
+    for b = 1, 8 do
+        for i = 1, 12 do
+            local button = _G['DaylightUIBar'.. b .. 'Button' .. i]
+            --if button and not button.GetPagedID and button.id then
+            --    button.GetPagedID = function ()
+            --        return button.id
+            --    end
+            --end
+            if button then
+                self:AddStandardButton(button)
+            end
         end
     end
 end
